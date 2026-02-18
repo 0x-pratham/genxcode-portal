@@ -467,7 +467,7 @@ export default function Signup() {
                     value={form.full_name}
                     onChange={(e) => handleChange("full_name", e.target.value)}
                     onBlur={() => handleBlur("full_name")}
-                    placeholder="John Doe"
+                    placeholder="Your Name"
                     className={`input-base ${
                       errors.full_name
                         ? "border-red-500/50 focus:border-red-400"
@@ -491,7 +491,7 @@ export default function Signup() {
                     value={form.email}
                     onChange={(e) => handleChange("email", e.target.value)}
                     onBlur={() => handleBlur("email")}
-                    placeholder="john.doe@example.com"
+                    placeholder="youremail@example.com"
                     className={`input-base ${
                       errors.email
                         ? "border-red-500/50 focus:border-red-400"
