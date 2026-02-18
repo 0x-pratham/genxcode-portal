@@ -1,0 +1,347 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------- BASE ---------- */
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-slate-950 text-slate-100 antialiased;
+  }
+
+  a {
+    @apply no-underline;
+  }
+}
+
+/* ---------- COMPONENTS ---------- */
+@layer components {
+  /* Layout container used everywhere */
+  .container-page {
+    @apply max-w-6xl mx-auto px-4 md:px-6;
+  }
+
+  /* Reusable card */
+  .card {
+    @apply rounded-2xl border border-slate-800 bg-slate-950/80 shadow-lg shadow-slate-950/40;
+  }
+
+  /* Primary button */
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-full bg-cyan-500 px-4 py-2 text-xs md:text-sm font-medium text-slate-950
+      hover:bg-cyan-400 hover:-translate-y-[1px]
+      focus:outline-none focus:ring-2 focus:ring-cyan-400/70 focus:ring-offset-2 focus:ring-offset-slate-950
+      disabled:cursor-not-allowed disabled:opacity-60
+      transition-all duration-150;
+  }
+
+  /* Outline / ghost button */
+  .btn-outline {
+    @apply inline-flex items-center justify-center rounded-full border border-slate-700/80 bg-slate-900/60 px-4 py-2 text-xs md:text-sm font-medium text-slate-100
+      hover:border-cyan-400 hover:bg-slate-900/90 hover:-translate-y-[1px]
+      focus:outline-none focus:ring-2 focus:ring-cyan-400/70 focus:ring-offset-2 focus:ring-offset-slate-950
+      disabled:cursor-not-allowed disabled:opacity-60
+      transition-all duration-150;
+  }
+
+  /* Form inputs / textareas */
+  .input-base {
+    @apply w-full rounded-xl border border-slate-700 bg-slate-950/70 px-3 py-2 text-sm text-slate-100 outline-none
+      placeholder:text-slate-500
+      focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/70;
+  }
+
+  /* Navbar shell */
+  .nav-backdrop {
+    @apply sticky top-0 z-40 border-b border-slate-800/70 bg-slate-950/90 backdrop-blur-xl;
+  }
+
+  .nav-inner {
+    @apply container-page flex h-16 md:h-20 items-center justify-between gap-4;
+  }
+
+  .nav-logo {
+    @apply inline-flex items-center gap-2;
+  }
+
+  .nav-logo-mark {
+    @apply flex h-8 w-8 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400 via-sky-500 to-indigo-500 text-xs font-bold text-slate-950 shadow-lg shadow-cyan-500/40;
+  }
+
+  .nav-logo-text {
+    @apply text-sm md:text-base font-semibold tracking-tight;
+  }
+
+  .nav-logo-sub {
+    @apply text-[10px] md:text-[11px] text-slate-400;
+  }
+
+  .nav-link {
+    @apply text-xs md:text-sm text-slate-300 hover:text-cyan-300 transition;
+  }
+
+  .nav-link-active {
+    @apply text-cyan-300;
+  }
+
+  /* Auth buttons in navbar */
+  .nav-auth-primary {
+    @apply inline-flex items-center justify-center rounded-full bg-cyan-500 px-4 py-1.5 text-[11px] md:text-xs font-medium text-slate-950
+      hover:bg-cyan-400 transition;
+  }
+
+  .nav-auth-outline {
+    @apply inline-flex items-center justify-center rounded-full border border-slate-700 px-4 py-1.5 text-[11px] md:text-xs font-medium text-slate-100
+      hover:border-cyan-400 hover:text-cyan-300 transition;
+  }
+
+  /* Admin pill in navbar */
+  .nav-admin-pill {
+    @apply inline-flex items-center gap-1 rounded-full border border-amber-400/70 bg-amber-500/10 px-3 py-1 text-[11px] font-medium text-amber-300
+      hover:bg-amber-500/15 hover:border-amber-300 transition;
+  }
+
+  /* Glassy auth card (login / signup) */
+  .auth-shell {
+    @apply min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center pb-16;
+  }
+
+  .auth-card {
+    @apply card bg-slate-950/90 border border-slate-800/80 px-6 py-6;
+  }
+
+  .auth-header-title {
+    @apply text-2xl md:text-3xl font-semibold;
+  }
+
+  .auth-header-subtitle {
+    @apply text-sm text-slate-400;
+  }
+
+  /* Small pill label used in many places */
+  .pill-muted {
+    @apply inline-flex items-center gap-1 rounded-full border border-slate-800 bg-slate-900/70 px-3 py-1 text-[11px] text-slate-300;
+  }
+
+  /* Announcement card styling */
+  .announcement-card {
+    @apply card px-5 py-4 border border-slate-800/80 bg-slate-950/90;
+  }
+}
+
+/* ---------- UTILITIES / ANIMATIONS ---------- */
+@layer utilities {
+  /* Subtle float animation (can be used with any element) */
+  .animate-soft-float {
+    animation: soft-float 9s ease-in-out infinite;
+  }
+
+  @keyframes soft-float {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+
+  /* Rotating blur "atoms" background */
+  .bg-orbit {
+    position: fixed;
+    inset: 0;
+    z-index: -10;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .bg-orbit-dot {
+    position: absolute;
+    width: 14rem;
+    height: 14rem;
+    border-radius: 9999px;
+    filter: blur(60px);
+    opacity: 0.75;
+    animation: orbit 22s linear infinite;
+  }
+
+  .bg-orbit-dot--cyan {
+    background: radial-gradient(circle at center, rgba(34, 211, 238, 0.6), transparent 60%);
+  }
+
+  .bg-orbit-dot--violet {
+    background: radial-gradient(circle at center, rgba(167, 139, 250, 0.6), transparent 60%);
+  }
+
+  .bg-orbit-dot--emerald {
+    background: radial-gradient(circle at center, rgba(52, 211, 153, 0.55), transparent 60%);
+  }
+
+  @keyframes orbit {
+    0% {
+      transform: translate3d(0, 0, 0) rotate(0deg);
+    }
+    50% {
+      transform: translate3d(40px, -30px, 0) rotate(180deg);
+    }
+    100% {
+      transform: translate3d(0, 0, 0) rotate(360deg);
+    }
+  }
+
+  /* Thin modern scrollbar */
+  .scroll-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.8) rgba(15, 23, 42, 1);
+  }
+
+  .scroll-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scroll-thin::-webkit-scrollbar-track {
+    background: #020617;
+  }
+
+  .scroll-thin::-webkit-scrollbar-thumb {
+    background: #64748b;
+    border-radius: 9999px;
+  }
+
+  /* Enhanced glow effects */
+  .glow-cyan {
+    box-shadow: 0 0 20px rgba(34, 211, 238, 0.3), 0 0 40px rgba(34, 211, 238, 0.2);
+  }
+
+  .glow-purple {
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.3), 0 0 40px rgba(168, 85, 247, 0.2);
+  }
+
+  /* Text gradient animation */
+  @keyframes gradient-shift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient-shift 5s ease infinite;
+  }
+
+  /* Pulse glow */
+  @keyframes pulse-glow {
+    0%, 100% {
+      opacity: 0.5;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 3s ease-in-out infinite;
+  }
+}
+/* === Animated blurred orbit background for pages === */
+@layer utilities {
+  .bg-orbit-page {
+    @apply relative overflow-hidden;
+  }
+
+  .bg-orbit-page::before,
+  .bg-orbit-page::after {
+    content: "";
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(80px);
+    opacity: 0.55;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Top‑left cyan blob */
+  .bg-orbit-page::before {
+    width: 420px;
+    height: 420px;
+    top: -140px;
+    left: -80px;
+    background: radial-gradient(
+      circle at center,
+      rgba(56, 189, 248, 0.65),
+      transparent 70%
+    );
+    animation: orbitLeft 22s ease-in-out infinite;
+  }
+
+  /* Bottom‑right purple/emerald blob */
+  .bg-orbit-page::after {
+    width: 460px;
+    height: 460px;
+    bottom: -160px;
+    right: -60px;
+    background: radial-gradient(
+        circle at 30% 20%,
+        rgba(168, 85, 247, 0.6),
+        transparent 65%
+      ),
+      radial-gradient(
+        circle at 80% 80%,
+        rgba(45, 212, 191, 0.5),
+        transparent 70%
+      );
+    animation: orbitRight 28s ease-in-out infinite;
+  }
+}
+
+/* gentle drifting */
+@keyframes orbitLeft {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  25% {
+    transform: translate3d(40px, 20px, 0) scale(1.05);
+  }
+  50% {
+    transform: translate3d(10px, 60px, 0) scale(0.98);
+  }
+  75% {
+    transform: translate3d(-20px, 20px, 0) scale(1.07);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes orbitRight {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  25% {
+    transform: translate3d(-30px, -10px, 0) scale(1.04);
+  }
+  50% {
+    transform: translate3d(-10px, -50px, 0) scale(1.02);
+  }
+  75% {
+    transform: translate3d(10px, -20px, 0) scale(0.97);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
