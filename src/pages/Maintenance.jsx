@@ -1,9 +1,24 @@
 import { useEffect, useState } from "react";
 
 export default function Maintenance() {
-  const launchDate = new Date();
-  launchDate.setHours(launchDate.getHours() + 72);
 
+  const STORAGE_KEY = "genxcode_maintenance_end";
+
+  // 🔥 Get or Create Launch Time
+  const getLaunchTime = () => {
+    const storedTime = localStorage.getItem(STORAGE_KEY);
+
+    if (storedTime) {
+      return new Date(storedTime);
+    } else {
+      const newLaunch = new Date();
+      newLaunch.setHours(newLaunch.getHours() + 72);
+      localStorage.setItem(STORAGE_KEY, newLaunch.toISOString());
+      return newLaunch;
+    }
+  };
+
+  const [launchDate] = useState(getLaunchTime());
   const [timeLeft, setTimeLeft] = useState({});
 
   useEffect(() => {
@@ -18,24 +33,27 @@ export default function Maintenance() {
           minutes: Math.floor((difference / 1000 / 60) % 60),
           seconds: Math.floor((difference / 1000) % 60),
         });
+      } else {
+        clearInterval(timer);
+        setTimeLeft({
+          days: 0,
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+        });
       }
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [launchDate]);
 
   return (
     <div className="relative min-h-screen isolate overflow-hidden bg-slate-950 text-slate-100">
 
       {/* 🌌 Premium Mesh Background */}
       <div className="absolute inset-0 -z-10">
-
-        {/* Soft animated radial depth */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.15),transparent_40%),radial-gradient(circle_at_80%_80%,rgba(168,85,247,0.15),transparent_40%)] animate-mesh" />
-
-        {/* Subtle grid overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px]" />
-
       </div>
 
       {/* Content */}
