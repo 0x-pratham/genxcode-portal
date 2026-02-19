@@ -9,10 +9,11 @@
   }
 
   html,
-  body,
-  #root {
-    height: 100%;
-  }
+body,
+#root {
+  min-height: 100%;
+  height: auto;
+}
 
   body {
     @apply bg-slate-950 text-slate-100 antialiased;
@@ -344,4 +345,55 @@
   100% {
     transform: translate3d(0, 0, 0) scale(1);
   }
+}
+/* Floating blobs animation */
+@keyframes float {
+  0% { transform: translateY(0px) translateX(0px); }
+  50% { transform: translateY(-60px) translateX(40px); }
+  100% { transform: translateY(0px) translateX(0px); }
+}
+
+.animate-float {
+  animation: float linear infinite;
+}
+
+/* Light sweep animation */
+@keyframes sweep {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-sweep {
+  animation: sweep 15s linear infinite;
+}
+
+/* Glow pulse for countdown */
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+@keyframes meshMove {
+  0% {
+    transform: translate(0px, 0px);
+  }
+  50% {
+    transform: translate(-40px, -30px);
+  }
+  100% {
+    transform: translate(0px, 0px);
+  }
+}
+
+.animate-mesh {
+  animation: meshMove 25s ease-in-out infinite;
 }

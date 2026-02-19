@@ -22,42 +22,55 @@ import NotFound from "./pages/NotFound";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Contact from "./pages/Contact";
+import Maintenance from "./pages/Maintenance";
 
 function App() {
+
+  // 🔥 TOGGLE THIS TO ENABLE / DISABLE MAINTENANCE MODE
+  const MAINTENANCE_MODE = true;
+
+if (MAINTENANCE_MODE) {
+  return <Maintenance />;
+}
+  // change to false when upgrades are complete
+
   return (
     <Router>
-      {/* outer wrapper that holds BG + content */}
-      <div className="relative min-h-screen bg-slate-950 text-slate-100 overflow-hidden">
-        {/* 🔥 global animated background behind everything */}
+      <div className="relative min-h-screen bg-slate-950 text-slate-100 overflow-x-hidden">
         <BackgroundOrbs />
 
-        {/* nav + routes on top of background */}
         <div className="relative z-10">
-          <Navbar />
 
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
+          {/* Hide Navbar during maintenance */}
+          {!MAINTENANCE_MODE && <Navbar />}
 
-            <Route path="/apply" element={<Apply />} />
-            <Route path="/apply/success" element={<ApplySuccess />} />
+          {MAINTENANCE_MODE ? (
+            <Maintenance />
+          ) : (
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
 
-            <Route path="/announcements" element={<Announcements />} />
-            <Route path="/leaderboard" element={<Leaderboard />} />
-            <Route path="/challenges" element={<Challenges />} />
+              <Route path="/apply" element={<Apply />} />
+              <Route path="/apply/success" element={<ApplySuccess />} />
 
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/admin" element={<AdminRoute><AdminPanel/></AdminRoute>} />
-            <Route path="/profile" element={<Profile />} />
+              <Route path="/announcements" element={<Announcements />} />
+              <Route path="/leaderboard" element={<Leaderboard />} />
+              <Route path="/challenges" element={<Challenges />} />
 
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/contact" element={<Contact />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/admin" element={<AdminRoute><AdminPanel/></AdminRoute>} />
+              <Route path="/profile" element={<Profile />} />
 
-            {/* fallback */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/contact" element={<Contact />} />
+
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          )}
+
         </div>
       </div>
     </Router>
