@@ -463,7 +463,7 @@ export default function Home() {
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 50, damping: 22, mass: 0.6 });
 
   // Parallax transforms for background elements (pixel values for GPU compositing)
-  const backgroundTranslate = useTransform(smoothProgress, [0, 1], [0, 300]); // px
+  
   const contentTranslate = useTransform(smoothProgress, [0, 1], [0, -90]); // px
 
   // Enable native smooth scrolling for anchor navigation (clean and subtle)
@@ -480,6 +480,7 @@ export default function Home() {
   
   // Ref for hero section
   const heroRef = useRef(null);
+  
 
   // Generate particle data with deterministic pattern
   const particles = useMemo(() => {
@@ -623,7 +624,8 @@ export default function Home() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
-        style={{ y: backgroundTranslate, willChange: "transform" }}
+        style={{ willChange: "transform" }}
+        
       >
         {/* cyan blob with enhanced animation */}
         <motion.div
@@ -2014,48 +2016,58 @@ export default function Home() {
 
         {/* ===== PREMIUM FOOTER ===== */}
         <motion.footer 
-          className="mt-16 pt-8 border-t border-slate-800/60"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+  className="mt-16 pt-8 border-t border-slate-800/60"
+  initial={{ opacity: 0 }}
+  whileInView={{ opacity: 1 }}
+  viewport={{ once: true }}
+  transition={{ duration: 0.6 }}
+>
+  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="space-y-1">
+      <p className="text-[11px] text-slate-400">
+        © {currentYear} GenXCode. All rights reserved.
+      </p>
+      <p className="text-[10px] text-slate-500">
+        Built with <span className="text-red-400">❤️</span> by the GenXCode student community.
+      </p>
+    </div>
+
+    <div className="flex items-center gap-4 text-[10px]">
+      
+      <motion.div whileHover={{ scale: 1.05 }}>
+        <Link
+          to="/privacy"
+          className="text-slate-500 hover:text-cyan-300 transition"
         >
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div className="space-y-1">
-              <p className="text-[11px] text-slate-400">
-                © {currentYear} GenXCode. All rights reserved.
-              </p>
-              <p className="text-[10px] text-slate-500">
-                Built with <span className="text-red-400">❤️</span> by the GenXCode student community.
-              </p>
-            </div>
-            <div className="flex items-center gap-4">
-              <motion.a
-                href="#"
-                className="text-[10px] text-slate-500 hover:text-cyan-300 transition"
-                whileHover={{ scale: 1.05 }}
-              >
-                Privacy
-              </motion.a>
-              <span className="h-1 w-1 rounded-full bg-slate-600" />
-              <motion.a
-                href="#"
-                className="text-[10px] text-slate-500 hover:text-cyan-300 transition"
-                whileHover={{ scale: 1.05 }}
-              >
-                Terms
-              </motion.a>
-              <span className="h-1 w-1 rounded-full bg-slate-600" />
-              <motion.a
-                href="#"
-                className="text-[10px] text-slate-500 hover:text-cyan-300 transition"
-                whileHover={{ scale: 1.05 }}
-              >
-                Contact
-              </motion.a>
-            </div>
-          </div>
-        </motion.footer>
+          Privacy
+        </Link>
+      </motion.div>
+
+      <span className="h-1 w-1 rounded-full bg-slate-600" />
+
+      <motion.div whileHover={{ scale: 1.05 }}>
+        <Link
+          to="/terms"
+          className="text-slate-500 hover:text-cyan-300 transition"
+        >
+          Terms
+        </Link>
+      </motion.div>
+
+      <span className="h-1 w-1 rounded-full bg-slate-600" />
+
+      <motion.div whileHover={{ scale: 1.05 }}>
+        <Link
+          to="/contact"
+          className="text-slate-500 hover:text-cyan-300 transition"
+        >
+          Contact
+        </Link>
+      </motion.div>
+
+    </div>
+  </div>
+</motion.footer>
       </div>
     </main>
   );

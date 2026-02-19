@@ -19,6 +19,9 @@ import AdminPanel from "./pages/AdminPanel";
 import AdminRoute from "./components/AdminRoute";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
+import Contact from "./pages/Contact";
 
 function App() {
   return (
@@ -47,6 +50,10 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/admin" element={<AdminRoute><AdminPanel/></AdminRoute>} />
             <Route path="/profile" element={<Profile />} />
+
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/contact" element={<Contact />} />
 
             {/* fallback */}
             <Route path="*" element={<NotFound />} />
