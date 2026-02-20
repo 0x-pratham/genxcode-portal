@@ -7,7 +7,6 @@ import { supabase, isSupabaseConfigured } from "../lib/supabaseClient";
 
 // ✏️ Put your real admin emails here
 const ADMIN_EMAILS = [
-  "ofc.genxcode@gmail.com",
   "prathmeshbhil86@gmail.com",
 ];
 
@@ -16,6 +15,7 @@ const navItems = [
   { label: "Announcements", to: "/announcements" },
   { label: "Challenges", to: "/challenges" },
   { label: "Leaderboard", to: "/leaderboard" },
+  { label: "Recruitment", to: "/recruitment" }, // ✅ Added
 ];
 
 const Navbar = () => {

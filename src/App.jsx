@@ -23,6 +23,7 @@ import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Contact from "./pages/Contact";
 import Maintenance from "./pages/Maintenance";
+import Recruitment from "./pages/Recruitment"; // ✅ Added
 
 function App() {
   return (
@@ -55,6 +56,9 @@ function App() {
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/contact" element={<Contact />} />
+
+            {/* ✅ Added Recruitment Route */}
+            <Route path="/recruitment" element={<Recruitment />} />
 
             {/* fallback */}
             <Route path="*" element={<NotFound />} />

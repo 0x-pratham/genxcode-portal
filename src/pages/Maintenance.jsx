@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import BackgroundOrbs from "../components/BackgroundOrbs";
 
 export default function Maintenance() {
 
@@ -48,13 +49,10 @@ export default function Maintenance() {
   }, [launchDate]);
 
   return (
-    <div className="relative min-h-screen isolate overflow-hidden bg-slate-950 text-slate-100">
+    <div className="relative min-h-screen bg-slate-950 text-slate-100 overflow-x-hidden">
 
-      {/* 🌌 Premium Mesh Background */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.15),transparent_40%),radial-gradient(circle_at_80%_80%,rgba(168,85,247,0.15),transparent_40%)] animate-mesh" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px]" />
-      </div>
+      {/* 🔥 Same Background as Home */}
+      <BackgroundOrbs />
 
       {/* Content */}
       <div className="relative z-10 max-w-2xl mx-auto px-6 pt-32 pb-20">
