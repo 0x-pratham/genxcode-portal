@@ -91,26 +91,57 @@ export default function Recruitment() {
 
   /* ================= HANDLE SUBMIT ================= */
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    const newErrors = {};
-    Object.keys(form).forEach((key) => {
-      const error = validators[key](form[key]);
-      if (error) newErrors[key] = error;
+  const newErrors = {};
+  Object.keys(form).forEach((key) => {
+    const error = validators[key](form[key]);
+    if (error) newErrors[key] = error;
+  });
+
+  if (Object.keys(newErrors).length > 0) {
+    setErrors(newErrors);
+    return;
+  }
+
+  setIsSubmitting(true);
+
+  try {
+    const response = await fetch("/api/submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(form),
     });
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Submission failed");
     }
 
-    setIsSubmitting(true);
+    alert("Application submitted successfully 🚀");
 
-    // Submit manually if needed
-    e.target.submit();
-  };
+    setForm({
+      fullName: "",
+      email: "",
+      contact: "",
+      branch: "",
+      year: "",
+      domain: "",
+      motivation: "",
+    });
 
+    setErrors({});
+
+  } catch (error) {
+    alert("Something went wrong. Please try again.");
+  }
+
+  setIsSubmitting(false);
+};
   /* ================= UI ================= */
 
   return (
@@ -134,8 +165,6 @@ export default function Recruitment() {
         </div>
 
         <form
-          action="https://formspree.io/f/mgolllyl"
-          method="POST"
           className="space-y-6"
           onSubmit={handleSubmit}
           noValidate
