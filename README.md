@@ -76,18 +76,19 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ### 5. Set Up Database Schema
 
 1. Go to your Supabase project → SQL Editor
-2. Run the SQL migration files in order:
-   - `supabase/migrations/001_initial_schema.sql` - Creates all tables, triggers, and functions
-   - `supabase/migrations/002_rls_policies.sql` - Sets up Row Level Security policies
+2. Run the SQL migration files **in order** (001 → 006):
+   - `001_initial_schema.sql` - Creates all tables, triggers, and functions
+   - `002_rls_policies.sql` - Row Level Security policies
+   - `003_fix_leaderboard_trigger_rls.sql` - Fixes leaderboard updates when submissions are approved
+   - `004_add_league_recalculation_trigger.sql` - League recalc on points change
+   - `005_fix_league_calculation.sql` - League fixes and recalc helpers
+   - `006_attendance_points_automation.sql` - **+10 points per attendance** (auto when you mark attendance)
 
-**Important**: Make sure to run `001_initial_schema.sql` first, then `002_rls_policies.sql`.
+**Important**: Run them in numeric order. New projects: run all six. Existing projects: run only migrations you haven’t applied yet.
 
 **Quick Steps:**
 1. Open Supabase Dashboard → SQL Editor
-2. Click "New query"
-3. Copy and paste the contents of `001_initial_schema.sql`
-4. Click "Run" (or press Ctrl+Enter)
-5. Repeat for `002_rls_policies.sql`
+2. For each migration file (001 through 006), click "New query", paste the file contents, then "Run"
 
 ### 6. Create Your First Admin User
 

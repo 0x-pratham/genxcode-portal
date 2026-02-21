@@ -2,12 +2,7 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { supabase, isSupabaseConfigured } from "../lib/supabaseClient";
-
-// Fallback list of admin emails (used only as a temporary fallback)
-const ADMIN_EMAILS = [
-  "ofc.genxcode@gmail.com",
-  "prathmeshbhil86@gmail.com",
-];
+import { ADMIN_EMAILS } from "../lib/adminEmails";
 
 // AdminRoute: allow access when profiles.role === 'admin' OR email is in ADMIN_EMAILS
 export default function AdminRoute({ children }) {

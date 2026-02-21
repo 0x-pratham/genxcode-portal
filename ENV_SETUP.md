@@ -7,9 +7,9 @@ Create a `.env` file in the root directory of the project with the following var
 ```env
 VITE_SUPABASE_URL=your_supabase_project_url_here
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here
-
-
 ```
+
+For **production** (e.g. Vercel) if you use the Recruitment form: add `FORMSPARK_KEY` in your host’s environment (the `/api/submit` serverless function uses it to forward submissions).
 
 ## How to Get Your Supabase Credentials
 
@@ -33,6 +33,7 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 - The `.env` file is already in `.gitignore`
 - Restart your development server after creating/updating `.env`
 - Environment variables must start with `VITE_` to be accessible in Vite
+- `FORMSPARK_KEY` is only used server-side (Vercel/host env) for the Recruitment form API
 
 ## Troubleshooting
 

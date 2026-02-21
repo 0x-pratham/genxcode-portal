@@ -46,6 +46,17 @@ This guide will help you set up the GenXCode Portal database in Supabase.
 
 **Expected result:** You should see "Success. No rows returned" or similar success message.
 
+### 3b. Run Remaining Migrations (003–006)
+
+If your project already has 001 and 002 applied, run these in order in the SQL Editor:
+
+- **003_fix_leaderboard_trigger_rls.sql** – Lets leaderboard update when submissions are approved
+- **004_add_league_recalculation_trigger.sql** – Recalculates league when points change
+- **005_fix_league_calculation.sql** – League fixes and recalc helpers
+- **006_attendance_points_automation.sql** – Adds **10 points per attendance** automatically when attendance is marked (insert) or removed (recalc)
+
+Run each file in a new query. For **006**, existing users’ leaderboard is recalculated so current attendance counts are reflected.
+
 ### 4. Verify Tables Were Created
 
 1. Go to "Table Editor" in the Supabase dashboard

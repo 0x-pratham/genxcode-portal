@@ -2,13 +2,8 @@
 import { useEffect, useState } from "react";
 import { NavLink, Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-void motion;
 import { supabase, isSupabaseConfigured } from "../lib/supabaseClient";
-
-// ✏️ Put your real admin emails here
-const ADMIN_EMAILS = [
-  "prathmeshbhil86@gmail.com",
-];
+import { ADMIN_EMAILS } from "../lib/adminEmails";
 
 const navItems = [
   { label: "Home", to: "/" },
@@ -23,9 +18,8 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  // If you want DB-based roles later, you can re-enable role loading.
-  const [profileRole] = useState(null);
-  const [roleLoading] = useState(false);
+  const [profileRole, setProfileRole] = useState(null);
+  const [roleLoading, setRoleLoading] = useState(true);
 
   // ---- Auth & user loading ----
   useEffect(() => {
@@ -37,6 +31,8 @@ const Navbar = () => {
         setUser(data.user);
       } else {
         setUser(null);
+        setProfileRole(null);
+        setRoleLoading(false);
       }
     };
 
@@ -51,6 +47,30 @@ const Navbar = () => {
 
     return () => subscription?.unsubscribe?.();
   }, []);
+
+  // ---- Load profile role when user is set ----
+  useEffect(() => {
+    if (!isSupabaseConfigured() || !user?.id) {
+      setProfileRole(null);
+      setRoleLoading(false);
+      return;
+    }
+    let cancelled = false;
+    setRoleLoading(true);
+    supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle()
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        setProfileRole(error ? null : data?.role ?? null);
+      })
+      .finally(() => {
+        if (!cancelled) setRoleLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [user?.id]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -177,7 +197,7 @@ const Navbar = () => {
                 </Link>
 
                 {/* Admin (only if admin) */}
-                {(profileRole === "admin" || ADMIN_EMAILS.includes(email)) ? (
+                {isAdmin ? (
                   <Link to="/admin">
                     <button aria-label="Open admin panel" className="inline-flex items-center gap-2 rounded-full border border-fuchsia-500/70 bg-gradient-to-r from-fuchsia-600/10 via-transparent to-pink-600/6 px-5 py-2.5 text-xs md:text-sm font-medium text-fuchsia-200 hover:scale-[1.02] hover:shadow-lg hover:shadow-fuchsia-500/30 transition-transform">
                       <span className="text-[13px]">⚙</span>
@@ -347,7 +367,7 @@ const Navbar = () => {
                     Profile
                   </button>
                 </Link>
-                {(profileRole === "admin" || ADMIN_EMAILS.includes(email)) && (
+                {isAdmin && (
                   <Link to="/admin" onClick={() => setMobileOpen(false)}>
                     <button className="btn-outline px-3 py-1.5 text-xs border-fuchsia-500/60 text-fuchsia-300">
                       Admin Panel
