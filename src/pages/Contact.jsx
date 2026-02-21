@@ -13,7 +13,7 @@ export default function Contact() {
 
       <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
         <p className="text-cyan-300 font-medium">
-          📧 genxcode.community@gmail.com
+          📧 ofc.genxcode@gmail.com
         </p>
         <p>📞 +917057020856</p>
       </div>
