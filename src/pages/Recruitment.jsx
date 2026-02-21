@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 
 export default function Recruitment() {
@@ -229,41 +229,78 @@ export default function Recruitment() {
         </div>
       </div>
 
-      {showSuccessModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.3 }}
-            className="bg-slate-900 border border-slate-800 rounded-2xl p-8 max-w-md w-full text-center shadow-xl"
+      <AnimatePresence>
+  {showSuccessModal && (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 px-4"
+    >
+      <motion.div
+        initial={{ scale: 0.7, opacity: 0, y: 40 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.7, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 120 }}
+        className="relative bg-slate-900 border border-slate-800 rounded-3xl p-8 max-w-md w-full text-center shadow-[0_0_60px_rgba(34,211,238,0.2)]"
+      >
+        {/* Floating Glow */}
+        <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-cyan-500/10 via-green-400/10 to-indigo-500/10 blur-2xl -z-10" />
+
+        {/* Animated Success Tick */}
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+          className="w-16 h-16 mx-auto mb-6 rounded-full bg-green-500/20 flex items-center justify-center"
+        >
+          <svg
+            className="w-8 h-8 text-green-400"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            viewBox="0 0 24 24"
           >
-            <h3 className="text-2xl font-semibold text-cyan-300 mb-4">
-              🎉 Application Submitted!
-            </h3>
+            <motion.path
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+        </motion.div>
 
-            <p className="text-slate-400 text-sm mb-6">
-              Join our WhatsApp community to stay updated with announcements,
-              shortlists and upcoming activities.
-            </p>
+        <h3 className="text-2xl font-semibold text-cyan-300 mb-4">
+          Application Submitted Successfully!
+        </h3>
 
-            <a
-              href="https://chat.whatsapp.com/JpNxXypDcmuCM6A80q8pPd?mode=gi_t"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full bg-gradient-to-r from-green-400 to-green-600 text-black font-semibold py-3 rounded-full mb-4 hover:brightness-110 transition"
-            >
-              Join WhatsApp Community
-            </a>
+        <p className="text-slate-400 text-sm mb-6">
+          You're one step closer 🚀  
+          Join our WhatsApp community to stay updated about announcements,
+          shortlists, and next steps.
+        </p>
 
-            <button
-              onClick={() => setShowSuccessModal(false)}
-              className="text-slate-400 text-sm hover:text-white transition"
-            >
-              Maybe Later
-            </button>
-          </motion.div>
-        </div>
-      )}
+        <a
+          href="https://chat.whatsapp.com/JpNxXypDcmuCM6A80q8pPd?mode=gi_t"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block w-full bg-gradient-to-r from-green-400 to-green-600 text-black font-semibold py-3 rounded-full mb-4 hover:scale-105 hover:shadow-lg hover:shadow-green-500/30 transition-all duration-300"
+        >
+          Join WhatsApp Community
+        </a>
+
+        <button
+          onClick={() => setShowSuccessModal(false)}
+          className="text-slate-400 text-sm hover:text-white transition"
+        >
+          Maybe Later
+        </button>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
     </>
   );
 }
