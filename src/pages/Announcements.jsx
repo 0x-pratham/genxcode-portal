@@ -48,11 +48,13 @@ export default function Announcements() {
       <div className="container-page relative z-10 max-w-5xl mx-auto pt-20 md:pt-24 space-y-8">
         {/* ===== HEADER ===== */}
         <motion.header
-          className="space-y-4"
+          className="relative space-y-6"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
+          {/* subtle header glow */}
+<div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[500px] h-[200px] bg-cyan-500/10 blur-3xl rounded-full pointer-events-none" />
           {/* pill */}
           <motion.div
             className="inline-flex items-center gap-2 rounded-full border border-slate-700/70 bg-slate-900/80 px-3 py-1.5 text-[11px] text-slate-300 shadow-lg shadow-cyan-500/20 backdrop-blur"
@@ -67,10 +69,10 @@ export default function Announcements() {
           </motion.div>
 
           <div className="space-y-2">
-            <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">
+            <h1 className="text-3xl md:text-4xl font-semibold tracking-tight bg-gradient-to-r from-slate-100 via-slate-200 to-slate-400 bg-clip-text text-transparent">
               Announcements
             </h1>
-            <p className="text-sm md:text-base text-slate-400 max-w-2xl">
+            <p className="text-sm md:text-base text-slate-400 max-w-2xl leading-relaxed">
               Stay in sync with sessions, events, challenge drops and important
               updates from the GenXCode core team.
             </p>
@@ -105,7 +107,11 @@ export default function Announcements() {
         ) : announcements.length === 0 ? (
           // empty state
           <motion.div
-            className="relative overflow-hidden rounded-2xl border border-dashed border-slate-700 bg-slate-950/70 px-6 py-10 text-sm text-slate-300 text-center shadow-lg shadow-slate-950/70"
+            className={`relative overflow-hidden rounded-2xl border ${
+  isLatest
+    ? "border-cyan-500/40 shadow-[0_0_40px_rgba(34,211,238,0.15)]"
+    : "border-slate-800/80"
+} bg-slate-950/70 backdrop-blur-xl px-5 py-4 md:px-6 md:py-5 shadow-xl shadow-slate-950/80 transition-all`}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
           >
@@ -130,11 +136,18 @@ export default function Announcements() {
               return (
                 <motion.article
                   key={a.id}
-                  className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/80 px-5 py-4 md:px-6 md:py-5 shadow-lg shadow-slate-950/70 transition-all"
+                  className="relative overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-950/70 backdrop-blur-xl px-5 py-4 md:px-6 md:py-5 shadow-xl shadow-slate-950/80 transition-all"
                   initial={{ opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.35, delay: index * 0.04 }}
-                  whileHover={shouldReduce ? {} : { translateY: -6, boxShadow: "0 30px 60px rgba(2,6,23,0.6)" }}
+                  whileHover={
+  shouldReduce
+    ? {}
+    : {
+        translateY: -8,
+        boxShadow: "0 40px 80px rgba(2,6,23,0.7)",
+      }
+}
                 >
                   {/* gradient top accent */}
                   <div className="pointer-events-none absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-cyan-400 via-sky-500 to-fuchsia-400 opacity-80" />
@@ -191,31 +204,33 @@ export default function Announcements() {
 
                   {a.content && (
                     <div className="mt-3 text-sm md:text-[15px] text-slate-200 leading-relaxed">
-                      <p className="whitespace-pre-line">{preview}</p>
-                      {a.content.length > 300 && (
-                        <div className="mt-2 flex items-center gap-2">
-                          <button
-                            onClick={() => setExpandedId(expandedId === a.id ? null : a.id)}
-                            className="text-xs text-cyan-300 hover:underline"
-                          >
-                            {expandedId === a.id ? "Show less" : "Read more"}
-                          </button>
-                        </div>
-                      )}
+                      <div className="mt-3 text-sm md:text-[15px] text-slate-200 leading-relaxed">
+  <AnimatePresence mode="wait">
+    <motion.p
+      key={expandedId === a.id ? "full" : "preview"}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: shouldReduce ? 0 : 0.2 }}
+      className="whitespace-pre-line"
+    >
+      {expandedId === a.id ? a.content : preview}
+    </motion.p>
+  </AnimatePresence>
 
-                      <AnimatePresence>
-                        {expandedId === a.id && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: shouldReduce ? 0 : 0.28 }}
-                            className="overflow-hidden mt-3"
-                          >
-                            <p className="whitespace-pre-line text-slate-200">{a.content}</p>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
+  {a.content.length > 300 && (
+    <div className="mt-2 flex items-center gap-2">
+      <button
+        onClick={() =>
+          setExpandedId(expandedId === a.id ? null : a.id)
+        }
+        className="text-xs text-cyan-300 hover:underline"
+      >
+        {expandedId === a.id ? "Show less" : "Read more"}
+      </button>
+    </div>
+  )}
+</div>
                     </div>
                   )}
                 </motion.article>
