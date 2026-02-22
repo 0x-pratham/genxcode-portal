@@ -873,7 +873,7 @@ export default function AdminPanel() {
   /* UI                                                                         */
   /* -------------------------------------------------------------------------- */
   return (
-    <main className="relative min-h-screen bg-slate-950 text-slate-100 flex overflow-hidden">
+    <main className="relative min-h-screen bg-slate-950 text-slate-100 flex overflow-hidden isolate">
       {/* Soft gradient background + glow */}
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute -top-32 -left-32 h-80 w-80 rounded-full bg-cyan-500/20 blur-3xl" />
@@ -887,7 +887,7 @@ export default function AdminPanel() {
         {/* Brand */}
         <div className="flex items-center gap-3 mb-2">
           <div className="h-9 w-9 rounded-2xl bg-gradient-to-br from-cyan-400 via-sky-500 to-indigo-500 flex items-center justify-center text-xs font-bold text-slate-950 shadow-lg shadow-cyan-500/40">
-            GX
+
           </div>
           <div className="leading-tight">
             <p className="text-sm font-semibold tracking-tight">GenXCode Admin</p>
