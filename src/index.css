@@ -397,3 +397,16 @@ body,
 .animate-mesh {
   animation: meshMove 25s ease-in-out infinite;
 }
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(34,211,238,0.4);
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(34,211,238,0.7);
+}

@@ -1,16 +1,15 @@
 // ===================== GENXCODE ADMIN PANEL — UPGRADED V2 =====================
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
-import { motion, useReducedMotion } from "framer-motion";
-void motion;
+import { motion } from "framer-motion";
 
 /* -------------------------------------------------------------------------- */
 /* UI HELPERS (UNCHANGED STYLE, REUSED)                                        */
 /* -------------------------------------------------------------------------- */
 
 const FrostCard = ({ children, className = "" }) => (
-  <div className={`rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-xl p-5 transition-transform transform-gpu hover:scale-[1.01] ${className}`}>
+  <div className={`rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-xl p-5 transition-all duration-300 transform-gpu hover:scale-[1.01] hover:shadow-cyan-500/20 ${className}`}>
     {children}
   </div>
 );
@@ -36,24 +35,7 @@ const Select = (props) => (
   />
 );
 
-const TabButton = ({ id, active, children, onClick }) => {
-  const reduce = useReducedMotion();
-  const hoverProps = reduce ? {} : { whileHover: { scale: 1.05 }, whileTap: { scale: 0.95 } };
 
-  return (
-    <motion.button
-      {...hoverProps}
-      onClick={() => onClick(id)}
-      className={`px-4 py-2 rounded-xl text-sm ${
-        active
-          ? "bg-gradient-to-r from-cyan-500/30 to-purple-500/30 border border-cyan-400/30"
-          : "bg-white/5 border border-white/10"
-      }`}
-    >
-      {children}
-    </motion.button>
-  );
-};
 
 /* -------------------------------------------------------------------------- */
 /* MAIN COMPONENT                                                              */
@@ -63,10 +45,12 @@ export default function AdminPanel() {
   const navigate = useNavigate();
   const [checking, setChecking] = useState(true);
   const [tab, setTab] = useState("overview");
+  const [toast, setToast] = useState(null);
   
 
   // local helpers / UI state
   const [appQuery, setAppQuery] = useState("");
+  const [appStatusFilter, setAppStatusFilter] = useState("all");
 
   /* ----------------------------- DATA STATES ------------------------------ */
   const [stats, setStats] = useState({
@@ -76,17 +60,19 @@ export default function AdminPanel() {
     announcements: 0,
   });
 
-  const [applications, setApplications] = useState([]);
-  const [applicationsError, setApplicationsError] = useState(null);
-  const [debugAuth, setDebugAuth] = useState(null); // { userId, email, role }
-  const [debugProfileError, setDebugProfileError] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
   const [leaders, setLeaders] = useState([]);
   const [profiles, setProfiles] = useState([]); // For showing user names
+  const profileMap = useMemo(() => {
+  return new Map(profiles.map(p => [p.id, p]));
+}, [profiles]);
+  const [applications, setApplications] = useState([]);
+const [applicationsError, setApplicationsError] = useState(null);
   const [challenges, setChallenges] = useState([]);
   const [submissions, setSubmissions] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [logs, setLogs] = useState([]);
+const [profilesMap, setProfilesMap] = useState(new Map());
 
   const [loadingAll, setLoadingAll] = useState(false);
   
@@ -145,7 +131,6 @@ export default function AdminPanel() {
           .single();
 
         // store debug info (helps diagnose 403/RLS issues)
-        setDebugAuth({ userId: user.id, email: user.email, role: profile?.role || null });
 
         if (error || profile?.role !== "admin") {
           navigate("/dashboard");
@@ -162,30 +147,6 @@ export default function AdminPanel() {
     checkAdmin();
   }, [navigate]);
 
-  // helper to fetch current user's profile info (useful for debugging RLS 403s)
-  const fetchProfileDebug = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setDebugAuth({ userId: null, email: null, role: null });
-        return null;
-      }
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('id, role')
-        .eq('id', user.id)
-        .maybeSingle();
-      setDebugAuth({ userId: user.id, email: user.email, role: profile?.role || null });
-      // surface profile fetch error for diagnostics
-      setDebugProfileError(error || null);
-      return { user, profile, error };
-    } catch (err) {
-      console.error('Error fetching profile debug:', err);
-      setDebugAuth({ userId: null, email: null, role: null });
-      setDebugProfileError(err || null);
-      return null;
-    }
-  };
 
 
   /* -------------------------------------------------------------------------- */
@@ -212,10 +173,10 @@ export default function AdminPanel() {
       if (apps.error) {
         console.error("Error loading applications:", apps.error);
         setApplications([]);
-        setApplicationsError({ status: apps.error.status, message: apps.error.message || String(apps.error) });
-        // fetch profile info to diagnose why RLS may be blocking the request (e.g., missing admin role)
-        const pd = await fetchProfileDebug();
-        console.info('Profile debug data for applications fetch:', pd);
+        setApplicationsError({ 
+  status: apps.error.status, 
+  message: apps.error.message || String(apps.error) 
+});
 
         // No server fallback here - rely on Supabase RLS policies only
       } else {
@@ -330,6 +291,56 @@ export default function AdminPanel() {
     Promise.resolve().then(() => loadAll());
   }, [checking]);
 
+  useEffect(() => {
+  if (checking) return;
+
+  const channel = supabase
+    .channel("admin-live")
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public" },
+      () => {
+        if (!loadingAll) {
+          loadAll();
+        }
+      }
+    )
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}, [checking, loadingAll]);
+  
+  const showToast = (message, type = "info") => {
+  setToast({ message, type });
+  setTimeout(() => setToast(null), 3000);
+};
+
+const logAdminAction = async ({
+  actionType,
+  targetType,
+  targetId,
+  metadata = {},
+}) => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    await supabase.from("admin_activity_logs").insert([
+      {
+        admin_id: user.id,
+        action_type: actionType,
+        target_type: targetType,
+        target_id: targetId,
+        metadata,
+      },
+    ]);
+  } catch (err) {
+    console.error("Log error:", err);
+  }
+};
+
   /* -------------------------------------------------------------------------- */
   /* ACTIONS                                                                    */
   /* -------------------------------------------------------------------------- */
@@ -338,7 +349,7 @@ export default function AdminPanel() {
     e.preventDefault();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      alert("You must be logged in to post announcements.");
+      showToast("You must be logged in.", "error");
       return;
     }
 
@@ -350,7 +361,7 @@ export default function AdminPanel() {
 
     if (error) {
       console.error("Error posting announcement:", error);
-      alert("Failed to post announcement. Please try again.");
+      showToast("Failed to post announcement.", "error");
       return;
     }
 
@@ -362,7 +373,7 @@ export default function AdminPanel() {
     e.preventDefault();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      alert("You must be logged in to add challenges.");
+      showToast("You must be logged in.", "error");
       return;
     }
 
@@ -391,7 +402,7 @@ export default function AdminPanel() {
 
     if (error) {
       console.error("Error adding challenge:", error);
-      alert("Failed to add challenge. Please try again.");
+      showToast("Failed to add challenge.", "error");
       return;
     }
 
@@ -410,13 +421,13 @@ export default function AdminPanel() {
 
   const approveSubmission = async (s) => {
     if (!s?.challenges?.points || !s?.user_id) {
-      alert("Invalid submission data.");
+      showToast("Invalid submission data.", "error");
       return;
     }
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      alert("You must be logged in to approve submissions.");
+      showToast("You must be logged in.", "error");
       return;
     }
 
@@ -432,25 +443,34 @@ export default function AdminPanel() {
 
     if (updateError) {
       console.error("Error approving submission:", updateError);
-      alert("Failed to approve submission: " + (updateError.message || "Unknown error"));
+      showToast("Failed to approve submission.", "error");
       return;
     }
 
     // Refresh all data to ensure leaderboard and points are updated
     await loadAll();
 
-    alert(`Submission approved! ${s.challenges.points} points awarded.`);
+    await logAdminAction({
+  actionType: "approve_submission",
+  targetType: "submission",
+  targetId: s.id,
+  metadata: {
+    user_id: s.user_id,
+    points: s.challenges.points,
+  },
+});
+    showToast(`Approved +${s.challenges.points} points`, "success");
   };
 
   const rejectSubmission = async (s) => {
     if (!s?.id) {
-      alert("Invalid submission data.");
+      showToast("Invalid submission data.", "error");
       return;
     }
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      alert("You must be logged in to reject submissions.");
+      showToast("You must be logged in.", "error");
       return;
     }
 
@@ -466,21 +486,27 @@ export default function AdminPanel() {
 
     if (updateError) {
       console.error("Error rejecting submission:", updateError);
-      alert("Failed to reject submission: " + (updateError.message || "Unknown error"));
+      showToast("Failed to reject submission.", "error");
       return;
     }
 
     // Refresh all data to ensure leaderboard is updated
     await loadAll();
 
-    alert("Submission rejected.");
+    await logAdminAction({
+  actionType: "reject_submission",
+  targetType: "submission",
+  targetId: s.id,
+});
+
+    showToast("Submission rejected.", "error");
   };
 
   const createSession = async (e) => {
     e.preventDefault();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      alert("You must be logged in to create sessions.");
+      showToast("You must be logged in.", "error");
       return;
     }
 
@@ -497,7 +523,7 @@ export default function AdminPanel() {
 
     if (error) {
       console.error("Error creating session:", error);
-      alert("Failed to create session. Please try again.");
+      showToast("Failed to create session.", "error");
       return;
     }
 
@@ -508,9 +534,9 @@ export default function AdminPanel() {
   const handleApproveApp = async (app) => {
     if (!app || !app.id) return;
     if (app.status && app.status !== "pending") {
-      alert("This application has already been reviewed.");
-      return;
-    }
+  showToast("Already reviewed.", "info");
+  return;
+}
     try {
       const { data: { user } } = await supabase.auth.getUser();
       const { error } = await supabase
@@ -523,20 +549,25 @@ export default function AdminPanel() {
         .eq("id", app.id);
       if (error) {
         console.error("Approve app error:", error);
-        alert("Failed to approve application: " + (error.message || "Unknown error"));
+        showToast("Failed to approve application.", "error");
         return;
       }
       setApplications(p => p.map(a => a.id === app.id ? { ...a, status: "approved", reviewed_by: user?.id } : a));
+      await logAdminAction({
+  actionType: "approve_application",
+  targetType: "application",
+  targetId: app.id,
+});
     } catch (err) {
       console.error("Approve app unexpected error:", err);
-      alert("Failed to approve application. See console for details.");
+      showToast("Failed to approve application.", "error");
     }
   };
 
   const handleRejectApp = async (app) => {
     if (!app || !app.id) return;
     if (app.status && app.status !== "pending") {
-      alert("This application has already been reviewed.");
+      showToast("This application has already been reviewed.", "error");
       return;
     }
     try {
@@ -551,13 +582,18 @@ export default function AdminPanel() {
         .eq("id", app.id);
       if (error) {
         console.error("Reject app error:", error);
-        alert("Failed to reject application: " + (error.message || "Unknown error"));
+        showToast("Failed to reject application.", "error");
         return;
       }
       setApplications(p => p.map(a => a.id === app.id ? { ...a, status: "rejected", reviewed_by: user?.id } : a));
+      await logAdminAction({
+  actionType: "reject_application",
+  targetType: "application",
+  targetId: app.id,
+});
     } catch (err) {
       console.error("Reject app unexpected error:", err);
-      alert("Failed to reject application. See console for details.");
+      showToast("Failed to reject application.", "error");
     }
   };
 
@@ -596,7 +632,7 @@ export default function AdminPanel() {
             console.log("Student already marked present");
           } else {
             console.error("Error marking attendance:", error);
-            alert("Failed to mark attendance: " + (error.message || "Unknown error"));
+            showToast("Failed to mark attendance.", "error");
             setMarkingAttendance(false);
             return;
           }
@@ -619,7 +655,7 @@ export default function AdminPanel() {
 
         if (error) {
           console.error("Error unmarking attendance:", error);
-          alert("Failed to unmark attendance: " + (error.message || "Unknown error"));
+          showToast("Failed to unmark attendance.", "error");
           setMarkingAttendance(false);
           return;
         } else {
@@ -648,7 +684,7 @@ export default function AdminPanel() {
       }
     } catch (err) {
       console.error("Error in attendance marking:", err);
-      alert("Something went wrong. Please try again.");
+      showToast("Something went wrong.", "error");
     } finally {
       setMarkingAttendance(false);
     }
@@ -661,9 +697,11 @@ export default function AdminPanel() {
     try {
       const studentsToProcess = attendanceSearchQuery
         ? allStudents.filter(s => 
-            (s.full_name || "").toLowerCase().includes(attendanceSearchQuery.toLowerCase()) ||
-            (s.branch || "").toLowerCase().includes(attendanceSearchQuery.toLowerCase())
-          )
+  !attendanceSearchQuery ||
+  (s.full_name || "").toLowerCase().includes(attendanceSearchQuery.toLowerCase()) ||
+  (s.branch || "").toLowerCase().includes(attendanceSearchQuery.toLowerCase()) ||
+  (s.year || "").toLowerCase().includes(attendanceSearchQuery.toLowerCase())
+)
         : allStudents;
 
       if (markAllAsPresent) {
@@ -683,7 +721,7 @@ export default function AdminPanel() {
 
           if (error) {
             console.error("Error marking all attendance:", error);
-            alert("Failed to mark all attendance. Some students may already be marked.");
+            showToast("Failed to mark all attendance. Some students may already be marked.", "error");
           }
         }
       } else {
@@ -698,7 +736,7 @@ export default function AdminPanel() {
 
           if (error) {
             console.error("Error unmarking all attendance:", error);
-            alert("Failed to unmark all attendance.");
+            showToast("Failed to unmark all attendance", "error");
           }
         }
       }
@@ -707,7 +745,7 @@ export default function AdminPanel() {
       await loadAll();
     } catch (err) {
       console.error("Error in bulk attendance marking:", err);
-      alert("Something went wrong. Please try again.");
+      showToast("Something went wrong.", "error");
     } finally {
       setMarkingAttendance(false);
     }
@@ -729,13 +767,13 @@ export default function AdminPanel() {
 
   const adjustUserPoints = async () => {
     if (!selectedUser || !pointsAdjustment.points) {
-      alert("Please enter points to adjust.");
+      showToast("Please enter points to adjust", "error");
       return;
     }
 
     const pointsToAdd = Number(pointsAdjustment.points);
     if (isNaN(pointsToAdd) || pointsToAdd === 0) {
-      alert("Please enter a valid number of points (positive or negative).");
+      showToast("Please enter a valid number of points (positive or negative).", "error");
       return;
     }
 
@@ -751,7 +789,7 @@ export default function AdminPanel() {
 
       if (fetchError) {
         console.error("Error fetching current points:", fetchError);
-        alert("Failed to fetch current points. Please try again.");
+        showToast("Failed to fetch current points. Please try again.", "error");
         setAdjustingPoints(false);
         return;
       }
@@ -780,7 +818,7 @@ export default function AdminPanel() {
 
       if (updateError) {
         console.error("Error updating points:", updateError);
-        alert("Failed to update points. Please try again.");
+        showToast("Failed to update points. Please try again.", "error");
         setAdjustingPoints(false);
         return;
       }
@@ -798,16 +836,25 @@ export default function AdminPanel() {
 
       // Refresh leaderboard data
       await loadAll();
+      await logAdminAction({
+  actionType: "adjust_points",
+  targetType: "leaderboard",
+  targetId: selectedUser.user_id,
+  metadata: {
+    delta: pointsToAdd,
+    reason: pointsAdjustment.reason,
+  },
+});
       
-      alert(
-        `Successfully ${pointsToAdd > 0 ? "added" : "subtracted"} ${Math.abs(pointsToAdd)} points. ` +
-        `New total: ${newPoints} points.`
-      );
+      showToast(
+  `${pointsToAdd > 0 ? "Added" : "Subtracted"} ${Math.abs(pointsToAdd)} pts · Total: ${newPoints}`,
+  "success"
+);
 
       closePointsAdjustment();
     } catch (err) {
       console.error("Error adjusting points:", err);
-      alert("Something went wrong. Please try again.");
+      showToast("Something went wrong.", "error");
     } finally {
       setAdjustingPoints(false);
     }
@@ -818,14 +865,26 @@ export default function AdminPanel() {
   const canAddChallenge = challenge.title.trim() && challenge.description.trim();
   const canCreateSession = session.title.trim() && session.session_date.trim();
 
-  const filteredApplications = appQuery
-    ? applications.filter(a => (a.full_name || a.email || "").toLowerCase().includes(appQuery.toLowerCase()))
-    : applications;
+  const filteredApplications = applications
+  .filter(a => {
+    // Search filter
+    if (!appQuery) return true;
+    const q = appQuery.toLowerCase();
+    return (
+      (a.full_name || "").toLowerCase().includes(q) ||
+      (a.email || "").toLowerCase().includes(q)
+    );
+  })
+  .filter(a => {
+    // Status filter
+    if (appStatusFilter === "all") return true;
+    return (a.status || "pending") === appStatusFilter;
+  });
 
   // Export applications as CSV (for quick admin use)
   const exportApplicationsCSV = () => {
     if (applicationsError) {
-      alert(`Cannot export applications: ${applicationsError.status || ''} ${applicationsError.message || ''}. This likely means your Supabase RLS prevents reading the table. Check your Supabase RLS policies for 'applications'.`);
+      showToast("Cannot export applications due to RLS restriction.", "error");
       return;
     }
 
@@ -838,7 +897,7 @@ export default function AdminPanel() {
     }));
 
     if (rows.length === 0) {
-      alert("No applications to export.");
+      showToast("No applications to export.", "info");
       return;
     }
 
@@ -883,7 +942,7 @@ export default function AdminPanel() {
       </div>
 
       {/* SIDEBAR */}
-      <aside className="hidden md:flex md:flex-col w-68 max-w-xs border-r border-white/10 bg-slate-950/80 backdrop-blur-xl px-5 py-6 gap-4">
+      <aside className="w-64 h-full bg-slate-950/90 backdrop-blur-xl border-r border-slate-800 p-6 flex flex-col">
         {/* Brand */}
         <div className="flex items-center gap-3 mb-2">
           <div className="h-9 w-9 rounded-2xl bg-gradient-to-br from-cyan-400 via-sky-500 to-indigo-500 flex items-center justify-center text-xs font-bold text-slate-950 shadow-lg shadow-cyan-500/40">
@@ -918,15 +977,16 @@ export default function AdminPanel() {
             { id: "challenges", label: "Challenges", icon: "💡" },
             { id: "submissions", label: "Submissions", icon: "✅" },
             { id: "attendance", label: "Attendance", icon: "📅" },
+            { id: "activity", label: "Activity Logs", icon: "📜" },
           ].map((item) => (
             <button
               key={item.id}
               onClick={() => setTab(item.id)}
-              className={`flex items-center justify-between rounded-xl px-3 py-2 text-left transition
+              className={`group flex items-center justify-between rounded-xl px-4 py-2.5 text-left text-[12px] font-medium transition-all duration-200
                 ${
                   tab === item.id
-                    ? "bg-gradient-to-r from-cyan-500/20 to-fuchsia-500/20 border border-cyan-400/40 text-slate-50 shadow-[0_0_25px_rgba(34,211,238,0.35)]"
-                    : "bg-slate-900/60 border border-slate-800/80 text-slate-300 hover:border-cyan-400/40 hover:text-slate-50"
+                    ? "bg-gradient-to-r from-cyan-500/25 to-fuchsia-500/25 border border-cyan-400/50 text-white shadow-[0_0_30px_rgba(34,211,238,0.45)]"
+                    : "bg-slate-900/60 border border-slate-800/80 text-slate-400 hover:border-cyan-400/50 hover:text-white hover:bg-slate-800/70"
                 }`}
             >
               <span className="flex items-center gap-2">
@@ -949,42 +1009,34 @@ export default function AdminPanel() {
 
       {/* CONTENT */}
       <section className="flex-1 px-4 py-5 md:px-8 md:py-8 space-y-5">
+        <motion.div
+  key={tab}
+  initial={{ opacity: 0, y: 10 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.25 }}
+>
         {/* Top header bar */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-1">
-          <div>
-            <p className="text-[11px] uppercase tracking-[0.25em] text-slate-500">
-              GenXCode · Admin Console
-            </p>
-            <h1 className="mt-1 text-xl md:text-2xl font-semibold tracking-tight">
-              Ultra Dashboard
-            </h1>
-            <p className="text-xs text-slate-400 mt-1 max-w-xl">
-              Review applications, manage challenges, announcements and sessions from a
-              single, focused control surface.
-            </p>
-          </div>
+          <div className="mt-1 space-y-1">
+  <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-white">
+    GenXCode Admin Dashboard
+  </h1>
+  <p className="text-xs text-slate-500 tracking-wide">
+    A Product of <span className="text-cyan-300 font-medium">Cosmolix Pvt Ltd</span>
+  </p>
+</div>
 
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1 rounded-full border border-slate-700/80 bg-slate-900/80 px-3 py-1 text-[10px] text-slate-300">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span
+  className={`h-1.5 w-1.5 rounded-full ${
+    loadingAll
+      ? "bg-amber-400 animate-ping"
+      : "bg-emerald-400 animate-pulse"
+  }`}
+/>
               <span>{loadingAll ? "Refreshing data…" : "Live Supabase data"}</span>
             </span>
-
-            {debugAuth && (
-              <span className="inline-flex items-center gap-2 rounded-full border border-slate-700/80 bg-slate-900/80 px-3 py-1 text-[10px] text-slate-300">
-                <span className="text-xs">ID: <span className="font-mono text-[10px] text-slate-400">{debugAuth.userId?.slice(0,8) || '—'}</span></span>
-                <span className="text-xs">Role: <span className="font-medium text-emerald-300">{debugAuth.role || '—'}</span></span>
-              </span>
-            )}
-
-            <button
-              onClick={async () => { await fetchProfileDebug(); await loadAll(); }}
-              disabled={loadingAll}
-              className={`px-3 py-1.5 rounded-full text-[11px] font-medium border transition
-                ${loadingAll ? "border-slate-600 bg-slate-800/80 text-slate-400 cursor-wait" : "border-yellow-400/70 bg-yellow-500/10 text-yellow-200 hover:bg-yellow-500/20"}`}
-            >
-              Diagnostics
-            </button>
 
             <button
               onClick={loadAll}
@@ -1015,7 +1067,7 @@ export default function AdminPanel() {
                   ? "💡"
                   : "📢";
               return (
-                <FrostCard key={key} className="relative overflow-hidden">
+                <FrostCard key={key} className="relative overflow-hidden hover:shadow-cyan-500/20">
                   <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/15 via-transparent to-fuchsia-500/15 opacity-60" />
                   <div className="relative flex flex-col gap-2">
                     <div className="flex items-center justify-between">
@@ -1026,7 +1078,15 @@ export default function AdminPanel() {
                         </span>
                       </span>
                     </div>
-                    <p className="text-3xl font-semibold text-cyan-300">{value}</p>
+                    <motion.p
+  key={value}
+  initial={{ scale: 1.1, opacity: 0.6 }}
+  animate={{ scale: 1, opacity: 1 }}
+  transition={{ duration: 0.3 }}
+  className="text-4xl font-bold text-cyan-300 tracking-tight"
+>
+  {value}
+</motion.p>
                     <p className="text-[10px] text-slate-500">
                       Total {label.toLowerCase()} in the GenXCode ecosystem.
                     </p>
@@ -1040,50 +1100,45 @@ export default function AdminPanel() {
         {/* APPLICATIONS */}
         {tab === "applications" && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Member Applications</h2>
-              <button
-                onClick={exportApplicationsCSV}
-                disabled={!!applicationsError || filteredApplications.length === 0}
-                className={`px-3 py-1 rounded-lg text-sm ${applicationsError || filteredApplications.length === 0 ? 'bg-slate-800 text-slate-500 cursor-not-allowed' : 'bg-emerald-500/30'}`}
-              >
-                Export CSV
-              </button>
-            </div>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+  <div>
+    <h2 className="text-lg font-semibold">Member Applications</h2>
+    <p className="text-xs text-slate-400 mt-1">
+      Review and manage recruitment requests.
+    </p>
+  </div>
+
+  <div className="flex flex-wrap items-center gap-2">
+    {["all", "pending", "approved", "rejected"].map((status) => (
+      <button
+        key={status}
+        onClick={() => setAppStatusFilter(status)}
+        className={`px-3 py-1 rounded-full text-[11px] border transition ${
+  appStatusFilter === status
+    ? "bg-cyan-500/20 border-cyan-400/50 text-cyan-200"
+    : "bg-slate-800/60 border-slate-700/60 hover:border-cyan-400/40"
+}`}
+      >
+        {status.charAt(0).toUpperCase() + status.slice(1)}
+      </button>
+    ))}
+    
+    <button
+      onClick={exportApplicationsCSV}
+      disabled={!!applicationsError || filteredApplications.length === 0}
+      className={`px-3 py-1 rounded-lg text-sm ${
+        applicationsError || filteredApplications.length === 0
+          ? "bg-slate-800 text-slate-500 cursor-not-allowed"
+          : "bg-emerald-500/30 hover:bg-emerald-500/40"
+      }`}
+    >
+      Export CSV
+    </button>
+  </div>
+</div>
             {applicationsError && (
               <FrostCard>
-                <div className="space-y-2">
                   <p className="text-sm text-amber-300">⚠️ Unable to read applications: <span className="font-mono">{applicationsError.status || ''}</span> <span className="font-mono">{applicationsError.message || ''}</span></p>
-                  <p className="text-sm text-slate-400">This usually means Supabase Row-Level Security prevents the current user from selecting the `applications` table. If you are testing locally, you can promote a user to admin in the Supabase SQL editor by running the SQL below (replace the id):</p>
-                  <pre className="mt-2 p-3 bg-slate-900/60 rounded text-xs font-mono text-slate-300">{`INSERT INTO public.profiles (id, role)
-VALUES ('${debugAuth?.userId || '<user-id>'}', 'admin')
-ON CONFLICT (id) DO UPDATE SET role='admin';`}</pre>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => { navigator.clipboard?.writeText(`INSERT INTO public.profiles (id, role)\\nVALUES ('${debugAuth?.userId || '<user-id>'}', 'admin')\\nON CONFLICT (id) DO UPDATE SET role='admin';`); alert('SQL copied to clipboard'); }}
-                      className="px-3 py-1 rounded bg-cyan-500/20 text-cyan-300 text-xs"
-                    >
-                      Copy SQL
-                    </button>
-                    <button
-                      onClick={async () => { await fetchProfileDebug(); await loadAll(); }}
-                      className="px-3 py-1 rounded bg-yellow-500/10 text-yellow-200 text-xs"
-                    >
-                      Re-run diagnostics
-                    </button>
-                    {debugProfileError && (
-                      <button
-                        onClick={() => { navigator.clipboard?.writeText(JSON.stringify(debugProfileError)); alert('Profile error copied'); }}
-                        className="px-3 py-1 rounded bg-slate-800 text-slate-200 text-xs"
-                      >
-                        Copy error
-                      </button>
-                    )}
-
-
-
-                  </div>
-                </div>
               </FrostCard>
             )}
 
@@ -1094,20 +1149,36 @@ ON CONFLICT (id) DO UPDATE SET role='admin';`}</pre>
             ) : (
               <div className="space-y-3">
                 {filteredApplications.map((app) => (
-                  <FrostCard key={app.id}>
+                  <FrostCard
+  key={app.id}
+  className={`hover:border-cyan-400/60 hover:shadow-cyan-500/10 transition-all duration-200 ${
+    (app.status || "pending") === "pending"
+      ? "border-amber-400/50 bg-amber-500/5 shadow-[0_0_20px_rgba(251,191,36,0.15)]"
+      : ""
+  }`}
+>
                     <div className="space-y-2">
                       <div className="flex items-start justify-between">
                         <div>
                           <p className="font-semibold">{app.full_name}</p>
                           <p className="text-xs text-slate-400">{app.email}</p>
                         </div>
-                        <span className={`px-2 py-1 rounded text-xs ${
-                          app.status === "approved" ? "bg-emerald-500/20 text-emerald-300" :
-                          app.status === "rejected" ? "bg-red-500/20 text-red-300" :
-                          "bg-amber-500/20 text-amber-300"
-                        }`}>
-                          {app.status || "pending"}
-                        </span>
+                        <span
+  className={`px-3 py-1.5 rounded-full text-[11px] font-semibold border transition
+    ${
+      app.status === "approved"
+        ? "bg-emerald-500/20 text-emerald-300 border-emerald-400/40"
+        : app.status === "rejected"
+        ? "bg-red-500/20 text-red-300 border-red-400/40"
+        : "bg-amber-500/25 text-amber-200 border-amber-400/50 shadow-[0_0_15px_rgba(251,191,36,0.3)]"
+    }`}
+>
+  {app.status === "approved"
+    ? "✓ Approved"
+    : app.status === "rejected"
+    ? "✕ Rejected"
+    : "⏳ Pending"}
+</span>
                       </div>
                       <div className="grid md:grid-cols-2 gap-2 text-xs text-slate-300">
                         <p><span className="text-slate-500">Branch:</span> {app.branch || "—"}</p>
@@ -1132,14 +1203,14 @@ ON CONFLICT (id) DO UPDATE SET role='admin';`}</pre>
                         <button
                           onClick={() => handleApproveApp(app)}
                           disabled={applicationsError || (app.status && app.status !== 'pending')}
-                          className="px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded text-xs hover:bg-emerald-500/30 disabled:opacity-40 disabled:cursor-not-allowed"
+                          className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500/25 text-emerald-200 border border-emerald-400/40 hover:bg-emerald-500/35 transition disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                           Approve
                         </button>
                         <button
                           onClick={() => handleRejectApp(app)}
                           disabled={applicationsError || (app.status && app.status !== 'pending')}
-                          className="px-3 py-1 bg-red-500/20 text-red-300 rounded text-xs hover:bg-red-500/30 disabled:opacity-40 disabled:cursor-not-allowed"
+                          className="px-4 py-1.5 rounded-lg text-xs font-medium bg-red-500/15 text-red-300 border border-red-400/30 hover:bg-red-500/25 transition disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                           Reject
                         </button>
@@ -1176,7 +1247,7 @@ ON CONFLICT (id) DO UPDATE SET role='admin';`}</pre>
                 <button
                   disabled={!canPost}
                   aria-disabled={!canPost}
-                  className={`px-4 py-2 rounded-lg bg-cyan-500/30 ${
+                  className={`px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500/30 to-purple-500/30 border border-cyan-400/40 font-medium transition hover:from-cyan-500/40 hover:to-purple-500/40 ${
                     !canPost ? "opacity-50 cursor-not-allowed" : ""
                   }`}
                 >
@@ -1232,7 +1303,7 @@ ON CONFLICT (id) DO UPDATE SET role='admin';`}</pre>
               ) : (
                 <div className="space-y-2 max-h-96 overflow-auto">
                   {leaders.slice(0, 50).map((row, idx) => {
-                    const profile = profiles.find((p) => p.id === row.user_id);
+                    const profile = profileMap.get(row.user_id);
                     const userName = profile?.full_name || "Unknown User";
                     const userInfo = profile
                       ? `${profile.branch || ""} ${profile.year || ""}`.trim() || ""
@@ -1241,12 +1312,21 @@ ON CONFLICT (id) DO UPDATE SET role='admin';`}</pre>
                     return (
                       <div
                         key={row.id}
-                        className="flex items-center justify-between text-xs border border-white/10 rounded-xl px-3 py-2 hover:border-cyan-400/40 transition-colors cursor-pointer group"
+                        className={`flex items-center justify-between text-xs border rounded-xl px-3 py-2 transition-all cursor-pointer group duration-200
+  ${
+    idx === 0
+      ? "border-yellow-400/50 bg-yellow-500/5 shadow-[0_0_20px_rgba(250,204,21,0.25)]"
+      : idx === 1
+      ? "border-slate-400/40 bg-slate-400/5"
+      : idx === 2
+      ? "border-amber-700/40 bg-amber-700/5"
+      : "border-white/10 hover:border-cyan-400/60 hover:bg-slate-800/50"
+  }`}
                         onClick={() => openPointsAdjustment(row)}
                       >
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
-                            <p className="font-semibold text-slate-50">
+                            <p className="font-semibold text-base">
                               #{idx + 1} · {userName}
                             </p>
                             <span className="px-2 py-0.5 rounded-full text-[10px] bg-gradient-to-r from-cyan-500/20 to-purple-500/20 border border-cyan-400/30">
@@ -1289,7 +1369,7 @@ ON CONFLICT (id) DO UPDATE SET role='admin';`}</pre>
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="bg-slate-900 border border-white/10 rounded-2xl p-6 max-w-md w-full shadow-2xl"
+                  className="bg-slate-900/95 border border-cyan-400/20 rounded-2xl p-6 max-w-md w-full shadow-[0_0_40px_rgba(34,211,238,0.25)] backdrop-blur-xl"
                 >
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold">Adjust Points</h3>
@@ -1302,7 +1382,7 @@ ON CONFLICT (id) DO UPDATE SET role='admin';`}</pre>
                   </div>
 
                   {(() => {
-                    const profile = profiles.find((p) => p.id === selectedUser.user_id);
+                    const profile = profileMap.get(selectedUser.user_id);
                     const userName = profile?.full_name || "Unknown User";
                     return (
                       <div className="space-y-4">
@@ -1484,7 +1564,7 @@ ON CONFLICT (id) DO UPDATE SET role='admin';`}</pre>
                 <button
                   disabled={!canAddChallenge}
                   aria-disabled={!canAddChallenge}
-                  className={`px-4 py-2 rounded-lg bg-cyan-500/30 ${
+                  className={`px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500/30 to-purple-500/30 border border-cyan-400/40 font-medium transition hover:from-cyan-500/40 hover:to-purple-500/40 ${
                     !canAddChallenge ? "opacity-50 cursor-not-allowed" : ""
                   }`}
                 >
@@ -1553,18 +1633,42 @@ ON CONFLICT (id) DO UPDATE SET role='admin';`}</pre>
                 <p className="text-sm text-slate-400">No submissions yet.</p>
               </FrostCard>
             ) : (
-              submissions.map((s) => (
-                <FrostCard key={s.id}>
-                  <div className="space-y-2 text-xs">
+              [...submissions]
+  .sort((a, b) => {
+    const order = { pending: 0, approved: 1, rejected: 2 };
+    return order[a.status] - order[b.status];
+  })
+  .map((s) => (
+                <FrostCard
+  key={s.id}
+  className={`transition-all duration-200 ${
+    s.status === "pending"
+      ? "border-amber-400/40 bg-amber-500/5 shadow-[0_0_20px_rgba(251,191,36,0.15)]"
+      : ""
+  }`}
+>
+                  <div className="space-y-4 text-xs">
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1">
                         <p className="font-semibold text-slate-50">
                           {s.challenges?.title || "Challenge"}
                         </p>
                         <p className="text-slate-400">
-                          Difficulty: {s.challenges?.difficulty || "—"} · Base{" "}
-                          {s.challenges?.points ?? 0} pts
-                        </p>
+  <span
+    className={`px-2 py-0.5 rounded text-[10px] font-medium mr-2 ${
+      s.challenges?.difficulty === "hard"
+        ? "bg-red-500/20 text-red-300"
+        : s.challenges?.difficulty === "medium"
+        ? "bg-amber-500/20 text-amber-300"
+        : "bg-emerald-500/20 text-emerald-300"
+    }`}
+  >
+    {s.challenges?.difficulty || "—"}
+  </span>
+  <span className="text-slate-500">
+    Base {s.challenges?.points ?? 0} pts
+  </span>
+</p>
                         <div className="mt-1 space-y-0.5">
                           <p className="text-[11px] text-slate-400">
                             <span className="text-slate-500">Submitted by:</span>{" "}
@@ -1585,16 +1689,20 @@ ON CONFLICT (id) DO UPDATE SET role='admin';`}</pre>
                       </div>
                       <div className="text-right">
                         <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] ${
-                            s.status === "approved"
-                              ? "bg-emerald-500/20 text-emerald-200"
-                              : s.status === "rejected"
-                              ? "bg-red-500/20 text-red-200"
-                              : "bg-amber-500/20 text-amber-200"
-                          }`}
-                        >
-                          {s.status}
-                        </span>
+  className={`px-3 py-1 rounded-full text-[11px] font-semibold border transition ${
+    s.status === "approved"
+      ? "bg-emerald-500/20 text-emerald-300 border-emerald-400/40"
+      : s.status === "rejected"
+      ? "bg-red-500/20 text-red-300 border-red-400/40"
+      : "bg-amber-500/25 text-amber-200 border-amber-400/50 shadow-[0_0_15px_rgba(251,191,36,0.3)]"
+  }`}
+>
+  {s.status === "approved"
+    ? "✓ Approved"
+    : s.status === "rejected"
+    ? "✕ Rejected"
+    : "⏳ Pending"}
+</span>
                         <p className="mt-1 text-[11px] text-slate-400">
                           Submitted{" "}
                           {s.submitted_at
@@ -1632,14 +1740,14 @@ ON CONFLICT (id) DO UPDATE SET role='admin';`}</pre>
                       <button
                         onClick={() => approveSubmission(s)}
                         disabled={s.status === "approved"}
-                        className="px-3 py-1 bg-emerald-500/20 text-emerald-200 rounded-lg text-[11px] disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500/25 text-emerald-200 border border-emerald-400/40 hover:bg-emerald-500/35 transition disabled:opacity-40 disabled:cursor-not-allowed"
                       >
                         Approve
                       </button>
                       <button
                         onClick={() => rejectSubmission(s)}
                         disabled={s.status === "rejected"}
-                        className="px-3 py-1 bg-red-500/20 text-red-200 rounded-lg text-[11px] disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="px-4 py-1.5 rounded-lg text-xs font-medium bg-red-500/15 text-red-300 border border-red-400/30 hover:bg-red-500/25 transition disabled:opacity-40 disabled:cursor-not-allowed"
                       >
                         Reject
                       </button>
@@ -1688,7 +1796,7 @@ ON CONFLICT (id) DO UPDATE SET role='admin';`}</pre>
                 <button
                   disabled={!canCreateSession}
                   aria-disabled={!canCreateSession}
-                  className={`px-4 py-2 bg-cyan-500/30 rounded-lg ${
+                  className={`px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500/30 to-purple-500/30 border border-cyan-400/40 font-medium transition hover:from-cyan-500/40 hover:to-purple-500/40 ${
                     !canCreateSession ? "opacity-50 cursor-not-allowed" : ""
                   }`}
                 >
@@ -1808,7 +1916,7 @@ ON CONFLICT (id) DO UPDATE SET role='admin';`}</pre>
                       return (
                         <div
                           key={student.id}
-                          className="flex items-center justify-between border border-white/10 rounded-xl px-3 py-2 hover:border-cyan-400/40 transition-colors"
+                          className="flex items-center justify-between border border-white/10 rounded-xl px-3 py-2 hover:border-cyan-400/60 hover:bg-slate-800/40 transition-all duration-200"
                         >
                           <div className="flex-1">
                             <p className="text-sm font-semibold text-slate-50">
@@ -1850,10 +1958,11 @@ ON CONFLICT (id) DO UPDATE SET role='admin';`}</pre>
                 </div>
 
                 {allStudents.filter(s => 
-                  !attendanceSearchQuery ||
-                  (s.full_name || "").toLowerCase().includes(attendanceSearchQuery.toLowerCase()) ||
-                  (s.branch || "").toLowerCase().includes(attendanceSearchQuery.toLowerCase())
-                ).length === 0 && (
+  !attendanceSearchQuery ||
+  (s.full_name || "").toLowerCase().includes(attendanceSearchQuery.toLowerCase()) ||
+  (s.branch || "").toLowerCase().includes(attendanceSearchQuery.toLowerCase()) ||
+  (s.year || "").toLowerCase().includes(attendanceSearchQuery.toLowerCase())
+).length === 0 && (
                   <p className="text-sm text-slate-400 text-center py-4">
                     No students found.
                   </p>
@@ -1868,8 +1977,155 @@ ON CONFLICT (id) DO UPDATE SET role='admin';`}</pre>
             )}
           </div>
         )}
+        {tab === "activity" && (
+  <FrostCard>
+    <h2 className="text-lg font-semibold mb-3">Admin Activity Logs</h2>
+    <ActivityLogs />
+  </FrostCard>
+)}
 
+<div className="mt-12 pt-6 border-t border-slate-800 text-center text-[10px] text-slate-500">
+  <p>
+    GenXCode © {new Date().getFullYear()} · Product engineered by 
+    <span className="text-cyan-300 ml-1">Cosmolix Pvt Ltd</span>
+  </p>
+</div>
+</motion.div>
       </section>
+    {toast && (
+  <div className="fixed bottom-6 right-6 z-50">
+    <div
+      className={`px-4 py-3 rounded-xl shadow-lg border text-sm backdrop-blur-xl transition
+        ${
+          toast.type === "error"
+            ? "bg-red-500/20 border-red-400/40 text-red-200"
+            : toast.type === "success"
+            ? "bg-emerald-500/20 border-emerald-400/40 text-emerald-200"
+            : "bg-cyan-500/20 border-cyan-400/40 text-cyan-200"
+        }`}
+    >
+      {toast.message}
+    </div>
+  </div>
+)}
     </main>
+  );
+}
+function ActivityLogs() {
+  const [logs, setLogs] = useState([]);
+  const [profilesMap, setProfilesMap] = useState(new Map());
+
+  useEffect(() => {
+  const fetchLogs = async () => {
+    // 1️⃣ Fetch logs with admin join
+    const { data: logData, error } = await supabase
+      .from("admin_activity_logs")
+      .select(`
+        *,
+        admin:profiles!admin_activity_logs_admin_id_fkey (
+          id,
+          full_name
+        )
+      `)
+      .order("created_at", { ascending: false })
+      .limit(50);
+
+    if (error) return;
+
+    setLogs(logData || []);
+
+    // 2️⃣ Fetch profiles for name lookup
+    const { data: profiles } = await supabase
+      .from("profiles")
+      .select("id, full_name");
+
+    const map = new Map();
+    (profiles || []).forEach(p => {
+      map.set(p.id, p.full_name);
+    });
+
+    setProfilesMap(map);
+  };
+
+  fetchLogs();
+}, []);
+
+const buildMessage = (log) => {
+  const adminName = log.admin?.full_name || "Unknown Admin";
+
+  const targetUserId =
+    log.metadata?.user_id || log.target_id;
+
+  const targetName =
+    profilesMap.get(targetUserId) || "User";
+
+  switch (log.action_type) {
+    case "approve_submission":
+      return `${adminName} approved submission for ${targetName}`;
+
+    case "reject_submission":
+      return `${adminName} rejected submission for ${targetName}`;
+
+    case "adjust_points":
+      return `${adminName} adjusted points for ${targetName}`;
+
+    case "approve_application":
+      return `${adminName} approved application`;
+
+    case "reject_application":
+      return `${adminName} rejected application`;
+
+    default:
+      return `${adminName} performed ${log.action_type.replaceAll("_", " ")}`;
+  }
+};
+
+  if (logs.length === 0) {
+    return (
+      <p className="text-sm text-slate-400">
+        No activity recorded yet.
+      </p>
+    );
+  }
+
+  return (
+    <div className="space-y-2 max-h-96 overflow-auto text-xs">
+      {logs.map((log) => (
+        <div
+          key={log.id}
+          className="border border-white/10 rounded-xl px-3 py-2"
+        >
+          <p className="text-slate-200 font-semibold">
+  {buildMessage(log)}
+</p>
+
+<p className="text-slate-400 text-[11px]">
+  Target: {log.target_type}
+</p>
+
+{log.metadata && (
+  <div className="text-[11px] text-slate-300 mt-1">
+    {log.metadata.delta && (
+      <p>
+        Points change:{" "}
+        <span className="text-cyan-300">
+          {log.metadata.delta > 0 ? "+" : ""}
+          {log.metadata.delta}
+        </span>
+      </p>
+    )}
+    {log.metadata.reason && (
+      <p className="text-slate-400">
+        Reason: {log.metadata.reason}
+      </p>
+    )}
+  </div>
+)}
+          <p className="text-slate-500 text-[10px]">
+            {new Date(log.created_at).toLocaleString()}
+          </p>
+        </div>
+      ))}
+    </div>
   );
 }
