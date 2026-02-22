@@ -42,10 +42,15 @@ export default function Announcements() {
 
   return (
     // ❗ no bg-slate-950 here so global BackgroundOrbs stays visible
-    <main className="relative min-h-screen text-slate-100 pb-24 overflow-hidden">
+    <main className="relative min-h-screen scroll-smooth text-slate-100 pb-24 overflow-hidden">
       <BackgroundOrbs />
       {/* All page content sits above global BG */}
-      <div className="container-page relative z-10 max-w-5xl mx-auto pt-20 md:pt-24 space-y-8">
+     <motion.div
+  className="container-page relative z-10 max-w-5xl mx-auto pt-20 md:pt-24 space-y-8"
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.6, ease: "easeOut" }}
+>
         {/* ===== HEADER ===== */}
         <motion.header
           className="relative space-y-6"
@@ -64,12 +69,12 @@ export default function Announcements() {
           >
             <span className="inline-flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
             <span className="font-medium tracking-wide">
-              GenXCode · Core team updates
+              GenXCode · President team updates
             </span>
           </motion.div>
 
           <div className="space-y-2">
-            <h1 className="text-3xl md:text-4xl font-semibold tracking-tight bg-gradient-to-r from-slate-100 via-slate-200 to-slate-400 bg-clip-text text-transparent">
+            <h1 className="text-4xl md:text-5xl font-semibold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
               Announcements
             </h1>
             <p className="text-sm md:text-base text-slate-400 max-w-2xl leading-relaxed">
@@ -88,7 +93,7 @@ export default function Announcements() {
             </p>
           )}
         </motion.header>
-
+<div className="h-px w-full bg-gradient-to-r from-transparent via-slate-700 to-transparent opacity-60" />
         {/* ===== CONTENT ===== */}
         {loading ? (
           // loading state
@@ -107,14 +112,10 @@ export default function Announcements() {
         ) : announcements.length === 0 ? (
           // empty state
           <motion.div
-            className={`relative overflow-hidden rounded-2xl border ${
-  isLatest
-    ? "border-cyan-500/40 shadow-[0_0_40px_rgba(34,211,238,0.15)]"
-    : "border-slate-800/80"
-} bg-slate-950/70 backdrop-blur-xl px-5 py-4 md:px-6 md:py-5 shadow-xl shadow-slate-950/80 transition-all`}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
+  className="relative overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-950/70 backdrop-blur-xl px-5 py-6 shadow-xl shadow-slate-950/80 transition-all"
+  initial={{ opacity: 0, y: 12 }}
+  animate={{ opacity: 1, y: 0 }}
+>
             <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-cyan-400 via-fuchsia-400 to-emerald-400 opacity-60" />
             <p className="text-base md:text-lg font-medium mb-1">
               No announcements yet
@@ -136,52 +137,64 @@ export default function Announcements() {
               return (
                 <motion.article
                   key={a.id}
-                  className="relative overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-950/70 backdrop-blur-xl px-5 py-4 md:px-6 md:py-5 shadow-xl shadow-slate-950/80 transition-all"
+                  className={`relative overflow-hidden rounded-2xl border ${
+  isLatest
+    ? "border-cyan-500/40 shadow-[0_0_40px_rgba(34,211,238,0.15)]"
+    : "border-slate-800/70"
+} bg-gradient-to-b from-slate-900/70 to-slate-950/70 backdrop-blur-2xl px-6 py-6 md:px-10 md:py-8 shadow-2xl shadow-slate-950/80 transition-all`}
                   initial={{ opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.35, delay: index * 0.04 }}
+                  transition={{ duration: 0.4, delay: index * 0.06, ease: "easeOut" }}
                   whileHover={
-  shouldReduce
-    ? {}
-    : {
-        translateY: -8,
-        boxShadow: "0 40px 80px rgba(2,6,23,0.7)",
-      }
-}
-                >
+    shouldReduce
+      ? {}
+      : {
+          y: -4,
+          scale: 1.006
+        }
+  }
+>
                   {/* gradient top accent */}
                   <div className="pointer-events-none absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-cyan-400 via-sky-500 to-fuchsia-400 opacity-80" />
 
                   <div className="flex items-start justify-between gap-3">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <h2 className="text-base md:text-lg font-semibold">
+                        <h2 className="text-lg md:text-xl font-semibold tracking-tight text-slate-100">
                           {a.title || "Announcement"}
                         </h2>
                         {isLatest && (
-                          <span className="rounded-full bg-emerald-500/12 border border-emerald-400/30 px-2 py-0.5 text-[10px] uppercase tracking-[0.12em] text-emerald-200">
+                          <span className="rounded-full bg-cyan-500/10 border border-cyan-400/30 px-3 py-0.5 text-[10px] uppercase tracking-[0.15em] text-cyan-300 backdrop-blur">
                             Latest
                           </span>
                         )}
                       </div>
 
                       {created && (
-                        <p className="text-[11px] text-slate-500">
-                          {created.toLocaleString()}
+                        <p className="text-[11px] text-slate-500 tracking-wide">
+                          {created.toLocaleDateString(undefined, {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+})}
                         </p>
                       )}
+                      <div className="mt-3 h-px w-full bg-slate-800/60" />
                     </div>
 
                     <div className="flex items-start gap-3">
-                      <span className="text-[11px] text-slate-500 font-mono">#{reversedIndex.toString().padStart(2, "0")}</span>
+                      <span className="text-[10px] text-slate-500 uppercase tracking-wider">
+                      Post {reversedIndex}
+                      </span>
                       <div className="flex gap-2">
                         <button
                           onClick={() => {
                             const url = `${window.location.origin}/announcements#${a.id}`;
                             navigator.clipboard?.writeText(url);
+                            alert("Link copied");
                             // small inline feedback could be improved with toasts
                           }}
-                          className="text-[11px] text-slate-400 hover:text-slate-200 px-2 py-1 rounded border border-slate-800/60"
+                          className="text-[11px] text-slate-400 hover:text-white px-3 py-1.5 rounded-lg border border-slate-800/70 bg-slate-900/60 hover:bg-slate-800/70 transition-all"
                         >
                           Copy link
                         </button>
@@ -194,7 +207,7 @@ export default function Announcements() {
                               window.open(url, "_blank");
                             }
                           }}
-                          className="text-[11px] text-slate-400 hover:text-slate-200 px-2 py-1 rounded border border-slate-800/60"
+                          className="text-[11px] text-slate-400 hover:text-white px-3 py-1.5 rounded-lg border border-slate-800/70 bg-slate-900/60 hover:bg-slate-800/70 transition-all"
                         >
                           Share
                         </button>
@@ -203,42 +216,57 @@ export default function Announcements() {
                   </div>
 
                   {a.content && (
-                    <div className="mt-3 text-sm md:text-[15px] text-slate-200 leading-relaxed">
-                      <div className="mt-3 text-sm md:text-[15px] text-slate-200 leading-relaxed">
-  <AnimatePresence mode="wait">
-    <motion.p
-      key={expandedId === a.id ? "full" : "preview"}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: shouldReduce ? 0 : 0.2 }}
-      className="whitespace-pre-line"
-    >
-      {expandedId === a.id ? a.content : preview}
-    </motion.p>
-  </AnimatePresence>
-
-  {a.content.length > 300 && (
-    <div className="mt-2 flex items-center gap-2">
-      <button
-        onClick={() =>
-          setExpandedId(expandedId === a.id ? null : a.id)
-        }
-        className="text-xs text-cyan-300 hover:underline"
+  <div className="mt-5 text-sm md:text-[15px] text-slate-200 leading-[1.8]">
+    <AnimatePresence mode="wait">
+      <motion.p
+        key={expandedId === a.id ? "full" : "preview"}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: shouldReduce ? 0 : 0.2 }}
+        className="whitespace-pre-line"
       >
-        {expandedId === a.id ? "Show less" : "Read more"}
-      </button>
-    </div>
-  )}
-</div>
-                    </div>
-                  )}
+        {expandedId === a.id ? a.content : preview}
+      </motion.p>
+    </AnimatePresence>
+
+    {a.content.length > 300 && (
+      <div className="mt-4">
+        <button
+          onClick={() =>
+            setExpandedId(expandedId === a.id ? null : a.id)
+          }
+          className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors font-medium"
+        >
+          {expandedId === a.id ? "Collapse ↑" : "Continue reading →"}
+        </button>
+      </div>
+    )}
+  </div>
+)}
+<motion.div
+style={{ willChange: "transform, opacity" }}
+  className="pointer-events-none absolute inset-0 opacity-0 bg-[linear-gradient(120deg,transparent,rgba(255,255,255,0.08),transparent)]"
+  animate={{}}
+  whileHover={
+    shouldReduce
+      ? {}
+      : {
+          opacity: [0, 0.6, 0],
+          x: ["-120%", "120%"]
+        }
+  }
+  transition={{
+    duration: 0.9,
+    ease: "easeInOut"
+  }}
+/>
                 </motion.article>
               );
             })}
           </div>
         )}
-      </div>
+      </motion.div>
     </main>
   );
 }
