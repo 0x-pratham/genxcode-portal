@@ -10,7 +10,6 @@ const navItems = [
   { label: "Announcements", to: "/announcements" },
   { label: "Challenges", to: "/challenges" },
   { label: "Leaderboard", to: "/leaderboard" },
-  { label: "Recruitment", to: "/recruitment" }, // ✅ Added
 ];
 
 const Navbar = () => {
