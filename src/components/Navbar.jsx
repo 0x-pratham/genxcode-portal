@@ -1,9 +1,9 @@
 // src/components/Navbar.jsx
 import { useEffect, useState } from "react";
 import { NavLink, Link, useLocation, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import { supabase, isSupabaseConfigured } from "../lib/supabaseClient";
 import { ADMIN_EMAILS } from "../lib/adminEmails";
+import { motion, AnimatePresence } from "framer-motion";
 
 const navItems = [
   { label: "Home", to: "/" },
@@ -19,6 +19,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [profileRole, setProfileRole] = useState(null);
   const [roleLoading, setRoleLoading] = useState(true);
+  const [scrolled, setScrolled] = useState(false);
 
   // ---- Auth & user loading ----
   useEffect(() => {
@@ -71,6 +72,15 @@ const Navbar = () => {
     return () => { cancelled = true; };
   }, [user?.id]);
 
+  useEffect(() => {
+  const handleScroll = () => {
+    setScrolled(window.scrollY > 20);
+  };
+
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setUser(null);
@@ -102,38 +112,39 @@ const Navbar = () => {
 
   // Helper: desktop nav links
   const renderNavLink = (to, label, end = false) => (
-    <NavLink
-      key={to}
-      to={to}
-      end={end}
-      className={({ isActive }) =>
-        [
-          "relative px-5 py-2 text-sm md:text-[15px] font-medium transition-all",
-          "text-slate-300 hover:text-slate-50",
-          isActive ? "text-cyan-300" : "",
-        ].join(" ")
-      }
-    >
-      {({ isActive }) => (
-        <>
-          <span className="relative z-[1]">{label}</span>
-          <span
-            className={[
-              "pointer-events-none absolute inset-x-4 -bottom-1 h-0.5 rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400",
-              "transition-all duration-300",
-              isActive
-                ? "opacity-100 scale-100 shadow-[0_0_18px_rgba(34,211,238,0.7)]"
-                : "opacity-0 scale-50",
-            ].join(" ")}
-          />
-        </>
-      )}
-    </NavLink>
-  );
+  <NavLink
+    key={to}
+    to={to}
+    end={end}
+    className={({ isActive }) =>
+      [
+        "relative px-5 py-2 text-sm md:text-[15px] font-medium transition-colors duration-200",
+        isActive ? "text-cyan-300" : "text-slate-300 hover:text-slate-50",
+      ].join(" ")
+    }
+  >
+    {({ isActive }) => (
+      <>
+        <span className="relative z-[1]">{label}</span>
 
+        {isActive && (
+          <motion.span
+            layoutId="nav-underline"
+            className="absolute inset-x-4 -bottom-1 h-0.5 rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 shadow-[0_0_18px_rgba(34,211,238,0.7)]"
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+          />
+        )}
+      </>
+    )}
+  </NavLink>
+);
   return (
     <motion.nav
-      className="sticky top-0 z-50 border-b border-slate-800/70 bg-slate-950/80 backdrop-blur-xl"
+      className={`sticky top-0 z-50 border-b transition-all duration-300 ${
+  scrolled
+    ? "border-slate-800/90 bg-slate-950/95 backdrop-blur-2xl shadow-lg shadow-slate-950/60"
+    : "border-slate-800/60 bg-slate-950/70 backdrop-blur-xl"
+}`}
       initial={{ y: -40, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
@@ -295,13 +306,15 @@ const Navbar = () => {
       </div>
 
       {/* === Mobile menu === */}
-      <div
-        className={`md:hidden origin-top border-t border-slate-800/80 bg-slate-950/95 backdrop-blur-xl transition-all duration-300 ${
-          mobileOpen
-            ? "max-h-[380px] opacity-100"
-            : "max-h-0 opacity-0 pointer-events-none"
-        }`}
-      >
+      <AnimatePresence>
+  {mobileOpen && (
+    <motion.div
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: "auto" }}
+      exit={{ opacity: 0, height: 0 }}
+      transition={{ duration: 0.25 }}
+      className="md:hidden border-t border-slate-800/80 bg-slate-950/95 backdrop-blur-xl overflow-hidden"
+    >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 flex flex-col gap-2">
           <div className="flex flex-col gap-1 pb-2 border-b border-slate-800/60">
             {navItems.map((item) => (
@@ -397,8 +410,10 @@ const Navbar = () => {
             </span>
           </p>
         </div>
-      </div>
-    </motion.nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
+          </motion.nav>
   );
 };
 
