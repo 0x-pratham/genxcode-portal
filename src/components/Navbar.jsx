@@ -20,6 +20,7 @@ const Navbar = () => {
   const [profileRole, setProfileRole] = useState(null);
   const [roleLoading, setRoleLoading] = useState(true);
   const [scrolled, setScrolled] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
 
   // ---- Auth & user loading ----
   useEffect(() => {
@@ -80,6 +81,13 @@ const Navbar = () => {
   window.addEventListener("scroll", handleScroll);
   return () => window.removeEventListener("scroll", handleScroll);
 }, []);
+useEffect(() => {
+  setMobileOpen(false);
+}, [location.pathname]);
+
+useEffect(() => {
+  setProfileOpen(false);
+}, [location.pathname]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -145,9 +153,9 @@ const Navbar = () => {
     ? "border-slate-800/90 bg-slate-950/95 backdrop-blur-2xl shadow-lg shadow-slate-950/60"
     : "border-slate-800/60 bg-slate-950/70 backdrop-blur-xl"
 }`}
-      initial={{ y: -40, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
+      initial={{ y: -25, opacity: 0 }}
+animate={{ y: 0, opacity: 1 }}
+transition={{ duration: 0.5, ease: "easeOut" }}
     >
       {/* glow line */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-cyan-500/40 via-fuchsia-500/40 to-emerald-400/40" />
@@ -187,7 +195,7 @@ const Navbar = () => {
 
           {/* === Center nav (desktop) === */}
           <div className="hidden lg:flex flex-1 justify-center">
-            <div className="flex items-center gap-1 rounded-full border border-slate-800/80 bg-slate-950/60 px-2 py-1.5 shadow-md shadow-slate-950/60">
+            <div className="flex items-center gap-1 rounded-full border border-slate-800/70 bg-slate-950/50 backdrop-blur-xl px-2 py-1.5 shadow-inner shadow-slate-900/40">
               {navItems.map((item) =>
                 renderNavLink(item.to, item.label, item.to === "/")
               )}
@@ -200,50 +208,120 @@ const Navbar = () => {
               <>
                 {/* Dashboard */}
                 <Link to="/dashboard">
-                  <button className="inline-flex items-center gap-2 rounded-full border border-cyan-500/70 bg-slate-950/70 px-5 py-2.5 text-xs md:text-sm font-medium text-cyan-200 hover:bg-cyan-500/10 hover:border-cyan-400/80 hover:shadow-lg hover:shadow-cyan-500/30 transition-all">
-                    <span className="text-[13px]">📊</span>
-                    <span>Dashboard</span>
-                  </button>
-                </Link>
+  <motion.button
+    whileHover={{ scale: 1.04 }}
+    whileTap={{ scale: 0.96 }}
+    className="relative inline-flex items-center gap-2 rounded-full border border-cyan-400/40 bg-slate-950/50 backdrop-blur-xl px-5 py-2.5 text-xs md:text-sm font-medium text-cyan-200 shadow-lg shadow-cyan-500/10 overflow-hidden transition-all duration-300 hover:border-cyan-300 hover:shadow-cyan-400/30"
+  >
+    <span className="relative z-10 flex items-center gap-2">
+      <span className="text-[13px]">📊</span>
+      Dashboard
+    </span>
+
+    {/* light sweep */}
+    <span className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500" />
+  </motion.button>
+</Link>
 
                 {/* Admin (only if admin) */}
                 {isAdmin ? (
                   <Link to="/admin">
-                    <button aria-label="Open admin panel" className="inline-flex items-center gap-2 rounded-full border border-fuchsia-500/70 bg-gradient-to-r from-fuchsia-600/10 via-transparent to-pink-600/6 px-5 py-2.5 text-xs md:text-sm font-medium text-fuchsia-200 hover:scale-[1.02] hover:shadow-lg hover:shadow-fuchsia-500/30 transition-transform">
-                      <span className="text-[13px]">⚙</span>
-                      <span>Admin Panel</span>
-                    </button>
-                  </Link>
+  <motion.button
+    whileHover={{ scale: 1.04 }}
+    whileTap={{ scale: 0.96 }}
+    aria-label="Open admin panel"
+    className="relative inline-flex items-center gap-2 rounded-full border border-fuchsia-400/40 bg-slate-950/50 backdrop-blur-xl px-5 py-2.5 text-xs md:text-sm font-medium text-fuchsia-200 shadow-lg shadow-fuchsia-500/10 overflow-hidden transition-all duration-300 hover:border-fuchsia-300 hover:shadow-fuchsia-400/30"
+  >
+    <span className="relative z-10 flex items-center gap-2">
+      <span className="text-[13px]">⚙</span>
+      Admin Panel
+    </span>
+
+    <span className="absolute inset-0 bg-gradient-to-r from-transparent via-fuchsia-400/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500" />
+  </motion.button>
+</Link>
                 ) : roleLoading ? (
                   <div className="px-4 py-2 text-xs text-slate-400">Checking role…</div>
                 ) : null}
 
                 {/* Profile pill */}
-                <Link to="/profile">
-                  <button className="px-0 py-0">
-                    <div className="flex items-center gap-2">
-                      <div className="relative h-9 w-9 md:h-10 md:w-10 rounded-full bg-gradient-to-br from-cyan-500 to-indigo-500 text-xs flex items-center justify-center font-semibold text-slate-950 shadow-lg shadow-cyan-500/40">
-                        {initials}
-                        <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-emerald-400 border-[2px] border-slate-950" />
-                      </div>
-                      <div className="flex flex-col text-left">
-                        <span className="text-xs md:text-sm text-slate-200 max-w-[140px] truncate">
-                          {userMeta.full_name || email?.split("@")[0]}
-                        </span>
-                        <span className="text-[10px] text-cyan-300">
-                          {isAdmin ? "Admin" : "Member"}
-                        </span>
-                      </div>
-                    </div>
-                  </button>
-                </Link>
+                {/* Profile Dropdown */}
+<div className="relative">
+  <motion.button
+    whileTap={{ scale: 0.96 }}
+    onClick={() => setProfileOpen((prev) => !prev)}
+    className="flex items-center gap-3 rounded-full border border-slate-700/60 bg-slate-950/50 backdrop-blur-xl px-3 py-2 shadow-lg shadow-slate-900/40 hover:border-cyan-400/50 transition-all"
+  >
+    <div className="relative h-9 w-9 md:h-10 md:w-10 rounded-full bg-gradient-to-br from-cyan-500 to-indigo-500 flex items-center justify-center text-xs font-semibold text-slate-950">
+      {initials}
+      <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-emerald-400 border-[2px] border-slate-950" />
+    </div>
 
-                <button
-  onClick={handleLogout}
-  className="text-[11px] md:text-xs text-rose-300 hover:text-rose-200 hover:underline transition-all"
->
-  Logout
-</button>
+    <div className="hidden lg:flex flex-col text-left">
+      <span className="text-xs md:text-sm text-slate-200 max-w-[120px] truncate">
+        {userMeta.full_name || email?.split("@")[0]}
+      </span>
+      <span className="text-[10px] text-cyan-300">
+        {isAdmin ? "Admin" : "Member"}
+      </span>
+    </div>
+
+    <motion.span
+      animate={{ rotate: profileOpen ? 180 : 0 }}
+      className="text-slate-400 text-xs"
+    >
+      ▼
+    </motion.span>
+  </motion.button>
+    <AnimatePresence>
+    {profileOpen && (
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        transition={{ duration: 0.2 }}
+        className="absolute right-0 mt-3 w-56 rounded-2xl border border-slate-800 bg-slate-950/95 backdrop-blur-2xl shadow-2xl shadow-slate-950/70 overflow-hidden z-50"
+      >
+        <div className="flex flex-col py-2 text-sm">
+
+          <Link
+            to="/profile"
+            className="px-4 py-2 hover:bg-slate-900 transition-colors text-slate-200"
+          >
+            Profile
+          </Link>
+
+          <Link
+            to="/dashboard"
+            className="px-4 py-2 hover:bg-slate-900 transition-colors text-slate-200"
+          >
+            Dashboard
+          </Link>
+
+          {isAdmin && (
+            <Link
+              to="/admin"
+              className="px-4 py-2 hover:bg-slate-900 transition-colors text-fuchsia-300"
+            >
+              Admin Panel
+            </Link>
+          )}
+
+          <div className="border-t border-slate-800 my-2" />
+
+          <button
+            onClick={handleLogout}
+            className="text-left px-4 py-2 hover:bg-slate-900 text-rose-300 transition-colors"
+          >
+            Logout
+          </button>
+
+        </div>
+      </motion.div>
+    )}
+  </AnimatePresence>
+</div>
+
               </>
             ) : (
               <>
@@ -306,16 +384,28 @@ const Navbar = () => {
       </div>
 
       {/* === Mobile menu === */}
-      <AnimatePresence>
+<AnimatePresence>
   {mobileOpen && (
-    <motion.div
-      initial={{ opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: "auto" }}
-      exit={{ opacity: 0, height: 0 }}
-      transition={{ duration: 0.25 }}
-      className="md:hidden border-t border-slate-800/80 bg-slate-950/95 backdrop-blur-xl overflow-hidden"
-    >
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 flex flex-col gap-2">
+    <>
+      {/* Overlay (dark background) */}
+      <motion.div
+        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={() => setMobileOpen(false)}
+      />
+
+      {/* Slide Down Panel */}
+      <motion.div
+        initial={{ y: -40, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: -40, opacity: 0 }}
+        transition={{ duration: 0.25 }}
+        className="fixed top-[72px] left-0 right-0 z-50 md:hidden bg-slate-950/95 backdrop-blur-2xl border-t border-slate-800 shadow-2xl shadow-black/40"
+      >
+        <div className="px-6 py-6 flex flex-col gap-5">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 flex flex-col gap-2">
           <div className="flex flex-col gap-1 pb-2 border-b border-slate-800/60">
             {navItems.map((item) => (
               <NavLink
@@ -410,10 +500,12 @@ const Navbar = () => {
             </span>
           </p>
         </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-          </motion.nav>
+                </div>
+      </motion.div>
+    </>
+  )}
+</AnimatePresence>
+</motion.nav>
   );
 };
 
