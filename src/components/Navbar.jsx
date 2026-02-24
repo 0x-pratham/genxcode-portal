@@ -1,10 +1,11 @@
 // src/components/Navbar.jsx
 import { useEffect, useState } from "react";
 import { NavLink, Link, useLocation, useNavigate } from "react-router-dom";
-import { useAuthUser } from "../hooks/useAuthUser";
+import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabaseClient";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import ProfileDropdown from "./navbar/ProfileDropdown";
+import MobileMenu from "./navbar/MobileMenu";
 
 const navItems = [
   { label: "Home", to: "/" },
@@ -17,41 +18,38 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, isAdmin, loading } = useAuthUser();
+  const { user, isAdmin, loading } = useAuth();
   
   const email = user?.email || "";
   const userMeta = user?.user_metadata || {};
   const [scrolled, setScrolled] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
+  let ticking = false;
+
   const handleScroll = () => {
-    setScrolled(window.scrollY > 20);
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        setScrolled(window.scrollY > 20);
+        ticking = false;
+      });
+      ticking = true;
+    }
   };
 
-  window.addEventListener("scroll", handleScroll);
+  window.addEventListener("scroll", handleScroll, { passive: true });
   return () => window.removeEventListener("scroll", handleScroll);
 }, []);
-useEffect(() => {
-  setMobileOpen(false);
-}, [location.pathname]);
 
 useEffect(() => {
-  setProfileOpen(false);
+  setMobileOpen(false);
 }, [location.pathname]);
 
   const handleLogout = async () => {
   await supabase.auth.signOut();
   navigate("/login");
 };
-
-
-  // Avatar initials
-  const initials =
-    userMeta.full_name?.[0]?.toUpperCase() ||
-    email?.[0]?.toUpperCase() ||
-    "G";
-
   // Helper: desktop nav links
   const renderNavLink = (to, label, end = false) => (
   <NavLink
@@ -60,8 +58,10 @@ useEffect(() => {
     end={end}
     className={({ isActive }) =>
       [
-        "relative px-5 py-2 text-sm md:text-[15px] font-medium transition-colors duration-200",
-        isActive ? "text-cyan-300" : "text-slate-300 hover:text-slate-50",
+        "relative px-5 py-2 text-sm md:text-[15px] font-medium transition-all duration-200 transform-gpu",
+isActive
+  ? "text-cyan-300"
+  : "text-slate-300 hover:text-white hover:scale-[1.03]",
       ].join(" ")
     }
   >
@@ -82,21 +82,27 @@ useEffect(() => {
 );
   return (
     <motion.nav
-      className={`sticky top-0 z-50 border-b transition-all duration-300 ${
+      className={`sticky top-0 z-50 border-b transition-all duration-300 transition-colors ${
   scrolled
-    ? "border-slate-800/90 bg-slate-950/95 backdrop-blur-2xl shadow-lg shadow-slate-950/60"
-    : "border-slate-800/60 bg-slate-950/70 backdrop-blur-xl"
+  ? "border-slate-800/90 bg-slate-950/98 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.6)]"
+  : "border-slate-800/50 bg-slate-950/60 backdrop-blur-xl"
 }`}
-      initial={{ y: -25, opacity: 0 }}
+      initial={shouldReduceMotion ? false : { y: -25, opacity: 0 }}
 animate={{ y: 0, opacity: 1 }}
-transition={{ duration: 0.5, ease: "easeOut" }}
+whileHover={shouldReduceMotion ? {} : { boxShadow: "0 12px 50px rgba(0,0,0,0.7)" }}
+transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
     >
       {/* glow line */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-cyan-500/40 via-fuchsia-500/40 to-emerald-400/40" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-b from-transparent to-slate-950/40" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-cyan-400/20 via-fuchsia-400/20 to-emerald-400/20" />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         {/* main row */}
-        <div className="flex items-center justify-between gap-6 py-4 md:py-5">
+        <div
+  className={`flex items-center justify-between gap-6 transition-all duration-300 ${
+    scrolled ? "py-3 md:py-3.5" : "py-4 md:py-5"
+  }`}
+>
           {/* === Logo (left) === */}
           <Link
             to="/"
@@ -112,9 +118,11 @@ transition={{ duration: 0.5, ease: "easeOut" }}
               <motion.img
                 src="https://i.ibb.co/FkVqXHZ8/Gen-XCode-Logo.png"
                 alt="GenXCode logo"
-                className="relative h-11 w-11 md:h-12 md:w-12 rounded-2xl object-contain ring-1 ring-cyan-400/40 bg-slate-950/80"
-                whileHover={{ scale: 1.06, rotate: -2 }}
-                transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                className={`relative rounded-2xl object-contain ring-1 ring-cyan-400/40 bg-slate-950/80 transition-all duration-300 ${
+  scrolled
+    ? "h-9 w-9 md:h-10 md:w-10"
+    : "h-11 w-11 md:h-12 md:w-12"
+}`}
               />
             </div>
             <div className="flex flex-col leading-tight">
@@ -128,7 +136,7 @@ transition={{ duration: 0.5, ease: "easeOut" }}
           </Link>
 
           {/* === Center nav (desktop) === */}
-          <div className="hidden lg:flex flex-1 justify-center">
+          <div className="hidden md:flex flex-1 justify-center">
             <div className="flex items-center gap-1 rounded-full border border-slate-800/70 bg-slate-950/50 backdrop-blur-xl px-2 py-1.5 shadow-inner shadow-slate-900/40">
               {navItems.map((item) =>
                 renderNavLink(item.to, item.label, item.to === "/")
@@ -174,7 +182,7 @@ transition={{ duration: 0.5, ease: "easeOut" }}
     <span className="absolute inset-0 bg-gradient-to-r from-transparent via-fuchsia-400/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500" />
   </motion.button>
 </Link>
-                ) :Loading ? (
+                ) :loading ? (
                   <div className="px-4 py-2 text-xs text-slate-400">Checking role…</div>
                 ) : null}
 
@@ -190,15 +198,23 @@ transition={{ duration: 0.5, ease: "easeOut" }}
             ) : (
               <>
                 <Link to="/login">
-                  <button className="rounded-full border border-slate-700 bg-slate-950/70 px-5 py-2.5 text-xs md:text-sm text-slate-200 hover:border-cyan-400 hover:text-cyan-200 hover:shadow-md hover:shadow-cyan-500/20 transition-all">
-                    Log in
-                  </button>
-                </Link>
+  <motion.button
+    whileHover={{ scale: 1.04 }}
+    whileTap={{ scale: 0.96 }}
+    className="rounded-full border border-slate-700 bg-slate-950/70 px-5 py-2.5 text-xs md:text-sm text-slate-200 hover:border-cyan-400 hover:text-cyan-200 hover:shadow-md hover:shadow-cyan-500/20 transition-all"
+  >
+    Log in
+  </motion.button>
+</Link>
                 <Link to="/signup">
-                  <button className="rounded-full bg-gradient-to-r from-cyan-500 to-indigo-500 px-6 py-2.5 text-xs md:text-sm font-medium text-slate-950 shadow-lg shadow-cyan-500/40 hover:brightness-110 active:scale-95 transition-all">
-                    Join now
-                  </button>
-                </Link>
+  <motion.button
+    whileHover={{ scale: 1.04 }}
+    whileTap={{ scale: 0.96 }}
+    className="rounded-full bg-gradient-to-r from-cyan-500 to-indigo-500 px-6 py-2.5 text-xs md:text-sm font-medium text-slate-950 shadow-lg shadow-cyan-500/40 hover:brightness-110 active:scale-95 transition-all"
+  >
+    Join now
+  </motion.button>
+</Link>
               </>
             )}
           </div>
@@ -222,7 +238,7 @@ transition={{ duration: 0.5, ease: "easeOut" }}
             {/* hamburger */}
             <button
               onClick={() => setMobileOpen((prev) => !prev)}
-              className="relative h-9 w-9 rounded-full border border-slate-700 bg-slate-900/80 flex items-center justify-center active:scale-95 transition-all"
+              className="relative h-10 w-10 sm:h-9 sm:w-9 rounded-full border border-slate-700 bg-slate-900/80 flex items-center justify-center active:scale-95 transition-all"
               aria-label="Toggle navigation menu"
             >
               <div className="relative h-3.5 w-4">
@@ -247,128 +263,15 @@ transition={{ duration: 0.5, ease: "easeOut" }}
         </div>
       </div>
 
-      {/* === Mobile menu === */}
-<AnimatePresence>
-  {mobileOpen && (
-    <>
-      {/* Overlay (dark background) */}
-      <motion.div
-        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={() => setMobileOpen(false)}
-      />
-
-      {/* Slide Down Panel */}
-      <motion.div
-        initial={{ y: -40, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: -40, opacity: 0 }}
-        transition={{ duration: 0.25 }}
-        className="fixed top-[72px] left-0 right-0 z-50 md:hidden bg-slate-950/95 backdrop-blur-2xl border-t border-slate-800 shadow-2xl shadow-black/40"
-      >
-        <div className="px-6 py-6 flex flex-col gap-5">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 flex flex-col gap-2">
-          <div className="flex flex-col gap-1 pb-2 border-b border-slate-800/60">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.to === "/"}
-                onClick={() => setMobileOpen(false)}
-                className={({ isActive }) =>
-                  [
-                    "flex items-center justify-between px-2 py-2 rounded-lg text-sm transition-colors",
-                    isActive
-                      ? "bg-slate-900 text-cyan-300"
-                      : "text-slate-300 hover:bg-slate-900/80",
-                  ].join(" ")
-                }
-              >
-                {({ isActive }) => (
-                  <>
-                    <span>{item.label}</span>
-                    {isActive && (
-                      <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 shadow-[0_0_12px_rgba(34,211,238,0.7)]" />
-                    )}
-                  </>
-                )}
-              </NavLink>
-            ))}
-          </div>
-
-          {user ? (
-            <>
-              <div className="flex items-center justify-between gap-3 py-2">
-                <div className="flex items-center gap-2">
-                  <div className="h-8 w-8 rounded-full bg-gradient-to-br from-cyan-500 to-indigo-500 flex items-center justify-center text-xs font-semibold text-slate-950">
-                    {initials}
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-[11px] text-slate-200">
-                      {userMeta.full_name || email?.split("@")[0]}
-                    </span>
-                    <span className="text-[10px] text-cyan-300">
-                      {isAdmin ? "Admin" : "Member"}
-                    </span>
-                  </div>
-                </div>
-                <button
-                  onClick={handleLogout}
-                  className="text-[11px] text-slate-400 hover:text-rose-300 hover:underline"
-                >
-                  Logout
-                </button>
-              </div>
-
-              <div className="flex flex-wrap gap-2 pb-2">
-                <Link to="/dashboard" onClick={() => setMobileOpen(false)}>
-                  <button className="btn-outline px-3 py-1.5 text-xs">
-                    Dashboard
-                  </button>
-                </Link>
-                <Link to="/profile" onClick={() => setMobileOpen(false)}>
-                  <button className="btn-outline px-3 py-1.5 text-xs">
-                    Profile
-                  </button>
-                </Link>
-                {isAdmin && (
-                  <Link to="/admin" onClick={() => setMobileOpen(false)}>
-                    <button className="btn-outline px-3 py-1.5 text-xs border-fuchsia-500/60 text-fuchsia-300">
-                      Admin Panel
-                    </button>
-                  </Link>
-                )}
-              </div>
-            </>
-          ) : (
-            <div className="flex flex-wrap gap-2 pt-1 pb-2">
-              <Link to="/login" onClick={() => setMobileOpen(false)}>
-                <button className="btn-outline px-3 py-1.5 text-xs">
-                  Log in
-                </button>
-              </Link>
-              <Link to="/signup" onClick={() => setMobileOpen(false)}>
-                <button className="btn-primary px-3 py-1.5 text-xs">
-                  Join now
-                </button>
-              </Link>
-            </div>
-          )}
-
-          <p className="text-[10px] text-slate-500 pt-1 pb-1">
-            You are on:{" "}
-            <span className="font-mono text-cyan-300 text-[10px]">
-              {location.pathname || "/"}
-            </span>
-          </p>
-        </div>
-                </div>
-      </motion.div>
-    </>
-  )}
-</AnimatePresence>
+<MobileMenu
+  mobileOpen={mobileOpen}
+  setMobileOpen={setMobileOpen}
+  user={user}
+  isAdmin={isAdmin}
+  handleLogout={handleLogout}
+  navItems={navItems}
+  location={location}
+/>
 </motion.nav>
   );
 };

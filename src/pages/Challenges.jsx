@@ -3,7 +3,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { motion, useReducedMotion } from "framer-motion";
-import BackgroundOrbs from "../components/BackgroundOrbs";
+import BackgroundOrbs from "../components/shared/BackgroundOrbs";
 
 // keep static analyzer happy
 void motion;

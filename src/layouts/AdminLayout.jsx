@@ -1,5 +1,5 @@
-import AdminSidebar from "./AdminSidebar";
-import AdminTopbar from "./AdminTopbar";
+import AdminSidebar from "../components/AdminSidebar";
+import AdminTopbar from "../components/AdminTopbar";
 
 const AdminLayout = ({ children }) => {
   return (

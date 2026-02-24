@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import BackgroundOrbs from "../components/BackgroundOrbs";
+import BackgroundOrbs from "../components/shared/BackgroundOrbs";
 
 export default function Maintenance() {
 

@@ -28,8 +28,8 @@ body,
 @layer components {
   /* Layout container used everywhere */
   .container-page {
-    @apply max-w-6xl mx-auto px-4 md:px-6;
-  }
+  @apply mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-8;
+}
 
   /* Reusable card */
   .card {
@@ -409,4 +409,16 @@ body,
 }
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(34,211,238,0.7);
+}
+@layer base {
+  button:focus-visible,
+  a:focus-visible {
+    @apply outline-none ring-2 ring-cyan-400 ring-offset-2 ring-offset-slate-900;
+  }
+}
+button:focus-visible,
+a:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(34,211,238,0.6);
+  border-radius: 9999px;
 }

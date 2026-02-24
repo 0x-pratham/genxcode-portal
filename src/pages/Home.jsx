@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence, useScroll, useTransform, useSpring, useReducedMotion } from "framer-motion";
+import { useToast } from "../context/ToastContext";
 // keep static analyzer happy when `motion` is only used in JSX
 void motion;
 
@@ -450,6 +451,7 @@ const cardHoverVariants = {
 };
 
 export default function Home() {
+  const { showToast } = useToast();
   const [activeIndex, setActiveIndex] = useState(0);
   const [autoSlide, setAutoSlide] = useState(true);
 
@@ -457,6 +459,7 @@ export default function Home() {
   const [autoLeague, setAutoLeague] = useState(true);
 
   const currentYear = new Date().getFullYear();
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
 
   // Scroll-based animations
   const { scrollYProgress } = useScroll();
@@ -474,7 +477,16 @@ export default function Home() {
       document.documentElement.style.scrollBehavior = prev || "";
     };
   }, []);
+useEffect(() => {
+  const checkScreen = () => {
+    setIsLargeScreen(window.innerWidth > 768);
+  };
 
+  checkScreen(); // run once on load
+  window.addEventListener("resize", checkScreen);
+
+  return () => window.removeEventListener("resize", checkScreen);
+}, []);
   // Respect user's reduced motion preference
   const shouldReduce = useReducedMotion();
   
@@ -607,7 +619,7 @@ export default function Home() {
             whileHover={{ scale: 1.1, y: -4 }}
             whileTap={{ scale: 0.95 }}
             onClick={scrollToTop}
-            className="fixed bottom-8 right-8 z-40 h-12 w-12 rounded-full bg-gradient-to-br from-cyan-500 to-indigo-500 shadow-2xl shadow-cyan-500/50 flex items-center justify-center text-slate-950 font-bold backdrop-blur-sm border border-cyan-400/30"
+            className="fixed bottom-5 right-5 sm:bottom-8 sm:right-8 h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-gradient-to-br from-cyan-500 to-indigo-500 shadow-2xl shadow-cyan-500/50 flex items-center justify-center text-slate-950 font-bold backdrop-blur-sm border border-cyan-400/30"
           >
             <motion.span
               animate={{ y: [0, -4, 0] }}
@@ -661,7 +673,8 @@ export default function Home() {
           style={{ willChange: "transform, opacity" }}
         />
         {/* Additional floating particles */}
-        {particles.map((particle) => (
+        {!shouldReduce && isLargeScreen &&
+        particles.map((particle) => (
           <motion.div
             key={particle.id}
             className="absolute rounded-full"
@@ -691,8 +704,8 @@ export default function Home() {
             key={`star-${i}`}
             className="absolute rounded-full bg-white"
             style={{ width: s.size, height: s.size, left: `${s.left}%`, top: `${s.top}%`, opacity: 0.85 }}
-            animate={!shouldReduce ? { opacity: [0.18, 0.95, 0.18], scale: [0.9, 1.12, 0.9] } : { opacity: 0.75 }}
-            transition={!shouldReduce ? { duration: 2.5 + i * 0.2, repeat: Infinity, delay: s.delay } : {}}
+            animate={!shouldReduce && isLargeScreen ? { opacity: [0.18, 0.95, 0.18], scale: [0.9, 1.12, 0.9] } : { opacity: 0.75 }}
+            transition={!shouldReduce && isLargeScreen ? { duration: 2.5 + i * 0.2, repeat: Infinity, delay: s.delay } : {}}
           />
         ))}
         {/* Animated gradient mesh overlay */}
@@ -710,7 +723,7 @@ export default function Home() {
         />
 
         {/* Shimmer sweep — diagonal glossy sweep for premium feel */}
-        {!shouldReduce && (
+        {!shouldReduce && isLargeScreen && (
           <motion.div
             className="absolute -left-1/2 top-0 h-full w-1/3 pointer-events-none"
             initial={{ x: '-120%', rotate: -12 }}
@@ -750,12 +763,14 @@ export default function Home() {
         >
           <span className="font-medium text-slate-200">Welcome to GenXCode</span>
           <span className="ml-2 text-slate-400">— Build projects, join tracks and climb the leagues.</span>
+          <div className="mt-3">
+</div>
         </motion.div>
 
         {/* ===== HERO ===== */}
         <motion.section
           ref={heroRef}
-          className="grid gap-10 lg:grid-cols-[1.3fr,1fr] items-center"
+          className="grid gap-12 items-start lg:items-center lg:grid-cols-[1.2fr,1fr]"
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
@@ -803,7 +818,7 @@ export default function Home() {
               animate="visible"
             >
               <motion.h1 
-                className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight leading-tight md:leading-[1.05]"
+                className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold tracking-tight leading-tight md:leading-[1.05]"
                 variants={textRevealVariants}
               >
                 Turn your{" "}
@@ -833,7 +848,7 @@ export default function Home() {
 
             {/* CTA buttons with enhanced animations */}
             <motion.div 
-              className="flex flex-wrap gap-4 items-center"
+              className="flex flex-col sm:flex-row flex-wrap gap-4 items-center"
               variants={containerVariants}
               initial="hidden"
               animate="visible"
@@ -853,7 +868,7 @@ export default function Home() {
                       animate={{ x: [0, 2, 0] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     >
-                      Join the community
+                      Start Building with GenXCode
                     </motion.span>
                     <motion.span 
                       className="pointer-events-none absolute inset-0 bg-gradient-to-r from-cyan-400/40 via-sky-500/30 to-indigo-500/40"
@@ -903,16 +918,7 @@ export default function Home() {
             </motion.div>
 
             {/* tiny scroll hint */}
-            <button
-              type="button"
-              onClick={() => sectionScroll("vision-section")}
-              className="inline-flex items-center gap-2 text-[11px] text-slate-500 hover:text-cyan-300 transition mt-1"
-            >
-              <span className="h-4 w-4 rounded-full border border-slate-600 flex items-center justify-center text-[9px]">
-                ↓
-              </span>
-              Scroll to see how GenXCode runs week to week
-            </button>
+            
           </motion.div>
 
           {/* Right column – Featured benefit slider (ALL benefits) */}
@@ -934,12 +940,10 @@ export default function Home() {
               transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
             />
             <motion.div
-              className="relative card bg-slate-950/90 border border-slate-700/80 rounded-3xl px-5 py-5 md:px-7 md:py-7 shadow-2xl shadow-slate-950/80 backdrop-blur"
-              animate={{ 
-                y: [0, -6, 0],
-                rotateX: [0, 1, 0]
-              }}
-              transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
+              className="relative card bg-slate-950/90 border border-slate-700/80 rounded-3xl px-4 py-5 sm:px-6 md:px-7 md:py-7 shadow-2xl shadow-slate-950/80 backdrop-blur"
+              animate={{ y: [0, -4, 0] }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+
               whileHover={{ 
                 scale: 1.02,
                 rotateY: 2,
@@ -952,8 +956,9 @@ export default function Home() {
               </p>
 
               <AnimatePresence mode="wait">
-                <motion.div
-                  key={active.id}
+              <div aria-live="polite">
+             <motion.div
+             key={active.id}
                   className="space-y-3"
                   variants={benefitSlideVariants}
                   initial="enter"
@@ -981,6 +986,7 @@ export default function Home() {
                     {active.desc}
                   </p>
                 </motion.div>
+                </div>
               </AnimatePresence>
 
               {/* slide controls */}
@@ -1322,7 +1328,7 @@ export default function Home() {
                   animate="center"
                   exit="exit"
                   transition={{ duration: 0.45 }}
-                  className="grid gap-5 md:grid-cols-[1.1fr,1.2fr] items-center"
+                  className="grid gap-6 lg:grid-cols-[1.1fr,1.2fr] items-center"
                 >
                   {/* Badge + glow – centered in the cube */}
                   <div className="relative flex flex-col items-center gap-3">
@@ -1360,7 +1366,7 @@ export default function Home() {
                       <p className="text-xs md:text-sm text-cyan-200/90 mt-1">
                         {activeLeague.tagline}
                       </p>
-                      <p className="text-xs md:text-sm text-slate-300 mt-2">
+                      <p className="text-sm md:text-base text-slate-300 mt-2">
                         {activeLeague.desc}
                       </p>
                     </div>
@@ -1490,7 +1496,7 @@ export default function Home() {
                   </span>
                 </h2>
               </motion.div>
-              <p className="text-xs md:text-sm text-slate-400 max-w-xl">
+              <p className="text-sm md:text-base text-slate-400 max-w-xl">
                 GenXCode exists so that no motivated student gets limited by the
                 syllabus. We want your college to feel like a mini tech hub – with
                 teams, projects, events and mentorship running all year.
@@ -1506,7 +1512,7 @@ export default function Home() {
                 {visions.map((line, idx) => (
                   <motion.li
                     key={line}
-                    className="flex items-start gap-2 text-xs md:text-sm text-slate-200"
+                    className="flex items-start gap-2 text-sm md:text-base text-slate-200"
                     variants={itemVariants}
                     whileHover={{ x: 4, scale: 1.02 }}
                   >
@@ -1625,7 +1631,7 @@ export default function Home() {
                 {founder.name}
               </h3>
               <p className="text-[11px] text-slate-400 mb-3">{founder.role}</p>
-              <p className="text-[11px] md:text-xs text-slate-200 mb-3">
+              <p className="text-sm md:text-base text-slate-200 mb-3">
                 “{founder.quote}”
               </p>
               <ul className="space-y-1.5 text-[11px] md:text-xs text-slate-300">
@@ -1654,7 +1660,7 @@ export default function Home() {
               <p className="text-[11px] text-slate-400 mb-3">
                 {coFounder.role}
               </p>
-              <p className="text-[11px] md:text-xs text-slate-200 mb-3">
+              <p className="text-sm md:text-base text-slate-200">
                 “{coFounder.quote}”
               </p>
               <ul className="space-y-1.5 text-[11px] md:text-xs text-slate-300">
@@ -1680,7 +1686,7 @@ export default function Home() {
     {mentor.name}
   </h3>
   <p className="text-[11px] text-slate-400 mb-3">{mentor.role}</p>
-  <p className="text-[11px] md:text-xs text-slate-200 mb-3">
+  <p className="text-sm md:text-base text-slate-200">
     “{mentor.quote}”
   </p>
   <ul className="space-y-1.5 text-[11px] md:text-xs text-slate-300">
@@ -1721,7 +1727,7 @@ export default function Home() {
             </div>
 
             <motion.div 
-              className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+              className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3"
               variants={containerVariants}
               initial="hidden"
               whileInView="visible"
@@ -2028,7 +2034,7 @@ export default function Home() {
         © {currentYear} GenXCode. All rights reserved.
       </p>
       <p className="text-[10px] text-slate-500">
-        Built with <span className="text-red-400">❤️</span> by the GenXCode student community.
+        Engineered by <span className="text-red-400">Cosmolix Pvt. Ltd.</span> for <span className="text-blue-400">GenXCode</span> students community.
       </p>
     </div>
 

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { supabase, isSupabaseConfigured } from "../lib/supabaseClient";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import BackgroundOrbs from "../components/BackgroundOrbs";
+import BackgroundOrbs from "../components/shared/BackgroundOrbs";
 
 // keep static analyzer happy when JSX doesn't reference AnimatePresence directly
 void AnimatePresence;

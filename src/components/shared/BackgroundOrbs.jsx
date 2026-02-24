@@ -1,4 +1,4 @@
-// src/components/BackgroundOrbs.jsx
+// src/components/shared/BackgroundOrbs.jsx
 import { motion } from "framer-motion";
 
 export default function BackgroundOrbs() {

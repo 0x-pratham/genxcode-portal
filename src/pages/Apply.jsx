@@ -3,10 +3,13 @@ import { useState, useRef, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import { supabase } from "../lib/supabaseClient";
+import { submitApplication } from "../services/recruitmentService";
+import { useToast } from "../context/ToastContext";
 
 export default function Apply() {
   const navigate = useNavigate();
   const shouldReduceMotion = useReducedMotion();
+  const { showToast } = useToast();
 
   const [form, setForm] = useState({
     full_name: "",
@@ -20,7 +23,7 @@ export default function Apply() {
 
   const [formErrors, setFormErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
+  
 
   const fullNameRef = useRef(null);
   const emailRef = useRef(null);
@@ -48,7 +51,7 @@ export default function Apply() {
   const handleChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
     setFormErrors((prev) => ({ ...prev, [field]: undefined }));
-    setErrorMsg("");
+    
   };
 
   const isFormValid = useMemo(() => {
@@ -57,66 +60,73 @@ export default function Apply() {
   }, [form]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setErrorMsg("");
+  e.preventDefault();
 
-    const errors = validate(form);
-    setFormErrors(errors);
-    if (Object.keys(errors).length > 0) {
-      const firstKey = Object.keys(errors)[0];
-      // focus the first invalid field
-      if (firstKey === "full_name" && fullNameRef.current) fullNameRef.current.focus();
-      else if (firstKey === "email" && emailRef.current) emailRef.current.focus();
-      else if (firstKey === "branch" && branchRef.current) branchRef.current.focus();
-      else if (firstKey === "year" && yearRef.current) yearRef.current.focus();
-      else if (firstKey === "phone" && phoneRef.current) phoneRef.current.focus();
-      else if (firstKey === "github" && githubRef.current) githubRef.current.focus();
-      else if (firstKey === "why_join" && whyRef.current) whyRef.current.focus();
-      return;
-    }
+  const errors = validate(form);
+  setFormErrors(errors);
 
-    setSubmitting(true);
+  if (Object.keys(errors).length > 0) {
+    const firstKey = Object.keys(errors)[0];
 
-    try {
-      if (!supabase) {
-        setErrorMsg("Supabase is not configured. Please check your environment variables.");
-        setSubmitting(false);
-        return;
-      }
+    if (firstKey === "full_name" && fullNameRef.current) fullNameRef.current.focus();
+    else if (firstKey === "email" && emailRef.current) emailRef.current.focus();
+    else if (firstKey === "branch" && branchRef.current) branchRef.current.focus();
+    else if (firstKey === "year" && yearRef.current) yearRef.current.focus();
+    else if (firstKey === "phone" && phoneRef.current) phoneRef.current.focus();
+    else if (firstKey === "github" && githubRef.current) githubRef.current.focus();
+    else if (firstKey === "why_join" && whyRef.current) whyRef.current.focus();
 
-      const { data: { user } } = await supabase.auth.getUser();
+    return;
+  }
 
-      const insertObj = {
-        full_name: form.full_name.trim(),
-        email: form.email.trim(),
-        branch: form.branch.trim(),
-        year: form.year.trim(),
-        phone: form.phone.trim(),
-        github: form.github.trim(),
-        why_join: form.why_join.trim(),
-        status: "pending",
-      };
+  setSubmitting(true);
 
-      // If the user is logged in, include user_id for ownership linking
-      if (user?.id) insertObj.user_id = user.id;
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
 
-      const { error } = await supabase.from("applications").insert([
-        insertObj,
-      ]);
-      if (error) {
-        console.error("Error inserting application", error);
-        setErrorMsg("Failed to submit form. Please try again.");
-        setSubmitting(false);
-        return;
-      }
+    const applicationData = {
+      full_name: form.full_name.trim(),
+      email: form.email.trim(),
+      branch: form.branch.trim(),
+      year: form.year.trim(),
+      phone: form.phone.trim(),
+      github: form.github.trim(),
+      why_join: form.why_join.trim(),
+      status: "pending",
+      user_id: user?.id || null,
+    };
 
-      navigate("/apply/success");
-    } catch (err) {
-      console.error(err);
-      setErrorMsg("Something went wrong. Please try again.");
-      setSubmitting(false);
-    }
-  };
+    const response = await submitApplication(applicationData);
+
+    if (!response.success) {
+  showToast(response.error?.message || "Submission failed", "error");
+  setSubmitting(false);
+  return;
+}
+
+showToast("Application submitted successfully!", "success");
+
+// optional form reset
+setForm({
+  full_name: "",
+  email: "",
+  branch: "",
+  year: "",
+  phone: "",
+  github: "",
+  why_join: "",
+});
+
+setSubmitting(false);
+
+navigate("/apply/success");
+
+  } catch (err) {
+    console.error(err);
+    showToast("Something went wrong. Please try again.", "error");
+    setSubmitting(false);
+  }
+};
 
   return (
     // ✅ Same structure as Home: animated BG + content above it
@@ -315,12 +325,6 @@ export default function Apply() {
                   Open for Future GenXCode Members
                 </span>
               </div>
-
-              {errorMsg && (
-                <div className="text-[11px] text-red-300 bg-red-900/30 border border-red-500/40 rounded-lg px-3 py-2">
-                  {errorMsg}
-                </div>
-              )}
 
               <form onSubmit={handleSubmit} className="space-y-4 text-sm">
                 <div className="grid gap-3 md:grid-cols-2">

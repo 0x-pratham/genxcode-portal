@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "../lib/supabaseClient";
-import BackgroundOrbs from "../components/BackgroundOrbs";
+import BackgroundOrbs from "../components/shared/BackgroundOrbs";
 
 // Branch options
 const BRANCHES = [

@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { motion, useReducedMotion } from "framer-motion";
-import BackgroundOrbs from "../components/BackgroundOrbs";
+import BackgroundOrbs from "../components/shared/BackgroundOrbs";
 
 // ensure `motion` import is treated as used by static analyzers (JSX uses it)
 void motion;
