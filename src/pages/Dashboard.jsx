@@ -4,6 +4,18 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
+// Page animation container
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.1
+    }
+  }
+};
+
 const leagueBadges = {
   Bronze: "bg-amber-900/50 text-amber-200 border border-amber-500/40",
   Silver: "bg-slate-500/20 text-slate-100 border border-slate-300/40",
@@ -47,7 +59,8 @@ const leagueImages = {
   Bronze: "https://i.ibb.co/tM2cYgH7/Bronze-Gen-X.png",
 };
 
-const glass = "bg-slate-900/60 backdrop-blur-xl border border-slate-700/60 shadow-xl";
+const glass =
+"bg-slate-900/50 backdrop-blur-2xl border border-slate-700/40 shadow-[0_10px_45px_rgba(0,0,0,0.45)] transition-all duration-300";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -58,10 +71,12 @@ export default function Dashboard() {
   const [copied, setCopied] = useState(false);
 
   const [lbRow, setLbRow] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [submissions, setSubmissions] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
-  const [sessions, setSessions] = useState([]);
-  const [sessionLogs, setSessionLogs] = useState([]);
+ const [sessions, setSessions] = useState([]);
+const [sessionLogs, setSessionLogs] = useState([]);
+const [recommended, setRecommended] = useState(null);
 
   const [leaderboardLoading, setLeaderboardLoading] = useState(true);
   const [subsLoading, setSubsLoading] = useState(true);
@@ -85,6 +100,23 @@ export default function Dashboard() {
       setLeaderboardLoading(false);
     }
   }
+  async function loadProfile(uid) {
+  if (!uid) return;
+
+  try {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", uid)
+      .single();
+
+    if (!error && data) {
+      setProfile(data);
+    }
+  } catch {
+    setProfile(null);
+  }
+}
 
   async function loadSubmissions(uid) {
     if (!uid) return;
@@ -99,6 +131,7 @@ export default function Dashboard() {
         .eq("user_id", uid)
         .order("submitted_at", { ascending: false });
       setSubmissions(error ? [] : data || []);
+       await loadLeaderboard(uid);
     } catch {
       setSubmissions([]);
     } finally {
@@ -140,27 +173,75 @@ export default function Dashboard() {
     }
   }
 
+  async function loadRecommendedChallenge(uid) {
+  try {
+    const { data, error } = await supabase
+      .from("challenges")
+      .select("*")
+      .eq("is_active", true)   // important
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
+
+    if (!error && data) {
+      setRecommended(data);
+    }
+  } catch {
+    setRecommended(null);
+  }
+}
+
   useEffect(() => {
-    const init = async () => {
-      if (!supabase) {
-        navigate("/login");
-        return;
-      }
-      const { data, error } = await supabase.auth.getUser();
-      if (error || !data?.user) return navigate("/login");
-      const u = data.user;
-      setUser(u);
-      setLoadingUser(false);
-      await Promise.all([
-        loadLeaderboard(u.id),
-        loadSubmissions(u.id),
-        loadAnnouncements(),
-        loadAttendance(u.id),
-      ]);
-      setLastUpdated(new Date().toISOString());
-    };
-    init();
-  }, [navigate]);
+  const init = async () => {
+    if (!supabase) {
+      navigate("/login");
+      return;
+    }
+
+    const { data, error } = await supabase.auth.getUser();
+    if (error || !data?.user) return navigate("/login");
+
+    const u = data.user;
+
+    setUser(u);
+    setLoadingUser(false);
+
+    await Promise.all([
+  loadLeaderboard(u.id),
+  loadProfile(u.id),   // ADD THIS
+  loadSubmissions(u.id),
+  loadAnnouncements(),
+  loadAttendance(u.id),
+  loadRecommendedChallenge(u.id),
+]);
+
+    setLastUpdated(new Date().toISOString());
+  };
+
+  init();
+
+  const interval = setInterval(() => {
+  if (user?.id) {
+    loadRecommendedChallenge(user.id);
+    loadLeaderboard(user.id);
+loadProfile(user.id);   // refresh profile snapshot
+  }
+}, 30000);
+const handleFocus = () => {
+  if (user?.id) {
+    loadLeaderboard(user.id);
+loadProfile(user.id);
+  }
+};
+
+window.addEventListener("focus", handleFocus);
+
+return () => {
+  clearInterval(interval);
+  window.removeEventListener("focus", handleFocus);
+};
+  return () => clearInterval(interval);
+}, [navigate]);
 
   const copyProfileLink = async () => {
     try {
@@ -190,6 +271,7 @@ export default function Dashboard() {
   const totalPoints = lbRow?.points || 0;
   const league = lbRow?.league || "Bronze";
   const approvedSubs = submissions.filter((s) => s.status?.toLowerCase() === "approved").length;
+  const streak = calculateStreak(submissions);
   const leagueIndex = leagueOrder.indexOf(league);
   const currentLeague = leagueIndex === -1 ? "Bronze" : league;
   const nextLeague = leagueIndex < leagueOrder.length - 1 ? leagueOrder[leagueIndex + 1] : null;
@@ -207,21 +289,70 @@ export default function Dashboard() {
 
   const fadeUp = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } };
   const stagger = { staggerChildren: 0.06, delayChildren: 0.1 };
+  function calculateStreak(submissions) {
+  if (!submissions || submissions.length === 0) return 0;
+
+  const dates = submissions
+    .map((s) => new Date(s.submitted_at).toISOString().split("T")[0])
+    .filter((v, i, a) => a.indexOf(v) === i)
+    .sort((a, b) => new Date(b) - new Date(a));
+
+  let streak = 0;
+  let today = new Date();
+
+  for (let i = 0; i < dates.length; i++) {
+    const submissionDate = new Date(dates[i]);
+
+    const diffDays = Math.floor(
+      (today - submissionDate) / (1000 * 60 * 60 * 24)
+    );
+
+    if (diffDays === streak) {
+      streak++;
+    } else {
+      break;
+    }
+  }
+
+  return streak;
+}
 
   return (
     <motion.main
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="min-h-screen text-slate-100 relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 pb-24"
-    >
+  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+  transition={{ duration: 0.5 }}
+  className="relative min-h-screen text-slate-100 pb-24 overflow-hidden"
+>
       {/* Background */}
       <div className="pointer-events-none fixed inset-0 -z-10">
-        <div className="absolute -top-40 -left-40 h-96 w-96 rounded-full bg-cyan-500/10 blur-[120px]" />
-        <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-fuchsia-500/10 blur-[120px]" />
-      </div>
 
-      <div className="container-page pt-8 sm:pt-10 space-y-8 relative z-10">
+  <motion.div
+    className="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-cyan-500/20 blur-[140px]"
+    animate={{
+  scale: [1, 1.15, 1],
+  x: [0, 20, 0],
+  y: [0, -10, 0]
+}}
+    transition={{ duration: 8, repeat: Infinity }}
+  />
+
+  <motion.div
+    className="absolute bottom-0 right-0 h-[500px] w-[500px] rounded-full bg-fuchsia-500/20 blur-[140px]"
+    animate={{ scale: [1, 1.15, 1] }}
+    transition={{ duration: 10, repeat: Infinity }}
+  />
+
+  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03),transparent_70%)]" />
+
+</div>
+
+      <motion.div
+  variants={containerVariants}
+  initial="hidden"
+  animate="visible"
+  className="container-page pt-8 sm:pt-10 space-y-10 relative z-10"
+>
         {/* Header */}
         <motion.header
           variants={fadeUp}
@@ -230,15 +361,19 @@ export default function Dashboard() {
           transition={{ duration: 0.5 }}
           className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
         >
-          <div>
-            <p className="text-xs text-slate-400 mb-0.5">Welcome back</p>
-            <h1 className="text-2xl sm:text-3xl font-semibold bg-gradient-to-r from-cyan-300 to-indigo-300 bg-clip-text text-transparent">
-              {displayName}
-            </h1>
-            <p className="text-sm text-slate-500 truncate max-w-xs">
-              {user.email}
-            </p>
-          </div>
+          <div className="flex items-center gap-3">
+   <div>
+    <p className="text-xs text-slate-400">Welcome back</p>
+
+    <h1 className="text-2xl sm:text-3xl font-semibold bg-gradient-to-r from-cyan-300 to-indigo-300 bg-clip-text text-transparent">
+      {displayName}
+    </h1>
+
+    <p className="text-sm text-slate-500 truncate max-w-xs">
+      {user.email}
+    </p>
+  </div>
+</div>
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <Link to="/challenges">
               <motion.button
@@ -264,6 +399,42 @@ export default function Dashboard() {
           </div>
         </motion.header>
 
+        {/* Quick Actions */}
+<motion.section
+  variants={stagger}
+  initial="hidden"
+  animate="visible"
+  className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+>
+  {[
+    { title: "Solve Challenge", link: "/challenges", icon: "⚡" },
+    { title: "Submit Solution", link: "/challenges", icon: "📤" },
+    { title: "Leaderboard", link: "/leaderboard", icon: "🏆" },
+    { title: "Profile", link: "/profile", icon: "👤" },
+  ].map((item, i) => (
+    <motion.div
+      key={i}
+      variants={fadeUp}
+      whileHover={{ y: -8, scale: 1.04 }}
+      className={`${glass} rounded-xl p-4 cursor-pointer transition-all hover:border-cyan-400/40`}
+    >
+      <Link to={item.link} className="flex items-center gap-3">
+        <span className="text-2xl">{item.icon}</span>
+
+        <div>
+          <p className="text-sm font-medium text-slate-200">
+            {item.title}
+          </p>
+
+          <p className="text-xs text-slate-400">
+            Open →
+          </p>
+        </div>
+      </Link>
+    </motion.div>
+  ))}
+</motion.section>
+
         {/* Stats grid */}
         <motion.section
           variants={stagger}
@@ -281,7 +452,7 @@ export default function Dashboard() {
               <div className="flex items-center gap-4">
                 <motion.img
                   src={leagueImages[league]}
-                  className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl object-contain ring-2 ring-slate-600/50"
+                  className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl object-contain ring-2 ring-cyan-400/40 shadow-[0_0_25px_rgba(34,211,238,0.4)]"
                   animate={!reduce ? { scale: [1, 1.03, 1] } : {}}
                   transition={{ duration: 3, repeat: Infinity }}
                 />
@@ -308,7 +479,7 @@ export default function Dashboard() {
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${progressPct}%` }}
-                    transition={{ duration: 1, ease: "easeOut" }}
+                    transition={{ duration: 1.2, ease: "easeInOut" }}
                     className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-fuchsia-500 shadow-[0_0_20px_rgba(34,211,238,0.4)]"
                   />
                 </div>
@@ -330,6 +501,25 @@ export default function Dashboard() {
             <p className="text-xs text-slate-400 mb-1">Total points</p>
             <p className="text-3xl font-bold text-cyan-300 tabular-nums">{totalPoints}</p>
           </motion.div>
+
+          {/* Coding Streak */}
+<motion.div
+  variants={fadeUp}
+  className={`${glass} rounded-2xl p-5 flex flex-col justify-center`}
+  whileHover={!reduce ? { y: -4, scale: 1.01 } : {}}
+>
+  <p className="text-xs text-slate-400 mb-1">Coding streak</p>
+
+  <p className="text-3xl font-bold text-orange-300 tabular-nums">
+<motion.span
+  animate={{ scale: [1, 1.1, 1] }}
+  transition={{ duration: 1.6, repeat: Infinity }}
+>
+🔥 {streak}
+</motion.span>
+<span className="text-lg ml-1">days</span>
+</p>
+</motion.div>
 
           {/* Submissions */}
           <motion.div
@@ -375,7 +565,13 @@ export default function Dashboard() {
                   animate={{ opacity: 1 }}
                   className={`rounded-2xl ${glass} p-8 text-center`}
                 >
-                  <p className="text-3xl mb-2">📤</p>
+                  <motion.p
+  animate={{ y: [0, -5, 0] }}
+  transition={{ duration: 1.5, repeat: Infinity }}
+  className="text-4xl mb-3"
+>
+🚀
+</motion.p>
                   <h3 className="text-base font-medium text-slate-200 mb-1">No submissions yet</h3>
                   <p className="text-sm text-slate-400 mb-4">
                     Solve challenges and submit your solutions to earn points.
@@ -410,8 +606,12 @@ export default function Dashboard() {
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0 }}
                           transition={{ duration: 0.3, delay: idx * 0.05 }}
-                          whileHover={!reduce ? { y: -2, boxShadow: "0 8px 30px rgba(0,0,0,0.3)" } : {}}
-                          className={`rounded-xl ${glass} p-4 transition-shadow`}
+                          whileHover={
+  !reduce
+    ? { y: -4, scale: 1.01, boxShadow: "0 12px 35px rgba(0,0,0,0.35)" }
+    : {}
+}
+                          className={`rounded-xl ${glass} p-4 transition-all hover:border-cyan-400/30`}
                         >
                           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                             <div className="flex-1 min-w-0">
@@ -558,6 +758,41 @@ export default function Dashboard() {
               </Link>
             </motion.div>
 
+            {/* Recommended Challenge */}
+<motion.div
+  variants={fadeUp}
+  initial="hidden"
+  animate="visible"
+  whileHover={{ scale: 1.02 }}
+  className={`${glass} rounded-2xl p-5 hover:border-cyan-400/30 transition`}
+>
+  <h2 className="text-base font-semibold mb-2">
+    Recommended Challenge
+  </h2>
+
+  {!recommended ? (
+    <p className="text-xs text-slate-400">
+      Loading challenge...
+    </p>
+  ) : (
+    <>
+      <p className="text-sm text-slate-300">
+        {recommended.title}
+      </p>
+
+      <p className="text-xs text-slate-500 mt-1">
+        {recommended.difficulty} • {recommended.points} pts
+      </p>
+
+      <Link to="/challenges">
+  <button className="mt-3 text-xs text-cyan-300 hover:underline">
+    Start challenge →
+  </button>
+</Link>
+    </>
+  )}
+</motion.div>
+
             {/* Profile snapshot */}
             <motion.div
               variants={fadeUp}
@@ -568,29 +803,32 @@ export default function Dashboard() {
             >
               <h2 className="text-base font-semibold mb-3">Profile snapshot</h2>
               <div className="text-xs space-y-2 text-slate-300">
-                <p><span className="text-slate-500">Name:</span> {lbRow?.full_name || user.user_metadata?.full_name || "—"}</p>
-                <p><span className="text-slate-500">Branch:</span> {lbRow?.branch || user.user_metadata?.branch || "—"}</p>
-                <p><span className="text-slate-500">Year:</span> {lbRow?.year || user.user_metadata?.year || "—"}</p>
-                <p className="break-all">
-                  <span className="text-slate-500">GitHub: </span>
-                  {(lbRow?.github || user.user_metadata?.github) ? (
-                    <a
-                      href={lbRow?.github || user.user_metadata?.github}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-cyan-300 hover:underline"
-                    >
-                      {(lbRow?.github || user.user_metadata?.github).replace("https://", "")}
-                    </a>
-                  ) : (
-                    "—"
-                  )}
-                </p>
+                <p><span className="text-slate-500">Name:</span> {profile?.full_name || user.user_metadata?.full_name || "—"}</p>
+
+<p><span className="text-slate-500">Branch:</span> {profile?.branch || "—"}</p>
+
+<p><span className="text-slate-500">Year:</span> {profile?.year || "—"}</p>
+
+<p className="break-all">
+  <span className="text-slate-500">GitHub: </span>
+  {profile?.github ? (
+    <a
+      href={profile.github}
+      target="_blank"
+      rel="noreferrer"
+      className="text-cyan-300 hover:underline"
+    >
+      {profile.github.replace("https://", "")}
+    </a>
+  ) : (
+    "—"
+  )}
+</p>
                 <motion.button
                   onClick={copyProfileLink}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="mt-3 w-full px-3 py-2 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 text-xs font-medium hover:bg-cyan-500/30 transition"
+                  className="mt-3 w-full px-3 py-2 rounded-lg bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 text-cyan-300 border border-cyan-400/30 text-xs font-medium hover:bg-cyan-500/30 transition"
                 >
                   {copied ? "✓ Copied!" : "Copy profile link"}
                 </motion.button>
@@ -649,7 +887,7 @@ export default function Dashboard() {
             </motion.div>
           </div>
         </div>
-      </div>
+      </motion.div> 
     </motion.main>
   );
 }

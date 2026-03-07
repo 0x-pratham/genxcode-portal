@@ -103,38 +103,54 @@ export default function Profile() {
   // SAVE PROFILE (RLS SAFE)
   // --------------------------------------------------
   const handleSave = async () => {
-    if (!user) return;
-    // basic validation
-    if (!profile.full_name.trim()) {
-      setErrorMsg("Please enter your full name.");
-      return;
-    }
+  if (!user) return;
 
-    setSaving(true);
-    setErrorMsg("");
-    setSuccessMsg("");
+  if (!profile.full_name.trim()) {
+    setErrorMsg("Please enter your full name.");
+    return;
+  }
 
-    const payload = {
-      id: user.id, // 🔐 MUST MATCH auth.uid()
-      full_name: profile.full_name.trim(),
-      branch: profile.branch.trim(),
-      year: profile.year.trim(),
-      github: profile.github.trim(),
-    };
+  setSaving(true);
+  setErrorMsg("");
+  setSuccessMsg("");
 
-    const { error } = await supabase.from("profiles").upsert(payload, { onConflict: "id" });
-
-    setSaving(false);
-
-    if (error) {
-      console.error(error);
-      setErrorMsg("Failed to update profile. Please try again.");
-      return;
-    }
-
-    setInitialProfile(payload);
-    setSuccessMsg("Profile updated successfully.");
+  const payload = {
+    id: user.id,
+    full_name: profile.full_name.trim(),
+    branch: profile.branch.trim(),
+    year: profile.year.trim(),
+    github: profile.github.trim(),
   };
+
+  // update profiles table
+  const { error } = await supabase
+    .from("profiles")
+    .upsert(payload, { onConflict: "id" });
+
+  if (!error) {
+    // sync leaderboard
+    await supabase
+      .from("leaderboard")
+      .update({
+        full_name: payload.full_name,
+        branch: payload.branch,
+        year: payload.year,
+        github: payload.github,
+      })
+      .eq("user_id", user.id);
+  }
+
+  setSaving(false);
+
+  if (error) {
+    console.error(error);
+    setErrorMsg("Failed to update profile. Please try again.");
+    return;
+  }
+
+  setInitialProfile(payload);
+  setSuccessMsg("Profile updated successfully.");
+};
 
   // --------------------------------------------------
   // UI STATES
