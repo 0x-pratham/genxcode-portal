@@ -1,12 +1,8 @@
-// FINAL FULL DASHBOARD — UPGRADE PACK A2 (Homepage Gradient + Circuit Tech Overlay)
-
+// Dashboard — UI/UX improvements
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
-import { motion, useReducedMotion } from "framer-motion";
-void motion;
-
-// ---------------- LEAGUE VISUAL CONFIG ------------------
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
 const leagueBadges = {
   Bronze: "bg-amber-900/50 text-amber-200 border border-amber-500/40",
@@ -19,17 +15,7 @@ const leagueBadges = {
   Legend: "bg-fuchsia-500/20 text-fuchsia-100 border border-fuchsia-400/70",
 };
 
-const leagueOrder = [
-  "Bronze",
-  "Silver",
-  "Gold",
-  "Crystal",
-  "Master",
-  "Champion",
-  "Titan",
-  "Legend",
-];
-
+const leagueOrder = ["Bronze", "Silver", "Gold", "Crystal", "Master", "Champion", "Titan", "Legend"];
 const leagueThresholds = {
   Bronze: 0,
   Silver: 500,
@@ -40,7 +26,6 @@ const leagueThresholds = {
   Titan: 7000,
   Legend: 8000,
 };
-
 const leagueIcons = {
   Bronze: "🥉",
   Silver: "🥈",
@@ -51,7 +36,6 @@ const leagueIcons = {
   Titan: "⚡",
   Legend: "👑",
 };
-
 const leagueImages = {
   Legend: "https://i.ibb.co/5hF3VvPt/legend.png",
   Titan: "https://i.ibb.co/5WtJTR9X/titan.png",
@@ -63,20 +47,15 @@ const leagueImages = {
   Bronze: "https://i.ibb.co/tM2cYgH7/Bronze-Gen-X.png",
 };
 
-// GLASS EFFECT
-const glass =
-  "bg-slate-900/40 backdrop-blur-xl border border-white/10 shadow-xl";
-
-// ---------------- MAIN COMPONENT ------------------
+const glass = "bg-slate-900/60 backdrop-blur-xl border border-slate-700/60 shadow-xl";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-
   const reduce = useReducedMotion();
-
   const [user, setUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [copied, setCopied] = useState(false);
 
   const [lbRow, setLbRow] = useState(null);
   const [submissions, setSubmissions] = useState([]);
@@ -89,9 +68,6 @@ export default function Dashboard() {
   const [annLoading, setAnnLoading] = useState(true);
   const [sessionLoading, setSessionLoading] = useState(true);
 
-  // ------------ LOAD EVERYTHING ------------
-
-  // Load Leaderboard
   async function loadLeaderboard(uid) {
     if (!uid) return;
     setLeaderboardLoading(true);
@@ -101,19 +77,15 @@ export default function Dashboard() {
         .select("*")
         .eq("user_id", uid)
         .single();
-      if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
-        console.error("Error loading leaderboard:", error);
-      }
+      if (error && error.code !== "PGRST116") console.error("Error loading leaderboard:", error);
       setLbRow(data || null);
     } catch (err) {
-      console.error("Error loading leaderboard:", err);
       setLbRow(null);
     } finally {
       setLeaderboardLoading(false);
     }
   }
 
-  // Load Submissions
   async function loadSubmissions(uid) {
     if (!uid) return;
     setSubsLoading(true);
@@ -121,32 +93,19 @@ export default function Dashboard() {
       const { data, error } = await supabase
         .from("submissions")
         .select(`
-          id,
-          status,
-          github_link,
-          points_awarded,
-          submitted_at,
-          feedback,
+          id, status, github_link, points_awarded, submitted_at, feedback,
           challenges (title, difficulty, points)
         `)
         .eq("user_id", uid)
         .order("submitted_at", { ascending: false });
-
-      if (error) {
-        console.error("Error loading submissions:", error);
-        setSubmissions([]);
-      } else {
-        setSubmissions(data || []);
-      }
-    } catch (err) {
-      console.error("Error loading submissions:", err);
+      setSubmissions(error ? [] : data || []);
+    } catch {
       setSubmissions([]);
     } finally {
       setSubsLoading(false);
     }
   }
 
-  // Load Announcements
   async function loadAnnouncements() {
     setAnnLoading(true);
     try {
@@ -155,52 +114,25 @@ export default function Dashboard() {
         .select("*")
         .order("created_at", { ascending: false })
         .limit(3);
-
-      if (error) {
-        console.error("Error loading announcements:", error);
-        setAnnouncements([]);
-      } else {
-        setAnnouncements(data || []);
-      }
-    } catch (err) {
-      console.error("Error loading announcements:", err);
+      setAnnouncements(error ? [] : data || []);
+    } catch {
       setAnnouncements([]);
     } finally {
       setAnnLoading(false);
     }
   }
 
-  // Load Attendance
   async function loadAttendance(uid) {
     if (!uid) return;
     setSessionLoading(true);
     try {
       const [sessionResult, logsResult] = await Promise.all([
-        supabase
-          .from("attendance_sessions")
-          .select("*")
-          .order("session_date", { ascending: false }),
-        supabase
-          .from("attendance_logs")
-          .select("session_id, checked_in_at")
-          .eq("user_id", uid)
+        supabase.from("attendance_sessions").select("*").order("session_date", { ascending: false }),
+        supabase.from("attendance_logs").select("session_id, checked_in_at").eq("user_id", uid),
       ]);
-
-      if (sessionResult.error) {
-        console.error("Error loading sessions:", sessionResult.error);
-        setSessions([]);
-      } else {
-        setSessions(sessionResult.data || []);
-      }
-
-      if (logsResult.error) {
-        console.error("Error loading attendance logs:", logsResult.error);
-        setSessionLogs([]);
-      } else {
-        setSessionLogs(logsResult.data || []);
-      }
-    } catch (err) {
-      console.error("Error loading attendance:", err);
+      setSessions(sessionResult.error ? [] : sessionResult.data || []);
+      setSessionLogs(logsResult.error ? [] : logsResult.data || []);
+    } catch {
       setSessions([]);
       setSessionLogs([]);
     } finally {
@@ -208,22 +140,17 @@ export default function Dashboard() {
     }
   }
 
-  // ------------ LOAD EVERYTHING (init) ------------
   useEffect(() => {
     const init = async () => {
       if (!supabase) {
-        console.error("Supabase is not configured");
         navigate("/login");
         return;
       }
-
       const { data, error } = await supabase.auth.getUser();
       if (error || !data?.user) return navigate("/login");
-
       const u = data.user;
       setUser(u);
       setLoadingUser(false);
-
       await Promise.all([
         loadLeaderboard(u.id),
         loadSubmissions(u.id),
@@ -232,546 +159,418 @@ export default function Dashboard() {
       ]);
       setLastUpdated(new Date().toISOString());
     };
-
     init();
   }, [navigate]);
-  const [copied, setCopied] = useState(false);
+
   const copyProfileLink = async () => {
     try {
-      const url = `${window.location.origin}/profile/${user?.id || ""}`;
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(`${window.location.origin}/profile/${user?.id || ""}`);
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
-    } catch {
-      // noop
-    }
+    } catch {}
   };
-
-  
 
   if (loadingUser) {
     return (
-      <main className="min-h-screen flex items-center justify-center text-slate-300">
-        Checking session…
+      <main className="min-h-screen flex items-center justify-center bg-slate-950">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="flex flex-col items-center gap-4 text-slate-400"
+        >
+          <div className="h-8 w-8 rounded-full border-2 border-cyan-500/50 border-t-cyan-400 animate-spin" />
+          <p className="text-sm">Checking session…</p>
+        </motion.div>
       </main>
     );
   }
 
   if (!user) return null;
 
-  // ------------ COMPUTE STATS ------------
   const totalPoints = lbRow?.points || 0;
   const league = lbRow?.league || "Bronze";
-
-  const approvedSubs = submissions.filter(
-    (s) => s.status?.toLowerCase() === "approved"
-  ).length;
-
+  const approvedSubs = submissions.filter((s) => s.status?.toLowerCase() === "approved").length;
   const leagueIndex = leagueOrder.indexOf(league);
   const currentLeague = leagueIndex === -1 ? "Bronze" : league;
-  const nextLeague =
-    leagueIndex < leagueOrder.length - 1
-      ? leagueOrder[leagueIndex + 1]
-      : null;
-
+  const nextLeague = leagueIndex < leagueOrder.length - 1 ? leagueOrder[leagueIndex + 1] : null;
   const currentMin = leagueThresholds[currentLeague];
   const nextMin = nextLeague ? leagueThresholds[nextLeague] : null;
-
-  const progressPct = nextMin
-    ? Math.round(
-        ((totalPoints - currentMin) / (nextMin - currentMin)) * 100
-      )
-    : 100;
-
+  const progressPct = nextMin ? Math.round(((totalPoints - currentMin) / (nextMin - currentMin)) * 100) : 100;
   const pointsNeeded = nextMin ? Math.max(0, nextMin - totalPoints) : 0;
 
   const attendedSet = new Set(sessionLogs.map((l) => l.session_id));
   const attendedCount = sessions.filter((s) => attendedSet.has(s.id)).length;
-  const attendanceRate =
-    sessions.length > 0
-      ? Math.round((attendedCount / sessions.length) * 100)
-      : null;
-
-  const fadeUp = {
-    hidden: { opacity: 0, y: 12 },
-    visible: { opacity: 1, y: 0 },
-  };
+  const attendanceRate = sessions.length > 0 ? Math.round((attendedCount / sessions.length) * 100) : null;
 
   const displayName =
-    lbRow?.full_name ||
-    user.user_metadata?.full_name ||
-    user.email?.split("@")[0] ||
-    "User";
+    lbRow?.full_name || user.user_metadata?.full_name || user.email?.split("@")[0] || "User";
 
-  // ------------------------ UI START ------------------------
+  const fadeUp = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } };
+  const stagger = { staggerChildren: 0.06, delayChildren: 0.1 };
 
   return (
     <motion.main
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.8 }}
-      className="min-h-screen text-slate-100 relative overflow-hidden"
-
-      // 🌈 FULL BACKGROUND: Neon Gradient + Circuit Tech Overlay
-      style={{
-        background:
-          "radial-gradient(circle at 20% 20%, rgba(0,255,255,0.18), transparent 60%), radial-gradient(circle at 80% 80%, rgba(180,0,255,0.22), transparent 60%), #020617",
-      }}
+      transition={{ duration: 0.5 }}
+      className="min-h-screen text-slate-100 relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 pb-24"
     >
-      {/* 🟦 CIRCUIT ANIMATED OVERLAY */}
-      <motion.div
-        className="absolute inset-0 opacity-[0.04] pointer-events-none bg-[url('/circuit.svg')]"
-        animate={!reduce ? { backgroundPosition: ["0% 0%", "100% 100%"] } : {}}
-        transition={!reduce ? { duration: 22, repeat: Infinity, ease: "linear" } : {}}
-      />
+      {/* Background */}
+      <div className="pointer-events-none fixed inset-0 -z-10">
+        <div className="absolute -top-40 -left-40 h-96 w-96 rounded-full bg-cyan-500/10 blur-[120px]" />
+        <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-fuchsia-500/10 blur-[120px]" />
+      </div>
 
-      {/* 🌫 GRADIENT AURA LIGHTS */}
-      <motion.div
-        className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-cyan-500/20 blur-[200px] rounded-full"
-        animate={{ opacity: [0.4, 0.8, 0.4] }}
-        transition={{ duration: 8, repeat: Infinity }}
-      />
-      <motion.div
-        className="absolute bottom-0 right-0 w-[450px] h-[450px] bg-fuchsia-600/20 blur-[220px] rounded-full"
-        animate={{ opacity: [0.3, 0.7, 0.3] }}
-        transition={{ duration: 10, repeat: Infinity }}
-      />
-
-      {/* ----- PAGE CONTENT ----- */}
-      <div className="container-page pt-10 space-y-10 relative">
-
-        {/* ---------------------------------------------------------------- */}
-        {/* HEADER */}
-        {/* ---------------------------------------------------------------- */}
-
+      <div className="container-page pt-8 sm:pt-10 space-y-8 relative z-10">
+        {/* Header */}
         <motion.header
           variants={fadeUp}
           initial="hidden"
           animate="visible"
-          transition={{ duration: 0.6 }}
-          className="flex flex-col md:flex-row justify-between gap-4"
+          transition={{ duration: 0.5 }}
+          className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
         >
           <div>
-            <p className="text-xs text-slate-400">Welcome back,</p>
-            <h1 className="text-3xl font-semibold bg-gradient-to-r from-cyan-300 to-indigo-300 bg-clip-text text-transparent">
+            <p className="text-xs text-slate-400 mb-0.5">Welcome back</p>
+            <h1 className="text-2xl sm:text-3xl font-semibold bg-gradient-to-r from-cyan-300 to-indigo-300 bg-clip-text text-transparent">
               {displayName}
             </h1>
-            <p className="text-sm text-slate-400">
-              Logged in as <span className="text-cyan-300">{user.email}</span>
+            <p className="text-sm text-slate-500 truncate max-w-xs">
+              {user.email}
             </p>
           </div>
-
-          <div className="flex gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <Link to="/challenges">
-              <button className="btn-primary px-4 py-2 text-xs rounded-full">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="btn-primary px-4 py-2.5 text-sm rounded-xl"
+              >
                 View challenges ↗
-              </button>
+              </motion.button>
             </Link>
-
             <Link to="/leaderboard">
-              <button className="btn-outline px-4 py-2 text-xs rounded-full">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="btn-outline px-4 py-2.5 text-sm rounded-xl"
+              >
                 Leaderboard
-              </button>
+              </motion.button>
             </Link>
-            <span className="text-xs text-slate-400 self-center">
-              Updated {lastUpdated ? new Date(lastUpdated).toLocaleString() : "—"}
+            <span className="text-[11px] text-slate-500 hidden sm:inline">
+              Updated {lastUpdated ? new Date(lastUpdated).toLocaleTimeString() : "—"}
             </span>
           </div>
         </motion.header>
 
-        {/* ---------------------------------------------------------------- */}
-        {/* STATS */}
-        {/* ---------------------------------------------------------------- */}
-
+        {/* Stats grid */}
         <motion.section
-          variants={fadeUp}
+          variants={stagger}
           initial="hidden"
           animate="visible"
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="grid md:grid-cols-4 gap-4"
+          className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
         >
-          {/* LEAGUE CARD */}
+          {/* League card (spans 2 on lg) */}
           <motion.div
-            className={`relative px-6 py-5 rounded-2xl overflow-hidden ${glass} md:col-span-2`}
-            whileHover={{ scale: 1.03, y: -6 }}
+            variants={fadeUp}
+            className={`relative rounded-2xl overflow-hidden ${glass} p-5 lg:col-span-2`}
+            whileHover={!reduce ? { y: -4, scale: 1.01 } : {}}
           >
-            {/* Subtle circuit bg inside card */}
-            <div className="absolute inset-0 opacity-[0.05] bg-[url('/circuit.svg')]" />
-
-            {/* Glow sweep */}
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-transparent to-fuchsia-500/10"
-              animate={{ opacity: [0.1, 0.3, 0.1] }}
-              transition={{ duration: 6, repeat: Infinity }}
-            />
-
-            <div className="relative flex items-center gap-5">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              <div className="flex items-center gap-4">
                 <motion.img
                   src={leagueImages[league]}
-                  loading="lazy"
-                  className="h-16 w-16 drop-shadow-[0_0_25px_rgba(0,200,255,0.5)]"
-                  animate={!reduce ? { scale: [1, 1.05, 1] } : {}}
-                  transition={!reduce ? { duration: 2.5, repeat: Infinity } : {}}
+                  className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl object-contain ring-2 ring-slate-600/50"
+                  animate={!reduce ? { scale: [1, 1.03, 1] } : {}}
+                  transition={{ duration: 3, repeat: Infinity }}
                 />
-
-              <div>
-                <span className={`px-3 py-1 rounded-full text-xs ${leagueBadges[league]}`}>
-                  {leagueIcons[league]} {league}
-                </span>
-
-                <p className="text-xs text-slate-400 mt-1">
-                  {totalPoints} pts · Next:{" "}
-                  <span className="text-cyan-300">{nextLeague || "Maxed"}</span>
-                </p>
-              </div>
-            </div>
-
-            {/* Progress Bar */}
-            <div className="mt-4">
-              <div className="flex justify-between text-[11px] text-slate-400">
-                <span>Progress</span>
-                <span className="text-cyan-300 font-semibold">{progressPct}%</span>
-              </div>
-
-              <motion.div className="h-2 bg-slate-900 rounded-full mt-1 overflow-hidden" role="progressbar" aria-valuenow={progressPct} aria-valuemin={0} aria-valuemax={100}>
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${progressPct}%` }}
-                  transition={{ duration: 1 }}
-                  className="h-full bg-gradient-to-r from-cyan-400 to-fuchsia-500 shadow-[0_0_20px_rgba(0,200,255,0.5)]"
-                />
-              </motion.div>
-
-              <p className="text-[10px] text-slate-500 mt-1">
-                {nextLeague
-                  ? `Need ${pointsNeeded} pts to reach ${nextLeague}.`
-                  : "You reached the highest league!"}
-              </p>
-            </div>
-          </motion.div>
-
-          {/* POINTS CARD */}
-          <motion.div className={`${glass} card px-5 py-4 rounded-2xl`} whileHover={{ scale: 1.03, y: -6 }}>
-            <p className="text-xs text-slate-400">Total points</p>
-            <p className="text-2xl font-semibold text-cyan-300">{totalPoints}</p>
-          </motion.div>
-
-          {/* APPROVED SUBMISSIONS */}
-          <motion.div className={`${glass} card px-5 py-4 rounded-2xl`} whileHover={{ scale: 1.03, y: -6 }}>
-            <p className="text-xs text-slate-400">Approved submissions</p>
-            <p className="text-2xl font-semibold text-emerald-300">{approvedSubs}</p>
-          </motion.div>
-        </motion.section>
-
-        {/* ---------------------------------------------------------------- */}
-        {/* SUBMISSIONS */}
-        {/* ---------------------------------------------------------------- */}
-
-        <motion.section
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <h2 className="text-lg font-semibold mb-2">Your submissions</h2>
-
-          {subsLoading ? (
-            <div className="card px-5 py-5 text-center text-slate-300">
-              <div className="space-y-2">
-                <div className="h-3 bg-slate-800 rounded w-3/4 mx-auto animate-pulse" />
-                <div className="h-3 bg-slate-800 rounded w-2/3 mx-auto animate-pulse" />
-              </div>
-            </div>
-          ) : submissions.length === 0 ? (
-            <div className="card px-5 py-5 text-center text-slate-300">
-              You have no submissions yet.
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {submissions.slice(0, 6).map((s, idx) => {
-                const diffColor =
-                  s.challenges?.difficulty === "easy"
-                    ? "text-emerald-300"
-                    : s.challenges?.difficulty === "medium"
-                    ? "text-yellow-300"
-                    : "text-red-300";
-
-                const statusColor =
-                  s.status === "approved"
-                    ? "text-emerald-300"
-                    : s.status === "rejected"
-                    ? "text-red-300"
-                    : "text-amber-300";
-
-                return (
-                  <motion.div
-                    key={s.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: idx * 0.07 }}
-                    whileHover={{
-                      y: -6,
-                      scale: 1.015,
-                      boxShadow: "0px 0px 25px rgba(0, 200, 255, 0.25)",
-                    }}
-                    className={`relative card px-5 py-4 overflow-hidden rounded-xl shadow-lg ${glass}`}
-                  >
-                    {/* Neon stripe */}
-                    <motion.div
-                      className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-cyan-400 to-fuchsia-500 opacity-60"
-                      animate={{ opacity: [0.4, 1, 0.4] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    />
-
-                    <div className="flex justify-between">
-                      <div>
-                        <h3 className="text-sm font-semibold">
-                          {s.challenges?.title || "Challenge"}
-                        </h3>
-
-                        <p className="text-[11px] text-slate-400">
-                          Difficulty: <span className={diffColor}>{s.challenges?.difficulty}</span>
-                          {" • "}
-                          Base: {s.challenges?.points ?? 0} pts
-                        </p>
-
-                        <p className="text-[10px] text-slate-500">
-                          Submitted: {new Date(s.submitted_at).toLocaleString()}
-                        </p>
-
-                        {s.github_link && (
-                          <a
-                            href={s.github_link}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-cyan-300 underline text-xs block mt-1"
-                          >
-                            {s.github_link}
-                          </a>
-                        )}
-                      </div>
-
-                      <div className="text-right">
-                        <span className={`text-xs font-semibold ${statusColor}`}>
-                          {s.status}
-                        </span>
-
-                        {s.points_awarded > 0 && (
-                          <p className="text-emerald-300 text-xs mt-1">
-                            +{s.points_awarded} pts
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    {s.feedback && (
-                      <p className="text-[11px] text-slate-300 mt-2">
-                        <span className="text-slate-500">Feedback: </span>
-                        {s.feedback}
-                      </p>
-                    )}
-                  </motion.div>
-                );
-              })}
-            </div>
-          )}
-        </motion.section>
-
-        {/* ---------------------------------------------------------------- */}
-        {/* ATTENDANCE */}
-        {/* ---------------------------------------------------------------- */}
-
-        <motion.section
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          transition={{ duration: 0.6, delay: 0.25 }}
-          className="grid md:grid-cols-3 gap-4"
-        >
-          <motion.div
-            className={`card px-5 py-4 space-y-3 relative overflow-hidden md:col-span-2 ${glass}`}
-            whileHover={{ scale: 1.01, y: -3 }}
-          >
-            {/* animated glow */}
-            <motion.div
-              className="pointer-events-none absolute inset-0 rounded-2xl
-                bg-gradient-to-br from-cyan-500/25 via-slate-900 to-fuchsia-500/25
-                blur opacity-0"
-              animate={{ opacity: [0.1, 0.35, 0.1] }}
-              transition={{ duration: 6, repeat: Infinity }}
-            />
-
-            <div className="relative">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-sm font-semibold">Session attendance</p>
-                <span className="text-[10px] text-slate-500">
-                  Admin-verified only
-                </span>
-              </div>
-
-              {sessionLoading ? (
-                <p className="text-xs text-slate-400">Loading attendance…</p>
-              ) : sessions.length === 0 ? (
-                <p className="text-xs text-slate-400">No sessions created yet.</p>
-              ) : (
-                <>
-                  <p className="text-xs text-slate-400">
-                    Attended{" "}
-                    <span className="text-emerald-300 font-semibold">{attendedCount}</span>
-                    {" / "}
-                    <span className="text-slate-100 font-semibold">{sessions.length}</span>
-                    {" "}
-                    sessions{" "}
-                    {attendanceRate !== null && (
-                      <span className="text-cyan-300 font-semibold">
-                        ({attendanceRate}%)
+                <div>
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium ${leagueBadges[league]}`}>
+                    {leagueIcons[league]} {league}
+                  </span>
+                  <p className="text-sm text-slate-400 mt-1">
+                    {totalPoints} pts
+                    {nextLeague && (
+                      <span className="text-cyan-300 ml-1">
+                        · {pointsNeeded} to {nextLeague}
                       </span>
                     )}
                   </p>
-
-                  <p className="text-xs text-slate-400">
-                    Missed{" "}
-                    <span className="text-amber-300 font-semibold">
-                      {sessions.length - attendedCount}
-                    </span>
+                </div>
+              </div>
+              <div className="flex-1 sm:min-w-[200px]">
+                <div className="flex justify-between text-xs text-slate-400 mb-1">
+                  <span>Progress to {nextLeague || "max"}</span>
+                  <span className="text-cyan-300 font-semibold">{progressPct}%</span>
+                </div>
+                <div className="h-2.5 bg-slate-800/80 rounded-full overflow-hidden" role="progressbar" aria-valuenow={progressPct} aria-valuemin={0} aria-valuemax={100}>
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progressPct}%` }}
+                    transition={{ duration: 1, ease: "easeOut" }}
+                    className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-fuchsia-500 shadow-[0_0_20px_rgba(34,211,238,0.4)]"
+                  />
+                </div>
+                {nextLeague && (
+                  <p className="text-[10px] text-slate-500 mt-1">
+                    Need {pointsNeeded} pts to reach {nextLeague}
                   </p>
-
-                  {/* Recent Sessions */}
-                  <div className="mt-3 border border-slate-800/80 rounded-xl
-                    divide-y divide-slate-800/80 bg-slate-950/70"
-                  >
-                    <div className="px-3 py-2 flex justify-between text-[11px] text-slate-400">
-                      <span>Recent sessions</span>
-                      <span>Status</span>
-                    </div>
-
-                    {sessions.slice(0, 5).map((s) => {
-                      const attended = attendedSet.has(s.id);
-                      return (
-                        <div
-                          key={s.id}
-                          className="px-3 py-2 flex justify-between text-[11px]"
-                        >
-                          <div>
-                            <p className="text-slate-100 line-clamp-1">{s.title}</p>
-                            <p className="text-slate-500">
-                              {new Date(s.session_date).toLocaleString()}
-                            </p>
-                          </div>
-
-                          <span
-                            className={`px-2 py-0.5 rounded-full font-medium ${
-                              attended
-                                ? "bg-emerald-500/15 text-emerald-300 border border-emerald-400/30"
-                                : "bg-red-500/10 text-red-300 border border-red-400/20"
-                            }`}
-                          >
-                            {attended ? "Attended" : "Missed"}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </>
-              )}
+                )}
+              </div>
             </div>
           </motion.div>
 
-          {/* Tip Card */}
+          {/* Points */}
           <motion.div
-            className={`card px-5 py-4 space-y-2 ${glass}`}
-            whileHover={{ scale: 1.02, y: -3 }}
+            variants={fadeUp}
+            className={`${glass} rounded-2xl p-5 flex flex-col justify-center`}
+            whileHover={!reduce ? { y: -4, scale: 1.01 } : {}}
           >
-            <p className="text-sm font-semibold">Tip</p>
-            <p className="text-xs text-slate-400">
-              Join more sessions to increase attendance rate and climb leagues faster.
-            </p>
+            <p className="text-xs text-slate-400 mb-1">Total points</p>
+            <p className="text-3xl font-bold text-cyan-300 tabular-nums">{totalPoints}</p>
+          </motion.div>
+
+          {/* Submissions */}
+          <motion.div
+            variants={fadeUp}
+            className={`${glass} rounded-2xl p-5 flex flex-col justify-center`}
+            whileHover={!reduce ? { y: -4, scale: 1.01 } : {}}
+          >
+            <p className="text-xs text-slate-400 mb-1">Approved submissions</p>
+            <p className="text-3xl font-bold text-emerald-300 tabular-nums">{approvedSubs}</p>
           </motion.div>
         </motion.section>
 
-        {/* ---------------------------------------------------------------- */}
-        {/* RIGHT SIDEBAR */}
-        {/* ---------------------------------------------------------------- */}
-
-        <motion.section
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          transition={{ duration: 0.6, delay: 0.28 }}
-          className="grid gap-6 lg:grid-cols-[2fr,1.2fr] items-start"
-        >
-          <div className="space-y-5">
-
-            {/* ANNOUNCEMENTS */}
-            <motion.div
-              className={`card px-5 py-4 space-y-3 relative overflow-hidden ${glass}`}
-              whileHover={{ scale: 1.02, y: -3 }}
+        {/* Main content grid */}
+        <div className="grid gap-8 lg:grid-cols-[1fr,380px]">
+          {/* Left column: Submissions + Attendance */}
+          <div className="space-y-8">
+            {/* Submissions */}
+            <motion.section
+              variants={fadeUp}
+              initial="hidden"
+              animate="visible"
+              transition={{ duration: 0.5, delay: 0.1 }}
             >
-              <motion.div
-                className="absolute inset-0 rounded-2xl bg-gradient-to-br
-                  from-cyan-500/20 via-slate-900 to-purple-500/20 blur"
-                animate={{ opacity: [0.15, 0.35, 0.15] }}
-                transition={{ duration: 5, repeat: Infinity }}
-              />
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold">Your submissions</h2>
+                {submissions.length > 0 && (
+                  <span className="text-xs text-slate-500">{submissions.length} total</span>
+                )}
+              </div>
 
-              <h2 className="text-base font-semibold relative">Latest announcements</h2>
+              {subsLoading ? (
+                <div className="space-y-3">
+                  {[0, 1, 2, 3].map((i) => (
+                    <div key={i} className={`rounded-xl ${glass} p-4 animate-pulse`}>
+                      <div className="h-4 w-3/4 rounded bg-slate-800 mb-3" />
+                      <div className="h-3 w-1/2 rounded bg-slate-800" />
+                    </div>
+                  ))}
+                </div>
+              ) : submissions.length === 0 ? (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className={`rounded-2xl ${glass} p-8 text-center`}
+                >
+                  <p className="text-3xl mb-2">📤</p>
+                  <h3 className="text-base font-medium text-slate-200 mb-1">No submissions yet</h3>
+                  <p className="text-sm text-slate-400 mb-4">
+                    Solve challenges and submit your solutions to earn points.
+                  </p>
+                  <Link to="/challenges">
+                    <button className="btn-primary px-4 py-2 text-sm rounded-xl">
+                      Browse challenges
+                    </button>
+                  </Link>
+                </motion.div>
+              ) : (
+                <div className="space-y-3">
+                  <AnimatePresence>
+                    {submissions.slice(0, 6).map((s, idx) => {
+                      const diffColor =
+                        s.challenges?.difficulty === "easy"
+                          ? "text-emerald-300"
+                          : s.challenges?.difficulty === "medium"
+                          ? "text-amber-300"
+                          : "text-rose-300";
+                      const statusStyles =
+                        s.status === "approved"
+                          ? "bg-emerald-500/15 text-emerald-300 border-emerald-400/40"
+                          : s.status === "rejected"
+                          ? "bg-rose-500/15 text-rose-300 border-rose-400/40"
+                          : "bg-amber-500/15 text-amber-300 border-amber-400/40";
 
+                      return (
+                        <motion.div
+                          key={s.id}
+                          initial={{ opacity: 0, y: 12 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.3, delay: idx * 0.05 }}
+                          whileHover={!reduce ? { y: -2, boxShadow: "0 8px 30px rgba(0,0,0,0.3)" } : {}}
+                          className={`rounded-xl ${glass} p-4 transition-shadow`}
+                        >
+                          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-semibold text-slate-100 truncate">
+                                {s.challenges?.title || "Challenge"}
+                              </h3>
+                              <p className="text-xs text-slate-400 mt-0.5">
+                                <span className={diffColor}>{s.challenges?.difficulty || "—"}</span>
+                                {" · "}
+                                Base: {s.challenges?.points ?? 0} pts
+                              </p>
+                              <p className="text-[11px] text-slate-500 mt-1">
+                                {new Date(s.submitted_at).toLocaleDateString()}
+                              </p>
+                              {s.github_link && (
+                                <a
+                                  href={s.github_link}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="text-xs text-cyan-300 hover:text-cyan-200 truncate block mt-1"
+                                >
+                                  {s.github_link}
+                                </a>
+                              )}
+                              {s.feedback && (
+                                <p className="text-xs text-slate-400 mt-2 italic">
+                                  {s.feedback}
+                                </p>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <span className={`px-2.5 py-1 rounded-lg text-xs font-medium border ${statusStyles}`}>
+                                {s.status}
+                              </span>
+                              {s.points_awarded > 0 && (
+                                <span className="text-sm font-semibold text-emerald-300">
+                                  +{s.points_awarded}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </AnimatePresence>
+                </div>
+              )}
+            </motion.section>
+
+            {/* Attendance */}
+            <motion.section
+              variants={fadeUp}
+              initial="hidden"
+              animate="visible"
+              transition={{ duration: 0.5, delay: 0.15 }}
+            >
+              <h2 className="text-lg font-semibold mb-4">Session attendance</h2>
+              <div className={`rounded-2xl ${glass} p-5`}>
+                {sessionLoading ? (
+                  <p className="text-sm text-slate-400">Loading…</p>
+                ) : sessions.length === 0 ? (
+                  <p className="text-sm text-slate-400">No sessions created yet.</p>
+                ) : (
+                  <>
+                    <div className="flex items-center justify-between mb-4">
+                      <p className="text-sm text-slate-300">
+                        <span className="text-emerald-300 font-semibold">{attendedCount}</span>
+                        {" / "}
+                        <span className="font-semibold">{sessions.length}</span>
+                        {" sessions"}
+                        {attendanceRate !== null && (
+                          <span className="text-cyan-300 ml-1">({attendanceRate}%)</span>
+                        )}
+                      </p>
+                      {sessions.length - attendedCount > 0 && (
+                        <span className="text-xs text-amber-300">
+                          {sessions.length - attendedCount} missed
+                        </span>
+                      )}
+                    </div>
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {sessions.slice(0, 5).map((sess) => {
+                        const attended = attendedSet.has(sess.id);
+                        return (
+                          <div
+                            key={sess.id}
+                            className="flex items-center justify-between py-2 px-3 rounded-lg bg-slate-900/50 border border-slate-800/60"
+                          >
+                            <div>
+                              <p className="text-sm font-medium text-slate-200 truncate">{sess.title}</p>
+                              <p className="text-[11px] text-slate-500">
+                                {new Date(sess.session_date).toLocaleDateString()}
+                              </p>
+                            </div>
+                            <span
+                              className={`shrink-0 px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                                attended
+                                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-400/30"
+                                  : "bg-rose-500/10 text-rose-300 border border-rose-400/20"
+                              }`}
+                            >
+                              {attended ? "Attended" : "Missed"}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+              </div>
+            </motion.section>
+          </div>
+
+          {/* Right sidebar */}
+          <div className="space-y-6">
+            {/* Announcements */}
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              animate="visible"
+              transition={{ duration: 0.5, delay: 0.15 }}
+              className={`rounded-2xl ${glass} p-5`}
+            >
+              <h2 className="text-base font-semibold mb-3">Latest announcements</h2>
               {annLoading ? (
                 <p className="text-xs text-slate-400">Loading…</p>
               ) : announcements.length === 0 ? (
-                <p className="text-xs text-slate-400">No announcements yet.</p>
+                <p className="text-sm text-slate-400">No announcements yet.</p>
               ) : (
-                <div className="space-y-3 relative">
-                  {announcements.map((a, idx) => (
-                    <motion.article
-                      key={a.id}
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.35, delay: idx * 0.07 }}
-                      className="border-b border-slate-800/80 pb-2 last:border-0"
-                    >
-                      <p className="text-sm font-medium">{a.title}</p>
-
-                      <p className="text-[10px] text-slate-500">
-                        {new Date(a.created_at).toLocaleString()}
+                <div className="space-y-3">
+                  {announcements.map((a) => (
+                    <article key={a.id} className="border-b border-slate-800/60 pb-3 last:border-0">
+                      <p className="text-sm font-medium text-slate-200">{a.title}</p>
+                      <p className="text-[10px] text-slate-500 mt-0.5">
+                        {new Date(a.created_at).toLocaleDateString()}
                       </p>
-
-                      <p className="text-[11px] text-slate-300 mt-1 line-clamp-3">
-                        {a.content}
-                      </p>
-                    </motion.article>
+                      <p className="text-xs text-slate-400 mt-1 line-clamp-2">{a.content}</p>
+                    </article>
                   ))}
                 </div>
               )}
-
-              <Link to="/announcements" className="text-[11px] text-cyan-300 underline">
+              <Link to="/announcements" className="inline-block text-xs text-cyan-300 hover:text-cyan-200 mt-2">
                 View all →
               </Link>
             </motion.div>
 
-            {/* PROFILE SNAPSHOT */}
+            {/* Profile snapshot */}
             <motion.div
-              className={`card px-5 py-4 space-y-3 ${glass}`}
-              whileHover={{ scale: 1.02, y: -3 }}
+              variants={fadeUp}
+              initial="hidden"
+              animate="visible"
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className={`rounded-2xl ${glass} p-5`}
             >
-              <h2 className="text-base font-semibold">Profile snapshot</h2>
-
-              <div className="text-xs space-y-1 mt-1">
-                <p>
-                  <span className="text-slate-500">Name: </span>
-                  {lbRow?.full_name || user.user_metadata?.full_name || "—"}
-                </p>
-
-                <p>
-                  <span className="text-slate-500">Branch: </span>
-                  {lbRow?.branch || user.user_metadata?.branch || "—"}
-                </p>
-
-                <p>
-                  <span className="text-slate-500">Year: </span>
-                  {lbRow?.year || user.user_metadata?.year || "—"}
-                </p>
-
+              <h2 className="text-base font-semibold mb-3">Profile snapshot</h2>
+              <div className="text-xs space-y-2 text-slate-300">
+                <p><span className="text-slate-500">Name:</span> {lbRow?.full_name || user.user_metadata?.full_name || "—"}</p>
+                <p><span className="text-slate-500">Branch:</span> {lbRow?.branch || user.user_metadata?.branch || "—"}</p>
+                <p><span className="text-slate-500">Year:</span> {lbRow?.year || user.user_metadata?.year || "—"}</p>
                 <p className="break-all">
                   <span className="text-slate-500">GitHub: </span>
                   {(lbRow?.github || user.user_metadata?.github) ? (
@@ -779,78 +578,77 @@ export default function Dashboard() {
                       href={lbRow?.github || user.user_metadata?.github}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-cyan-300 underline"
+                      className="text-cyan-300 hover:underline"
                     >
-                      {lbRow?.github || user.user_metadata?.github}
+                      {(lbRow?.github || user.user_metadata?.github).replace("https://", "")}
                     </a>
-                  ) : "—"}
+                  ) : (
+                    "—"
+                  )}
                 </p>
-                <div className="mt-3 flex items-center gap-3">
-                  <button onClick={copyProfileLink} className="px-3 py-1 rounded-lg bg-cyan-500/30 text-xs">Copy profile link</button>
-                  {copied && <span className="text-emerald-300 text-xs">Copied!</span>}
-                </div>
+                <motion.button
+                  onClick={copyProfileLink}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="mt-3 w-full px-3 py-2 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 text-xs font-medium hover:bg-cyan-500/30 transition"
+                >
+                  {copied ? "✓ Copied!" : "Copy profile link"}
+                </motion.button>
               </div>
             </motion.div>
 
-            {/* LEAGUE LADDER */}
+            {/* League ladder */}
             <motion.div
-              className={`card px-5 py-4 space-y-3 ${glass}`}
-              whileHover={{ scale: 1.02, y: -3 }}
+              variants={fadeUp}
+              initial="hidden"
+              animate="visible"
+              transition={{ duration: 0.5, delay: 0.25 }}
+              className={`rounded-2xl ${glass} p-5`}
             >
-              <h2 className="text-sm font-semibold">League Ladder</h2>
-              <p className="text-[11px] text-slate-400">Track your progression.</p>
-
-              <div className="space-y-2">
+              <h2 className="text-base font-semibold mb-2">League ladder</h2>
+              <p className="text-xs text-slate-400 mb-3">Track your progression</p>
+              <div className="space-y-1.5">
                 {leagueOrder.map((lg) => {
-                  const min = leagueThresholds[lg];
                   const isCurrent = lg === currentLeague;
-                  const unlocked = totalPoints >= min;
-
+                  const unlocked = totalPoints >= leagueThresholds[lg];
                   return (
-                    <motion.div
+                    <div
                       key={lg}
-                      whileHover={{ scale: isCurrent ? 1.03 : 1.01 }}
-                      className={`
-                        flex items-center justify-between px-2 py-1.5 text-[11px]
-                        rounded-lg border
-                        ${
-                          isCurrent
-                            ? "bg-cyan-500/10 border-cyan-400/60 shadow-md shadow-cyan-500/20"
-                            : unlocked
-                            ? "bg-emerald-500/10 border-emerald-400/40"
-                            : "bg-slate-900/60 border-slate-700/80"
-                        }
-                      `}
+                      className={`flex items-center justify-between px-2.5 py-2 rounded-lg text-xs ${
+                        isCurrent
+                          ? "bg-cyan-500/15 border border-cyan-400/40"
+                          : unlocked
+                          ? "bg-emerald-500/10 border border-emerald-400/30"
+                          : "bg-slate-900/50 border border-slate-800/60"
+                      }`}
                     >
                       <div className="flex items-center gap-2">
-                        <img
-                          src={leagueImages[lg]}
-                          alt={lg}
-                          className="h-5 w-5 object-contain"
-                        />
+                        <span>{leagueIcons[lg]}</span>
                         <span>{lg}</span>
-
-                        {isCurrent && (
-                          <span className="ml-1 rounded-full bg-cyan-500/20 text-cyan-200 px-2 py-0.5 border border-cyan-400/40">
-                            Current
-                          </span>
-                        )}
-
-                        {!isCurrent && unlocked && (
-                          <span className="ml-1 rounded-full bg-emerald-500/20 text-emerald-200 px-2 py-0.5 border border-emerald-400/40">
-                            Unlocked
-                          </span>
-                        )}
+                        {isCurrent && <span className="text-cyan-300 text-[10px] font-medium">Current</span>}
                       </div>
-
-                      <span className="text-slate-400">{min} pts</span>
-                    </motion.div>
+                      <span className="text-slate-400 tabular-nums">{leagueThresholds[lg]} pts</span>
+                    </div>
                   );
                 })}
               </div>
             </motion.div>
+
+            {/* Tip */}
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              animate="visible"
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className={`rounded-xl border border-slate-700/60 bg-slate-900/40 p-4`}
+            >
+              <p className="text-xs font-medium text-slate-300 mb-1">💡 Tip</p>
+              <p className="text-[11px] text-slate-400">
+                Join sessions and submit challenges to climb leagues faster.
+              </p>
+            </motion.div>
           </div>
-        </motion.section>
+        </div>
       </div>
     </motion.main>
   );
