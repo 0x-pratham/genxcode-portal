@@ -1,15 +1,21 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import GlobalLoader from "./shared/GlobalLoader";
+import GlobalLoader from "../components/shared/GlobalLoader";
 
-export default function AdminRoute({ children }) {
+export default function AdminRoute() {
   const { user, isAdmin, loading } = useAuth();
 
-  if (loading) return <GlobalLoader />;
+  if (loading) {
+    return <GlobalLoader />;
+  }
 
-  if (!user) return <Navigate to="/login" />;
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
-  if (!isAdmin) return <Navigate to="/" />;
+  if (!isAdmin) {
+    return <Navigate to="/" replace />;
+  }
 
-  return children;
+  return <Outlet />;
 }

@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }) => {
   setUser(currentSession?.user ?? null);
 
   if (currentSession?.user?.id) {
-    await fetchUserRole(currentSession.user.id);
+     fetchUserRole(currentSession.user.id);
   } else {
     setIsAdmin(false);
   }
