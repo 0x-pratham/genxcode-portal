@@ -18,7 +18,7 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, isAdmin, loading } = useAuth();
+  const { user, isAdmin, loading, roleLoading } = useAuth();
   
   const email = user?.email || "";
   const userMeta = user?.user_metadata || {};
@@ -182,7 +182,7 @@ transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
     <span className="absolute inset-0 bg-gradient-to-r from-transparent via-fuchsia-400/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500" />
   </motion.button>
 </Link>
-                ) :loading ? (
+                ) : (loading || roleLoading) ? (
                   <div className="px-4 py-2 text-xs text-slate-400">Checking role…</div>
                 ) : null}
 

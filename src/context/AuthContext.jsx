@@ -3,6 +3,14 @@ import { supabase } from "../lib/supabaseClient";
 
 const AuthContext = createContext();
 
+const withTimeout = (promise, ms, label = "operation") =>
+  Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms)
+    ),
+  ]);
+
 export const AuthProvider = ({ children }) => {
   const [session, setSession] = useState(null);
   const [user, setUser] = useState(null);
@@ -11,45 +19,72 @@ export const AuthProvider = ({ children }) => {
   const [roleLoading, setRoleLoading] = useState(false);
 
   const fetchUserRole = useCallback(async (userId) => {
-  if (!userId) {
-    setIsAdmin(false);
-    return;
-  }
+    if (!userId) {
+      setIsAdmin(false);
+      return;
+    }
 
-  setRoleLoading(true);
+    if (!supabase) {
+      setIsAdmin(false);
+      return;
+    }
 
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", userId)
-    .single();
+    setRoleLoading(true);
+    try {
+      const { data, error } = await withTimeout(
+        supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", userId)
+        .maybeSingle(),
+        8000,
+        "role fetch"
+      );
 
-  if (error) {
-    console.error("Role fetch error:", error);
-    setIsAdmin(false);
-  } else {
-    setIsAdmin(data?.role === "admin");
-  }
-
-  setRoleLoading(false);
+      if (error) {
+        console.error("Role fetch error:", error);
+        setIsAdmin(false);
+      } else {
+        setIsAdmin(data?.role === "admin");
+      }
+    } catch (err) {
+      console.error("Role fetch exception:", err);
+      setIsAdmin(false);
+    } finally {
+      setRoleLoading(false);
+    }
 }, []);
 
   const refreshUser = useCallback(async () => {
-  setLoading(true);
+    setLoading(true);
+    try {
+      if (!supabase) {
+        setSession(null);
+        setUser(null);
+        setIsAdmin(false);
+        return;
+      }
 
-  const { data } = await supabase.auth.getSession();
-  const currentSession = data.session;
+      const { data } = await withTimeout(supabase.auth.getSession(), 8000, "getSession");
+      const currentSession = data.session;
 
-  setSession(currentSession);
-  setUser(currentSession?.user ?? null);
+      setSession(currentSession);
+      setUser(currentSession?.user ?? null);
 
-  if (currentSession?.user?.id) {
-     fetchUserRole(currentSession.user.id);
-  } else {
-    setIsAdmin(false);
-  }
-
-  setLoading(false);
+      if (currentSession?.user?.id) {
+        // Do not block app rendering on role fetch
+        fetchUserRole(currentSession.user.id);
+      } else {
+        setIsAdmin(false);
+      }
+    } catch (err) {
+      console.error("Auth refresh exception:", err);
+      setSession(null);
+      setUser(null);
+      setIsAdmin(false);
+    } finally {
+      setLoading(false);
+    }
 }, [fetchUserRole]);
 
   useEffect(() => {
@@ -57,48 +92,74 @@ export const AuthProvider = ({ children }) => {
 
   const initializeAuth = async () => {
     setLoading(true);
+    try {
+      if (!supabase) {
+        if (!mounted) return;
+        setSession(null);
+        setUser(null);
+        setIsAdmin(false);
+        return;
+      }
 
-    const { data } = await supabase.auth.getSession();
-    const currentSession = data.session;
+      const { data } = await withTimeout(supabase.auth.getSession(), 8000, "getSession");
+      const currentSession = data.session;
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    setSession(currentSession);
-    setUser(currentSession?.user ?? null);
+      setSession(currentSession);
+      setUser(currentSession?.user ?? null);
 
-    if (currentSession?.user?.id) {
-      await fetchUserRole(currentSession.user.id);
-    } else {
+      if (currentSession?.user?.id) {
+        // Do not block app rendering on role fetch
+        fetchUserRole(currentSession.user.id);
+      } else {
+        setIsAdmin(false);
+      }
+    } catch (err) {
+      console.error("Auth init exception:", err);
+      if (!mounted) return;
+      setSession(null);
+      setUser(null);
       setIsAdmin(false);
+    } finally {
+      if (mounted) setLoading(false);
     }
-
-    if (mounted) setLoading(false);
   };
 
   initializeAuth();
 
-  const { data: listener } = supabase.auth.onAuthStateChange(
-    async (_event, session) => {
-      if (!mounted) return;
+  if (!supabase) {
+    return () => {
+      mounted = false;
+    };
+  }
 
-      setLoading(true);
+  const { data: listener } = supabase.auth.onAuthStateChange(async (_event, nextSession) => {
+    if (!mounted) return;
+    setLoading(true);
+    try {
+      setSession(nextSession);
+      setUser(nextSession?.user ?? null);
 
-      setSession(session);
-      setUser(session?.user ?? null);
-
-      if (session?.user?.id) {
-        await fetchUserRole(session.user.id);
+      if (nextSession?.user?.id) {
+        // Do not block app rendering on role fetch
+        fetchUserRole(nextSession.user.id);
       } else {
         setIsAdmin(false);
       }
-
+    } catch (err) {
+      console.error("Auth state change exception:", err);
+      setSession(null);
+      setUser(null);
+      setIsAdmin(false);
+    } finally {
       if (mounted) setLoading(false);
     }
-  );
+  });
 
   return () => {
     mounted = false;
-    listener.subscription.unsubscribe();
+    listener?.subscription?.unsubscribe?.();
   };
 }, [fetchUserRole]);
 

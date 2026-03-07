@@ -419,6 +419,43 @@ const logAdminAction = async ({
     });
   };
 
+  const setChallengeActive = async (challengeId, nextActive) => {
+    if (!challengeId) return;
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        showToast("You must be logged in.", "error");
+        return;
+      }
+
+      const { error } = await supabase
+        .from("challenges")
+        .update({ is_active: !!nextActive })
+        .eq("id", challengeId);
+
+      if (error) {
+        console.error("Error updating challenge active state:", error);
+        showToast("Failed to update challenge.", "error");
+        return;
+      }
+
+      setChallenges((prev) =>
+        prev.map((c) => (c.id === challengeId ? { ...c, is_active: !!nextActive } : c))
+      );
+
+      showToast(nextActive ? "Challenge activated." : "Challenge deactivated.", "success");
+      await logAdminAction({
+        actionType: nextActive ? "activate_challenge" : "deactivate_challenge",
+        targetType: "challenge",
+        targetId: challengeId,
+        metadata: { is_active: !!nextActive },
+      });
+    } catch (err) {
+      console.error("setChallengeActive error:", err);
+      showToast("Failed to update challenge.", "error");
+    }
+  };
+
   const approveSubmission = async (s) => {
     if (!s?.challenges?.points || !s?.user_id) {
       showToast("Invalid submission data.", "error");
@@ -1589,15 +1626,28 @@ const logAdminAction = async ({
                             · {c.difficulty} · {c.points} pts
                           </span>
                         </p>
-                        <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] ${
-                            c.is_active
-                              ? "bg-emerald-500/20 text-emerald-200"
-                              : "bg-slate-700/60 text-slate-200"
-                          }`}
-                        >
-                          {c.is_active ? "Active" : "Hidden"}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[10px] ${
+                              c.is_active
+                                ? "bg-emerald-500/20 text-emerald-200"
+                                : "bg-slate-700/60 text-slate-200"
+                            }`}
+                          >
+                            {c.is_active ? "Active" : "Hidden"}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setChallengeActive(c.id, !c.is_active)}
+                            className={`px-2 py-1 rounded-lg border text-[10px] font-medium transition ${
+                              c.is_active
+                                ? "border-rose-400/30 bg-rose-500/10 text-rose-200 hover:bg-rose-500/15"
+                                : "border-emerald-400/30 bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/15"
+                            }`}
+                          >
+                            {c.is_active ? "Deactivate" : "Activate"}
+                          </button>
+                        </div>
                       </div>
                       {Array.isArray(c.tags) && c.tags.length > 0 && (
                         <p className="text-[10px] text-slate-400">

@@ -8,6 +8,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { motion, useMotionValue, useTransform, useReducedMotion } from "framer-motion";
+import { useAuth } from "../context/AuthContext";
 
 // --------------------------------------------------
 // LEAGUE ICONS
@@ -59,6 +60,10 @@ function useSafeTilt() {
 export default function Leaderboard() {
   const [leaders, setLeaders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [query, setQuery] = useState("");
+  const [leagueFilter, setLeagueFilter] = useState("All");
+  const { user } = useAuth();
 
   const topTilt = useSafeTilt();
   const restTilt = useSafeTilt();
@@ -70,9 +75,11 @@ export default function Leaderboard() {
   useEffect(() => {
     const load = async () => {
       setLoading(true);
+      setErrorMsg("");
 
       if (!supabase) {
         console.error("Supabase is not configured");
+        setErrorMsg("Supabase is not configured.");
         setLoading(false);
         return;
       }
@@ -85,6 +92,11 @@ export default function Leaderboard() {
       const { data: pr, error: prErr } = await supabase
         .from("profiles")
         .select("*");
+
+      if (lbErr || prErr) {
+        console.error("Leaderboard load error:", lbErr || prErr);
+        setErrorMsg("Failed to load leaderboard. Please try again.");
+      }
 
       const safeLeaderboard = Array.isArray(lb) ? lb : [];
       const safeProfiles = Array.isArray(pr) ? pr : [];
@@ -108,8 +120,27 @@ export default function Leaderboard() {
     load();
   }, []);
 
-  const topThree = leaders.slice(0, 3);
-  const rest = leaders.slice(3);
+  const normalizedQuery = query.trim().toLowerCase();
+  const filteredLeaders = leaders.filter((l) => {
+    const matchesQuery =
+      !normalizedQuery ||
+      (l.full_name || "").toLowerCase().includes(normalizedQuery) ||
+      (l.branch || "").toLowerCase().includes(normalizedQuery) ||
+      (l.github || "").toLowerCase().includes(normalizedQuery);
+
+    const matchesLeague = leagueFilter === "All" || l.league === leagueFilter;
+    return matchesQuery && matchesLeague;
+  });
+
+  const topThree = filteredLeaders.slice(0, 3);
+  const rest = filteredLeaders.slice(3);
+
+  const currentUserId = user?.id || null;
+  const yourIndexAll = currentUserId
+    ? leaders.findIndex((l) => l.user_id === currentUserId)
+    : -1;
+  const yourRankAll = yourIndexAll >= 0 ? yourIndexAll + 1 : null;
+  const yourEntryAll = yourIndexAll >= 0 ? leaders[yourIndexAll] : null;
 
   function LeagueIcon({ league, variant = "lg" }) {
     const src = leagueImages[league] || defaultLeagueIcon;
@@ -174,6 +205,70 @@ export default function Leaderboard() {
           Leaderboard
         </motion.h1>
 
+        {/* Controls + your rank */}
+        <section className="grid gap-4">
+          <div className="grid md:grid-cols-3 gap-3">
+            <div className="md:col-span-2">
+              <label className="block text-xs text-slate-400 mb-1">Search</label>
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search by name, branch, or GitHub…"
+                className="w-full rounded-xl border border-white/10 bg-slate-950/50 backdrop-blur-xl px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:border-cyan-400/40"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-slate-400 mb-1">League</label>
+              <select
+                value={leagueFilter}
+                onChange={(e) => setLeagueFilter(e.target.value)}
+                className="w-full rounded-xl border border-white/10 bg-slate-950/50 backdrop-blur-xl px-3 py-2.5 text-sm text-slate-100 outline-none focus:border-cyan-400/40"
+              >
+                <option value="All">All</option>
+                {Object.keys(leagueImages).map((lg) => (
+                  <option key={lg} value={lg}>
+                    {lg}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {!loading && yourEntryAll && (
+            <div className="rounded-2xl border border-cyan-400/20 bg-slate-950/45 backdrop-blur-xl p-4 shadow-lg shadow-cyan-500/10">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <img
+                    src={leagueImages[yourEntryAll.league] || defaultLeagueIcon}
+                    className="h-10 w-10 rounded-full"
+                    alt={yourEntryAll.league}
+                  />
+                  <div className="leading-tight">
+                    <p className="text-sm font-semibold text-slate-50">You</p>
+                    <p className="text-xs text-slate-400">
+                      Rank <span className="text-cyan-300 font-semibold">#{yourRankAll}</span> ·{" "}
+                      {yourEntryAll.league}
+                    </p>
+                  </div>
+                </div>
+                <p className="text-lg font-bold text-cyan-300">{yourEntryAll.points}</p>
+              </div>
+            </div>
+          )}
+
+          {!loading && !yourEntryAll && user && (
+            <div className="rounded-2xl border border-white/10 bg-slate-950/40 backdrop-blur-xl p-4 text-sm text-slate-300">
+              Your leaderboard entry isn’t available yet.
+            </div>
+          )}
+        </section>
+
+        {!!errorMsg && !loading && (
+          <div className="rounded-2xl border border-rose-400/20 bg-rose-500/10 p-4 text-sm text-rose-200">
+            {errorMsg}
+          </div>
+        )}
+
         {loading && (
           <section className="grid md:grid-cols-3 gap-6" aria-hidden>
             {[0, 1, 2].map((i) => (
@@ -189,7 +284,7 @@ export default function Leaderboard() {
           </section>
         )}
 
-        {!loading && leaders.length > 0 && (
+        {!loading && filteredLeaders.length > 0 && (
           <section className="grid md:grid-cols-3 gap-6">
             {topThree.map((l, i) => {
               const glow = leagueGlow[l.league] || leagueGlow.Default;
@@ -245,6 +340,12 @@ export default function Leaderboard() {
             })}
           </section>
         )}
+        {!loading && filteredLeaders.length === 0 && (
+          <div className="rounded-2xl border border-white/10 bg-slate-950/40 backdrop-blur-xl p-6 text-sm text-slate-300">
+            No results found.
+          </div>
+        )}
+
         {!loading && rest.length > 0 && (
           <section className="mt-8 grid md:grid-cols-2 gap-4">
             {rest.map((r, idx) => (
@@ -266,7 +367,14 @@ export default function Leaderboard() {
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium">{r.full_name}</p>
+                      <p className="font-medium">
+                        {r.full_name}
+                        {currentUserId && r.user_id === currentUserId && (
+                          <span className="ml-2 text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-200 border border-cyan-400/20">
+                            You
+                          </span>
+                        )}
+                      </p>
                       <p className="text-xs text-slate-400">{r.branch || "Member"}</p>
                     </div>
                     <p className="text-lg font-semibold text-cyan-300">{r.points}</p>

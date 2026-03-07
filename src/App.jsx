@@ -15,7 +15,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
 import GlobalLoader from "./components/shared/GlobalLoader";
 import RouteProgress from "./components/shared/RouteProgress";
-import AdminRoute from "./components/AdminRoute";
+import AdminRoute from "./routes/AdminRoutes";
 
 
 /* ===========================

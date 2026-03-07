@@ -3,9 +3,9 @@ import { useAuth } from "../context/AuthContext";
 import GlobalLoader from "../components/shared/GlobalLoader";
 
 export default function AdminRoute() {
-  const { user, isAdmin, loading } = useAuth();
+  const { user, isAdmin, loading, roleLoading } = useAuth();
 
-  if (loading) {
+  if (loading || roleLoading) {
     return <GlobalLoader />;
   }
 
