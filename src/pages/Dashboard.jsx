@@ -60,7 +60,7 @@ const leagueImages = {
 };
 
 const glass =
-"bg-slate-900/50 backdrop-blur-2xl border border-slate-700/40 shadow-[0_10px_45px_rgba(0,0,0,0.45)] transition-all duration-300";
+"bg-slate-900/50 backdrop-blur-2xl border border-slate-700/40 shadow-[0_10px_45px_rgba(0,0,0,0.45)] transition-all duration-300 hover:border-cyan-400/40 hover:shadow-[0_0_35px_rgba(34,211,238,0.12)]";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -82,7 +82,7 @@ const [recommended, setRecommended] = useState(null);
   const [subsLoading, setSubsLoading] = useState(true);
   const [annLoading, setAnnLoading] = useState(true);
   const [sessionLoading, setSessionLoading] = useState(true);
-
+  
   async function loadLeaderboard(uid) {
     if (!uid) return;
     setLeaderboardLoading(true);
@@ -181,7 +181,7 @@ const [recommended, setRecommended] = useState(null);
       .eq("is_active", true)   // important
       .order("created_at", { ascending: false })
       .limit(1)
-      .single();
+.maybeSingle();
 
     if (!error && data) {
       setRecommended(data);
@@ -240,7 +240,6 @@ return () => {
   clearInterval(interval);
   window.removeEventListener("focus", handleFocus);
 };
-  return () => clearInterval(interval);
 }, [navigate]);
 
   const copyProfileLink = async () => {
@@ -259,8 +258,14 @@ return () => {
           animate={{ opacity: 1 }}
           className="flex flex-col items-center gap-4 text-slate-400"
         >
-          <div className="h-8 w-8 rounded-full border-2 border-cyan-500/50 border-t-cyan-400 animate-spin" />
-          <p className="text-sm">Checking session…</p>
+          <div className="flex flex-col items-center gap-4 text-slate-400">
+<motion.div
+animate={{ rotate: 360 }}
+transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+className="h-10 w-10 rounded-full border-2 border-cyan-500 border-t-transparent"
+/>
+<p className="text-sm">Loading your dashboard...</p>
+</div>
         </motion.div>
       </main>
     );
@@ -285,30 +290,42 @@ return () => {
   const attendanceRate = sessions.length > 0 ? Math.round((attendedCount / sessions.length) * 100) : null;
 
   const displayName =
-    lbRow?.full_name || user.user_metadata?.full_name || user.email?.split("@")[0] || "User";
+profile?.full_name ||
+user.user_metadata?.full_name ||
+user.email?.split("@")[0] ||
+"User";
 
-  const fadeUp = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } };
+  const fadeUp = {
+hidden: { opacity: 0, y: 30 },
+visible: {
+opacity: 1,
+y: 0,
+transition: {
+type: "spring",
+stiffness: 70,
+damping: 15
+}
+}
+};
   const stagger = { staggerChildren: 0.06, delayChildren: 0.1 };
   function calculateStreak(submissions) {
   if (!submissions || submissions.length === 0) return 0;
 
-  const dates = submissions
-    .map((s) => new Date(s.submitted_at).toISOString().split("T")[0])
-    .filter((v, i, a) => a.indexOf(v) === i)
-    .sort((a, b) => new Date(b) - new Date(a));
+  const days = new Set(
+    submissions.map((s) =>
+      new Date(s.submitted_at).toISOString().split("T")[0]
+    )
+  );
 
   let streak = 0;
-  let today = new Date();
+  let current = new Date();
 
-  for (let i = 0; i < dates.length; i++) {
-    const submissionDate = new Date(dates[i]);
+  while (true) {
+    const day = current.toISOString().split("T")[0];
 
-    const diffDays = Math.floor(
-      (today - submissionDate) / (1000 * 60 * 60 * 24)
-    );
-
-    if (diffDays === streak) {
+    if (days.has(day)) {
       streak++;
+      current.setDate(current.getDate() - 1);
     } else {
       break;
     }
@@ -328,7 +345,7 @@ return () => {
       <div className="pointer-events-none fixed inset-0 -z-10">
 
   <motion.div
-    className="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-cyan-500/20 blur-[140px]"
+    className="absolute -top-40 -left-40 h-[400px] w-[400px] blur-[120px] rounded-full bg-cyan-500/20 blur-[140px]"
     animate={{
   scale: [1, 1.15, 1],
   x: [0, 20, 0],
@@ -339,11 +356,16 @@ return () => {
 
   <motion.div
     className="absolute bottom-0 right-0 h-[500px] w-[500px] rounded-full bg-fuchsia-500/20 blur-[140px]"
-    animate={{ scale: [1, 1.15, 1] }}
+    animate={{
+scale: [1, 1.15, 1],
+x: [0, -30, 0],
+y: [0, 20, 0]
+}}
     transition={{ duration: 10, repeat: Infinity }}
   />
 
   <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03),transparent_70%)]" />
+  <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px] opacity-20"/>
 
 </div>
 
@@ -377,19 +399,27 @@ return () => {
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <Link to="/challenges">
               <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="btn-primary px-4 py-2.5 text-sm rounded-xl"
-              >
+whileHover={{ scale: 1.03 }}
+whileTap={{ scale: 0.96 }}
+className="relative px-4 py-2.5 text-sm rounded-xl font-medium
+bg-gradient-to-r from-cyan-500 to-indigo-500
+text-white shadow-lg shadow-cyan-500/20
+hover:shadow-cyan-400/40 hover:scale-[1.02]
+transition-all duration-200"
+>
                 View challenges ↗
               </motion.button>
             </Link>
             <Link to="/leaderboard">
               <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="btn-outline px-4 py-2.5 text-sm rounded-xl"
-              >
+whileHover={{ scale: 1.03 }}
+whileTap={{ scale: 0.96 }}
+className="relative px-4 py-2.5 text-sm rounded-xl font-medium
+bg-gradient-to-r from-cyan-500 to-indigo-500
+text-white shadow-lg shadow-cyan-500/20
+hover:shadow-cyan-400/40 hover:scale-[1.02]
+transition-all duration-200"
+>
                 Leaderboard
               </motion.button>
             </Link>
@@ -403,7 +433,8 @@ return () => {
 <motion.section
   variants={stagger}
   initial="hidden"
-  animate="visible"
+  whileInView="visible"
+  viewport={{ once: true }}
   className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
 >
   {[
@@ -415,11 +446,22 @@ return () => {
     <motion.div
       key={i}
       variants={fadeUp}
-      whileHover={{ y: -8, scale: 1.04 }}
+      whileHover={{
+y: -10,
+scale: 1.04,
+rotateX: 2,
+rotateY: -2,
+boxShadow: "0 25px 50px rgba(34,211,238,0.2)"
+}}
       className={`${glass} rounded-xl p-4 cursor-pointer transition-all hover:border-cyan-400/40`}
     >
       <Link to={item.link} className="flex items-center gap-3">
-        <span className="text-2xl">{item.icon}</span>
+        <motion.span
+  className="text-2xl"
+  whileHover={{ scale: 1.2, rotate: 6 }}
+>
+  {item.icon}
+</motion.span>
 
         <div>
           <p className="text-sm font-medium text-slate-200">
@@ -444,10 +486,11 @@ return () => {
         >
           {/* League card (spans 2 on lg) */}
           <motion.div
-            variants={fadeUp}
-            className={`relative rounded-2xl overflow-hidden ${glass} p-5 lg:col-span-2`}
-            whileHover={!reduce ? { y: -4, scale: 1.01 } : {}}
-          >
+  variants={fadeUp}
+  whileHover={{ scale: 1.01 }}
+  className={`relative rounded-2xl overflow-hidden ${glass} p-6 lg:col-span-2`}
+>
+  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-transparent to-fuchsia-500/10 pointer-events-none"/>
             <div className="flex flex-col sm:flex-row sm:items-center gap-4">
               <div className="flex items-center gap-4">
                 <motion.img
@@ -498,8 +541,17 @@ return () => {
             className={`${glass} rounded-2xl p-5 flex flex-col justify-center`}
             whileHover={!reduce ? { y: -4, scale: 1.01 } : {}}
           >
-            <p className="text-xs text-slate-400 mb-1">Total points</p>
-            <p className="text-3xl font-bold text-cyan-300 tabular-nums">{totalPoints}</p>
+            <p className="text-xs text-slate-400 mb-1 flex items-center gap-2">
+⚡ Total points
+</p>
+            <motion.p
+initial={{ opacity: 0, y: 10 }}
+animate={{ opacity: 1, y: 0 }}
+transition={{ duration: 0.4 }}
+className="text-3xl font-bold text-cyan-300 tabular-nums"
+>
+{totalPoints}
+</motion.p>
           </motion.div>
 
           {/* Coding Streak */}
@@ -508,7 +560,7 @@ return () => {
   className={`${glass} rounded-2xl p-5 flex flex-col justify-center`}
   whileHover={!reduce ? { y: -4, scale: 1.01 } : {}}
 >
-  <p className="text-xs text-slate-400 mb-1">Coding streak</p>
+  <p className="text-xs text-slate-400 mb-1">🔥 Coding streak</p>
 
   <p className="text-3xl font-bold text-orange-300 tabular-nums">
 <motion.span
@@ -527,7 +579,7 @@ return () => {
             className={`${glass} rounded-2xl p-5 flex flex-col justify-center`}
             whileHover={!reduce ? { y: -4, scale: 1.01 } : {}}
           >
-            <p className="text-xs text-slate-400 mb-1">Approved submissions</p>
+            <p className="text-xs text-slate-400 mb-1">✅ Approved submissions</p>
             <p className="text-3xl font-bold text-emerald-300 tabular-nums">{approvedSubs}</p>
           </motion.div>
         </motion.section>
@@ -538,11 +590,12 @@ return () => {
           <div className="space-y-8">
             {/* Submissions */}
             <motion.section
-              variants={fadeUp}
-              initial="hidden"
-              animate="visible"
-              transition={{ duration: 0.5, delay: 0.1 }}
-            >
+  variants={fadeUp}
+  initial="hidden"
+  whileInView="visible"
+  viewport={{ once: true }}
+  transition={{ duration: 0.5, delay: 0.1 }}
+>
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold">Your submissions</h2>
                 {submissions.length > 0 && (
@@ -615,7 +668,12 @@ return () => {
                         >
                           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                             <div className="flex-1 min-w-0">
-                              <h3 className="font-semibold text-slate-100 truncate">
+                              <h3 className="font-semibold text-slate-100 truncate flex items-center gap-2">
+                                <motion.span
+className="w-2 h-2 rounded-full bg-cyan-400"
+animate={{ scale: [1, 1.4, 1] }}
+transition={{ duration: 2, repeat: Infinity }}
+/>
                                 {s.challenges?.title || "Challenge"}
                               </h3>
                               <p className="text-xs text-slate-400 mt-0.5">
@@ -663,11 +721,12 @@ return () => {
 
             {/* Attendance */}
             <motion.section
-              variants={fadeUp}
-              initial="hidden"
-              animate="visible"
-              transition={{ duration: 0.5, delay: 0.15 }}
-            >
+  variants={fadeUp}
+  initial="hidden"
+  whileInView="visible"
+  viewport={{ once: true }}
+  transition={{ duration: 0.5, delay: 0.15 }}
+>
               <h2 className="text-lg font-semibold mb-4">Session attendance</h2>
               <div className={`rounded-2xl ${glass} p-5`}>
                 {sessionLoading ? (
@@ -760,6 +819,7 @@ return () => {
 
             {/* Recommended Challenge */}
 <motion.div
+
   variants={fadeUp}
   initial="hidden"
   animate="visible"
@@ -776,18 +836,29 @@ return () => {
     </p>
   ) : (
     <>
-      <p className="text-sm text-slate-300">
-        {recommended.title}
-      </p>
+      <h3 className="text-sm font-semibold text-slate-200">
+  {recommended.title}
+</h3>
+<div className="flex items-center gap-2 mt-2">
+  <span className="px-2 py-0.5 rounded bg-slate-800 text-[10px]">
+    {recommended.difficulty}
+  </span>
 
-      <p className="text-xs text-slate-500 mt-1">
-        {recommended.difficulty} • {recommended.points} pts
-      </p>
-
+  <span className="text-xs text-cyan-300">
+    {recommended.points} pts
+  </span>
+</div>
       <Link to="/challenges">
-  <button className="mt-3 text-xs text-cyan-300 hover:underline">
-    Start challenge →
-  </button>
+  <motion.button
+whileHover={{ scale: 1.05 }}
+whileTap={{ scale: 0.95 }}
+className="mt-3 px-3 py-1.5 text-xs rounded-md
+bg-cyan-500/10 text-cyan-300
+border border-cyan-400/30
+hover:bg-cyan-500/20 transition"
+>
+Start challenge →
+</motion.button>
 </Link>
     </>
   )}
