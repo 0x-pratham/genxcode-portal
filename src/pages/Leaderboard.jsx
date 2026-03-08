@@ -1,9 +1,10 @@
 // Leaderboard — UI/UX improvements
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
+
 
 const leagueImages = {
   Legend: "https://i.ibb.co/5hF3VvPt/legend.png",
@@ -30,8 +31,6 @@ const leagueGlow = {
   Default: "from-cyan-300/30 to-transparent",
 };
 
-const podiumOrder = [1, 0, 2]; // 2nd place center, 1st left, 3rd right
-
 const rankMedals = {
   1: { emoji: "🥇", label: "1st", height: "h-24", glow: "from-yellow-400/40" },
   2: { emoji: "🥈", label: "2nd", height: "h-20", glow: "from-slate-300/40" },
@@ -42,9 +41,31 @@ function LeagueIcon({ league, variant = "lg" }) {
   const src = leagueImages[league] || defaultLeagueIcon;
   const size = variant === "lg" ? "h-16 w-16" : "h-12 w-12";
 
+  const glow = leagueGlow[league] || leagueGlow.Default;
+
   return (
-    <div className="relative inline-block overflow-hidden rounded-full ring-2 ring-slate-700/50">
-      <img src={src} className={`${size} rounded-full object-contain`} alt={league} />
+    <div className="relative flex items-center justify-center">
+
+      {/* Outer aura */}
+      <motion.div
+        className={`absolute rounded-full blur-2xl opacity-80 bg-gradient-to-br ${glow}`}
+        style={{ width: "120%", height: "120%" }}
+        animate={{ scale: [1, 1.15, 1] }}
+        transition={{ duration: 3.5, repeat: Infinity }}
+      />
+
+      {/* Ring Glow */}
+      <div className="absolute inset-0 rounded-full ring-4 ring-cyan-400/10" />
+
+      {/* Badge */}
+      <motion.img
+        src={src}
+        alt={league}
+        className={`${size} relative rounded-full object-contain`}
+        animate={{ y: [0, -3, 0] }}
+        transition={{ duration: 3, repeat: Infinity }}
+      />
+
     </div>
   );
 }
@@ -101,16 +122,23 @@ export default function Leaderboard() {
     load();
   }, []);
 
-  const normalizedQuery = query.trim().toLowerCase();
-  const filteredLeaders = leaders.filter((l) => {
-    const matchesQuery =
-      !normalizedQuery ||
-      (l.full_name || "").toLowerCase().includes(normalizedQuery) ||
-      (l.branch || "").toLowerCase().includes(normalizedQuery) ||
-      (l.github || "").toLowerCase().includes(normalizedQuery);
-    const matchesLeague = leagueFilter === "All" || l.league === leagueFilter;
-    return matchesQuery && matchesLeague;
-  });
+  const normalizedQuery = useMemo(() => {
+  return query.trim().toLowerCase();
+}, [query]);
+
+const filteredLeaders = leaders.filter((l) => {
+  const matchesQuery =
+    !normalizedQuery ||
+    (l.full_name || "").toLowerCase().includes(normalizedQuery) ||
+    (l.branch || "").toLowerCase().includes(normalizedQuery) ||
+    (l.github || "").toLowerCase().includes(normalizedQuery);
+
+  const matchesLeague = leagueFilter === "All" || l.league === leagueFilter;
+
+  return matchesQuery && matchesLeague;
+});
+
+const maxPoints = Math.max(...filteredLeaders.map(l => l.points || 0), 1);
 
   const topThree = filteredLeaders.slice(0, 3);
   const rest = filteredLeaders.slice(3);
@@ -123,18 +151,41 @@ export default function Leaderboard() {
   return (
     <main className="relative min-h-screen text-slate-100 pb-24 overflow-hidden bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900">
       {/* Background */}
-      <div className="pointer-events-none fixed inset-0 -z-10">
-        <motion.div
-          className="absolute -top-32 -left-40 h-[35rem] w-[35rem] rounded-full bg-cyan-400/12 blur-[140px]"
-          animate={!shouldReduce ? { x: [0, 35, -20, 0], y: [0, -25, 20, 0] } : {}}
-          transition={{ duration: 42, repeat: Infinity }}
-        />
-        <motion.div
-          className="absolute top-52 -right-40 h-[35rem] w-[35rem] rounded-full bg-fuchsia-400/12 blur-[140px]"
-          animate={!shouldReduce ? { x: [0, -35, 20, 0], y: [0, 20, -15, 0] } : {}}
-          transition={{ duration: 48, repeat: Infinity }}
-        />
-      </div>
+<div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+
+  {/* Gradient Base */}
+  <div className="absolute inset-0 bg-gradient-to-b from-slate-900 via-slate-950 to-black" />
+
+  {/* Animated Glow Orbs */}
+  <motion.div
+    className="absolute -top-32 -left-40 h-[38rem] w-[38rem] rounded-full bg-cyan-400/15 blur-[160px]"
+    animate={!shouldReduce ? { x: [0, 40, -20, 0], y: [0, -30, 20, 0] } : {}}
+    transition={{ duration: 45, repeat: Infinity }}
+  />
+
+  <motion.div
+    className="absolute top-40 -right-40 h-[38rem] w-[38rem] rounded-full bg-fuchsia-400/15 blur-[160px]"
+    animate={!shouldReduce ? { x: [0, -40, 20, 0], y: [0, 20, -20, 0] } : {}}
+    transition={{ duration: 50, repeat: Infinity }}
+  />
+
+  <motion.div
+    className="absolute bottom-0 left-1/3 h-[28rem] w-[28rem] rounded-full bg-indigo-400/10 blur-[140px]"
+    animate={!shouldReduce ? { x: [0, 20, -10, 0], y: [0, 15, -10, 0] } : {}}
+    transition={{ duration: 38, repeat: Infinity }}
+  />
+
+  {/* Tech Grid Overlay */}
+  <div
+    className="absolute inset-0 opacity-[0.04]"
+    style={{
+      backgroundImage:
+        "linear-gradient(to right, #ffffff 1px, transparent 1px), linear-gradient(to bottom, #ffffff 1px, transparent 1px)",
+      backgroundSize: "80px 80px",
+    }}
+  />
+
+</div>
 
       <div className="container-page max-w-5xl mx-auto pt-20 space-y-8 relative z-10">
         {/* Header */}
@@ -145,7 +196,7 @@ export default function Leaderboard() {
           className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4"
         >
           <div>
-            <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-cyan-300 via-sky-300 to-indigo-300 bg-clip-text text-transparent">
+            <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-cyan-300 via-indigo-300 to-fuchsia-300 bg-clip-text text-transparent">
               Leaderboard
             </h1>
             <p className="text-sm text-slate-400 mt-1">
@@ -205,11 +256,7 @@ export default function Leaderboard() {
                 <div className="flex items-center justify-between gap-4 flex-wrap">
                   <div className="flex items-center gap-3">
                     <div className="relative">
-                      <img
-                        src={leagueImages[yourEntryAll.league] || defaultLeagueIcon}
-                        className="h-12 w-12 rounded-full ring-2 ring-cyan-400/30"
-                        alt={yourEntryAll.league}
-                      />
+                    <LeagueIcon league={yourEntryAll.league} variant="lg" />
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-slate-50">Your rank</p>
@@ -287,69 +334,122 @@ export default function Leaderboard() {
           </motion.section>
         )}
 
-        {/* Top 3 podium */}
-        {!loading && filteredLeaders.length > 0 && (
-          <motion.section
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="grid grid-cols-3 gap-3 md:gap-6 items-end"
-          >
-            {podiumOrder.map((orderIdx, colIdx) => {
-              const l = topThree[orderIdx];
-              if (!l) return <div key={colIdx} />;
-              const rank = orderIdx === 0 ? 2 : orderIdx === 1 ? 1 : 3;
-              const config = rankMedals[rank];
-              const glow = leagueGlow[l.league] || leagueGlow.Default;
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
 
-              return (
-                <motion.div
-                  key={l.user_id}
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.1 + colIdx * 0.08 }}
-                  whileHover={!shouldReduce ? { y: -6, scale: 1.02 } : {}}
-                  className={`relative rounded-2xl overflow-hidden border ${
-                    rank === 1 ? "md:-mt-4 md:mb-4" : ""
-                  } bg-slate-950/80 backdrop-blur-xl border-slate-700/60 shadow-xl`}
-                >
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-br ${glow} opacity-50 blur-2xl pointer-events-none`}
-                  />
-                  <div className="relative p-5 md:p-6 flex flex-col items-center text-center">
-                    <div className="absolute top-2 right-2">
-                      <span
-                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${
-                          rank === 1
-                            ? "bg-yellow-500/20 text-yellow-300 border border-yellow-400/40"
-                            : rank === 2
-                            ? "bg-slate-400/20 text-slate-200 border border-slate-300/40"
-                            : "bg-amber-600/20 text-amber-200 border border-amber-500/40"
-                        }`}
-                      >
-                        {config.emoji} #{rank}
-                      </span>
-                    </div>
-                    <div className={`${config.height} w-full flex justify-center mb-3`}>
-                      <img
-                        src={leagueImages[l.league] || defaultLeagueIcon}
-                        className="h-16 w-16 md:h-20 md:w-20 rounded-full ring-2 ring-slate-600/50 object-contain"
-                        alt={l.league}
-                      />
-                    </div>
-                    <h3 className="font-semibold text-slate-50 line-clamp-1">{l.full_name}</h3>
-                    <p className="text-xs text-slate-400 mt-0.5">
-                      {l.branch || "Member"}
-                      {l.year && ` · ${l.year}`}
-                    </p>
-                    <p className="text-2xl font-bold text-cyan-300 mt-2">{l.points}</p>
-                    <p className="text-[10px] text-slate-500">points</p>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </motion.section>
-        )}
+  <div className="p-4 rounded-xl border border-slate-800 bg-slate-950/60">
+    <p className="text-xs text-slate-400">Total Builders</p>
+    <p className="text-2xl font-bold text-cyan-300">{leaders.length}</p>
+  </div>
+
+  <div className="p-4 rounded-xl border border-slate-800 bg-slate-950/60">
+    <p className="text-xs text-slate-400">Top Score</p>
+    <p className="text-2xl font-bold text-indigo-300">
+      {leaders[0]?.points || 0}
+    </p>
+  </div>
+
+  <div className="p-4 rounded-xl border border-slate-800 bg-slate-950/60">
+    <p className="text-xs text-slate-400">Your Rank</p>
+    <p className="text-2xl font-bold text-fuchsia-300">
+      {yourRankAll || "-"}
+    </p>
+  </div>
+
+</div>
+
+        {/* Top 3 podium */}
+{!loading && topThree.length > 0 && (
+  <motion.section
+  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+  transition={{ duration: 0.5, delay: 0.1 }}
+  className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 items-end"
+>
+    {topThree.map((leader, index) => {
+      const rank = index + 1;
+      const podiumGlow = {
+  1: "from-yellow-400/25 via-yellow-300/15 to-transparent",
+  2: "from-slate-300/25 via-slate-200/10 to-transparent",
+  3: "from-amber-500/25 via-amber-300/10 to-transparent",
+};
+
+const glowColor = podiumGlow[rank];
+      const crownGlow =
+  rank === 1
+    ? "shadow-[0_0_40px_rgba(255,215,0,0.35)]"
+    : "";
+      const config = rankMedals[rank];
+      const glow = leagueGlow[leader.league] || leagueGlow.Default;
+
+      return (
+        <motion.div
+  key={leader.user_id}
+  initial={{ opacity: 0, y: 24 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.5, delay: index * 0.1 }}
+  whileHover={!shouldReduce ? { y: -8, scale: 1.04 } : {}}
+  className={`relative rounded-2xl overflow-hidden border bg-slate-950/80 backdrop-blur-xl border-slate-700/60 shadow-xl ${crownGlow}`}
+> 
+          {/* Glow background */}
+          <div
+            className={`absolute inset-0 bg-gradient-to-br ${glow} opacity-50 blur-2xl`}
+          />
+
+          <div className="relative p-5 md:p-6 flex flex-col items-center text-center">
+
+            {/* PODIUM GLOW */}
+<motion.div
+  className={`absolute inset-0 bg-gradient-to-br ${glowColor} blur-2xl`}
+  animate={{ opacity: [0.4, 0.8, 0.4] }}
+  transition={{ duration: 3, repeat: Infinity }}
+/>
+
+            {/* Rank Badge */}
+            <div className="absolute top-2 right-2">
+              <span
+                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${
+                  rank === 1
+                    ? "bg-yellow-500/20 text-yellow-300 border border-yellow-400/40"
+                    : rank === 2
+                    ? "bg-slate-400/20 text-slate-200 border border-slate-300/40"
+                    : "bg-amber-600/20 text-amber-200 border border-amber-500/40"
+                }`}
+              >
+                {config.emoji} #{rank}
+              </span>
+            </div>
+
+            {/* League Icon */}
+            <LeagueIcon league={leader.league} variant="lg" />
+
+            {/* Name */}
+            <h3 className="font-semibold text-slate-50 mt-3 tracking-wide">
+              {leader.full_name}
+            </h3>
+
+            {/* League */}
+            <span className="mt-2 inline-flex px-2 py-0.5 rounded-full text-[10px] bg-slate-800 border border-slate-700 text-slate-300">
+              {leader.league} League
+            </span>
+
+            {/* Branch */}
+            <p className="text-xs text-slate-400 mt-1">
+              {leader.branch || "Member"}
+              {leader.year && ` · ${leader.year}`}
+            </p>
+
+            {/* Points */}
+            <p className="text-2xl font-bold text-cyan-300 mt-2">
+              {leader.points}
+            </p>
+            <p className="text-[10px] text-slate-500">points</p>
+
+          </div>
+        </motion.div>
+      );
+    })}
+  </motion.section>
+)}
 
         {/* Rest of list */}
         {!loading && rest.length > 0 && (
@@ -370,8 +470,20 @@ export default function Leaderboard() {
                     key={r.user_id}
                     initial={{ opacity: 0, x: -8 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: idx * 0.02 }}
-                    whileHover={!shouldReduce ? { x: 4, backgroundColor: "rgba(15,23,42,0.9)" } : {}}
+                    transition={{
+  duration: 0.3,
+  delay: idx * 0.04,
+  ease: "easeOut"
+}}
+                    whileHover={
+  !shouldReduce
+    ? {
+        x: 6,
+        scale: 1.01,
+        boxShadow: "0px 10px 30px rgba(0,0,0,0.4)"
+      }
+    : {}
+}
                     className={`flex items-center gap-4 p-4 rounded-xl border transition ${
                       isYou
                         ? "border-cyan-400/30 bg-cyan-500/5"
@@ -391,10 +503,34 @@ export default function Leaderboard() {
                       </p>
                       <p className="text-xs text-slate-400 truncate">
                         {r.branch || "Member"}
-                        {r.github && ` · ${r.github}`}
+
+{r.github && (
+  <>
+    {" · "}
+    <a
+      href={`https://github.com/${r.github}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-cyan-300 hover:text-cyan-200"
+    >
+      @{r.github}
+    </a>
+  </>
+)}
                       </p>
                     </div>
-                    <p className="text-lg font-semibold text-cyan-300 tabular-nums">{r.points}</p>
+                    <div className="flex flex-col items-end gap-1 min-w-[90px]">
+  <p className="text-lg font-semibold text-cyan-300 tabular-nums">
+    {r.points}
+  </p>
+
+  <div className="w-24 h-1.5 rounded-full bg-slate-800 overflow-hidden">
+    <div
+      className="h-full bg-gradient-to-r from-cyan-400 to-indigo-400"
+      style={{ width: `${(r.points / maxPoints) * 100}%` }}
+    />
+  </div>
+</div>
                   </motion.div>
                 );
               })}
