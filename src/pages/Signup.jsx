@@ -86,14 +86,64 @@ export default function Signup() {
         }
         break;
 
+        //Email Validation with Verification -Akash
       case "email":
-        if (!value.trim()) {
+      const email = value.trim().toLowerCase();
+
+      // Allowed email domains
+       const allowedDomains = [
+          "gmail.com",
+          "outlook.com",
+          "hotmail.com",
+          "yahoo.com",
+          "icloud.com",
+          "edu.in",
+          "ac.in",
+        ];
+
+        // Block temporary/fake email providers
+        const blockedDomains = [
+          "tempmail.com",
+          "10minutemail.com",
+          "mailinator.com",
+          "fakeinbox.com",
+          "guerrillamail.com",
+          "trashmail.com",
+        ];
+
+        if (!email) {
           newErrors.email = "Email is required";
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-          newErrors.email = "Please enter a valid email address";
-        } else {
-          delete newErrors.email;
         }
+
+        // Proper email format check
+        else if (
+          !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)
+        ) {
+          newErrors.email = "Please enter a valid email address";
+        }
+
+        else {
+          const domain = email.split("@")[1];
+
+          // Block fake/temp emails
+          if (blockedDomains.includes(domain)) {
+            newErrors.email =
+              "Temporary email addresses are not allowed";
+          }
+
+          // Allow only trusted domains
+          else if (
+            !allowedDomains.some((d) => domain.endsWith(d))
+          ) {
+            newErrors.email =
+              "Please use a valid personal or college email";
+          }
+
+          else {
+            delete newErrors.email;
+          }
+        }
+
         break;
 
       case "password":
