@@ -23,7 +23,7 @@ export default function Apply() {
 
   const [formErrors, setFormErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
-  
+
 
   const fullNameRef = useRef(null);
   const emailRef = useRef(null);
@@ -51,7 +51,7 @@ export default function Apply() {
   const handleChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
     setFormErrors((prev) => ({ ...prev, [field]: undefined }));
-    
+
   };
 
   const isFormValid = useMemo(() => {
@@ -60,73 +60,73 @@ export default function Apply() {
   }, [form]);
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const errors = validate(form);
-  setFormErrors(errors);
+    const errors = validate(form);
+    setFormErrors(errors);
 
-  if (Object.keys(errors).length > 0) {
-    const firstKey = Object.keys(errors)[0];
+    if (Object.keys(errors).length > 0) {
+      const firstKey = Object.keys(errors)[0];
 
-    if (firstKey === "full_name" && fullNameRef.current) fullNameRef.current.focus();
-    else if (firstKey === "email" && emailRef.current) emailRef.current.focus();
-    else if (firstKey === "branch" && branchRef.current) branchRef.current.focus();
-    else if (firstKey === "year" && yearRef.current) yearRef.current.focus();
-    else if (firstKey === "phone" && phoneRef.current) phoneRef.current.focus();
-    else if (firstKey === "github" && githubRef.current) githubRef.current.focus();
-    else if (firstKey === "why_join" && whyRef.current) whyRef.current.focus();
+      if (firstKey === "full_name" && fullNameRef.current) fullNameRef.current.focus();
+      else if (firstKey === "email" && emailRef.current) emailRef.current.focus();
+      else if (firstKey === "branch" && branchRef.current) branchRef.current.focus();
+      else if (firstKey === "year" && yearRef.current) yearRef.current.focus();
+      else if (firstKey === "phone" && phoneRef.current) phoneRef.current.focus();
+      else if (firstKey === "github" && githubRef.current) githubRef.current.focus();
+      else if (firstKey === "why_join" && whyRef.current) whyRef.current.focus();
 
-    return;
-  }
+      return;
+    }
 
-  setSubmitting(true);
+    setSubmitting(true);
 
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
 
-    const applicationData = {
-      full_name: form.full_name.trim(),
-      email: form.email.trim(),
-      branch: form.branch.trim(),
-      year: form.year.trim(),
-      phone: form.phone.trim(),
-      github: form.github.trim(),
-      why_join: form.why_join.trim(),
-      status: "pending",
-      user_id: user?.id || null,
-    };
+      const applicationData = {
+        full_name: form.full_name.trim(),
+        email: form.email.trim(),
+        branch: form.branch.trim(),
+        year: form.year.trim(),
+        phone: form.phone.trim(),
+        github: form.github.trim(),
+        why_join: form.why_join.trim(),
+        status: "pending",
+        user_id: user?.id || null,
+      };
 
-    const response = await submitApplication(applicationData);
+      const response = await submitApplication(applicationData);
 
-    if (!response.success) {
-  showToast(response.error?.message || "Submission failed", "error");
-  setSubmitting(false);
-  return;
-}
+      if (!response.success) {
+        showToast(response.error?.message || "Submission failed", "error");
+        setSubmitting(false);
+        return;
+      }
 
-showToast("Application submitted successfully!", "success");
+      showToast("Application submitted successfully!", "success");
 
-// optional form reset
-setForm({
-  full_name: "",
-  email: "",
-  branch: "",
-  year: "",
-  phone: "",
-  github: "",
-  why_join: "",
-});
+      // optional form reset
+      setForm({
+        full_name: "",
+        email: "",
+        branch: "",
+        year: "",
+        phone: "",
+        github: "",
+        why_join: "",
+      });
 
-setSubmitting(false);
+      setSubmitting(false);
 
-navigate("/apply/success");
+      navigate("/apply/success");
 
-  } catch (err) {
-    console.error(err);
-    showToast("Something went wrong. Please try again.", "error");
-    setSubmitting(false);
-  }
-};
+    } catch (err) {
+      console.error(err);
+      showToast("Something went wrong. Please try again.", "error");
+      setSubmitting(false);
+    }
+  };
 
   return (
     // ✅ Same structure as Home: animated BG + content above it
@@ -313,7 +313,7 @@ navigate("/apply/success");
               transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
             />
 
-              <div className="relative rounded-3xl bg-slate-950/92 border border-slate-800/80 px-5 py-5 md:px-6 md:py-6 shadow-2xl shadow-slate-950/90 backdrop-blur space-y-4">
+            <div className="relative rounded-3xl bg-slate-950/92 border border-slate-800/80 px-5 py-5 md:px-6 md:py-6 shadow-2xl shadow-slate-950/90 backdrop-blur space-y-4">
               {/* top row: step + badge */}
               <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1">
                 <span>
@@ -336,6 +336,7 @@ navigate("/apply/success");
                       ref={fullNameRef}
                       name="full_name"
                       type="text"
+                      placeholder="Enter your full name"
                       className={`input-base ${formErrors.full_name ? "ring-2 ring-red-500/40" : ""}`}
                       value={form.full_name}
                       onChange={(e) => handleChange("full_name", e.target.value)}
@@ -352,6 +353,7 @@ navigate("/apply/success");
                       ref={emailRef}
                       name="email"
                       type="email"
+                      placeholder="you@example.com"
                       className={`input-base ${formErrors.email ? "ring-2 ring-red-500/40" : ""}`}
                       value={form.email}
                       onChange={(e) => handleChange("email", e.target.value)}
@@ -361,33 +363,62 @@ navigate("/apply/success");
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[11px] text-slate-400">Branch <span className="text-red-400">*</span></label>
-                    <input
+                    <label className="text-[11px] text-slate-400">
+                      Branch <span className="text-red-400">*</span>
+                    </label>
+
+                    <select
                       ref={branchRef}
                       name="branch"
-                      type="text"
-                      className={`input-base ${formErrors.branch ? "ring-2 ring-red-500/40" : ""}`}
+                      className={`input-base ${formErrors.branch ? "ring-2 ring-red-500/40" : ""
+                        }`}
                       value={form.branch}
                       onChange={(e) => handleChange("branch", e.target.value)}
-                      placeholder="CSE / IT / AI‑DS…"
                       required
-                    />
-                    {formErrors.branch && <p className="text-[11px] text-red-300">{formErrors.branch}</p>}
+                    >
+                      <option value="">Select your branch</option>
+                      <option value="CSE">CSE</option>
+                      <option value="EXTC">AIML</option>
+                      <option value="IT">IT</option>
+                      <option value="AI-DS">AI-DS</option>
+                      <option value="EXTC">EXTC</option>
+                      <option value="Mechanical">Mechanical</option>
+                      <option value="Civil">Civil</option>
+                    </select>
+
+                    {formErrors.branch && (
+                      <p className="text-[11px] text-red-300">
+                        {formErrors.branch}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[11px] text-slate-400">Year <span className="text-red-400">*</span></label>
-                    <input
+                    <label className="text-[11px] text-slate-400">
+                      Year <span className="text-red-400">*</span>
+                    </label>
+
+                    <select
                       ref={yearRef}
                       name="year"
-                      type="text"
-                      className={`input-base ${formErrors.year ? "ring-2 ring-red-500/40" : ""}`}
+                      className={`input-base ${formErrors.year ? "ring-2 ring-red-500/40" : ""
+                        }`}
                       value={form.year}
                       onChange={(e) => handleChange("year", e.target.value)}
-                      placeholder="1st / 2nd / 3rd / Final"
                       required
-                    />
-                    {formErrors.year && <p className="text-[11px] text-red-300">{formErrors.year}</p>}
+                    >
+                      <option value="">Select your year</option>
+                      <option value="1st Year">1st Year</option>
+                      <option value="2nd Year">2nd Year</option>
+                      <option value="3rd Year">3rd Year</option>
+                      <option value="Final Year">Final Year</option>
+                    </select>
+
+                    {formErrors.year && (
+                      <p className="text-[11px] text-red-300">
+                        {formErrors.year}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-1">
@@ -399,7 +430,7 @@ navigate("/apply/success");
                       className={`input-base ${formErrors.phone ? "ring-2 ring-red-500/40" : ""}`}
                       value={form.phone}
                       onChange={(e) => handleChange("phone", e.target.value)}
-                      placeholder="+91…"
+                      placeholder="+91 xxxxx-xxxxx"
                       required
                     />
                     {formErrors.phone && <p className="text-[11px] text-red-300">{formErrors.phone}</p>}
@@ -422,19 +453,32 @@ navigate("/apply/success");
 
                   <div className="space-y-1 md:col-span-2">
                     <label className="text-[11px] text-slate-400">
-                      Why do you want to join GenXCode? <span className="text-red-400">*</span>
+                      Why do you want to join GenXCode?{" "}
+                      <span className="text-red-400">*</span>
                     </label>
+
                     <textarea
                       ref={whyRef}
                       name="why_join"
                       rows={4}
-                      className={`input-base resize-y ${formErrors.why_join ? "ring-2 ring-red-500/40" : ""}`}
+                      maxLength={300}
+                      className={`input-base resize-y ${formErrors.why_join ? "ring-2 ring-red-500/40" : ""
+                        }`}
                       value={form.why_join}
                       onChange={(e) => handleChange("why_join", e.target.value)}
                       placeholder="Tell us about your interests, experience and what you want to build with the community."
                       required
                     />
-                    {formErrors.why_join && <p className="text-[11px] text-red-300">{formErrors.why_join}</p>}
+
+                    {formErrors.why_join && (
+                      <p className="text-[11px] text-red-300">
+                        {formErrors.why_join}
+                      </p>
+                    )}
+
+                    <p className="text-[10px] text-slate-500 text-right mt-1">
+                      {form.why_join.length}/300 characters
+                    </p>
                   </div>
                 </div>
 
