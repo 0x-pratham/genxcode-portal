@@ -240,7 +240,7 @@ export default function Apply() {
             {/* cards: what we look for / what you get */}
             <div className="grid gap-3 md:grid-cols-2">
               <motion.div
-                className="rounded-2xl border border-slate-800 bg-slate-950/80 px-4 py-3 shadow-lg shadow-slate-950/50"
+                className="rounded-2xl border border-cyan-500/10 bg-white/5 px-4 py-4 shadow-[0_0_30px_rgba(34,211,238,0.05)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/20 hover:shadow-cyan-500/10"
                 whileHover={{ y: -4, scale: 1.01 }}
                 transition={{ duration: 0.25 }}
               >
@@ -255,17 +255,30 @@ export default function Apply() {
               </motion.div>
 
               <motion.div
-                className="rounded-2xl border border-slate-800 bg-slate-950/80 px-4 py-3 shadow-lg shadow-slate-950/50"
+                className="rounded-2xl border border-cyan-500/10 bg-white/5 px-4 py-4 shadow-[0_0_30px_rgba(34,211,238,0.05)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/20 hover:shadow-cyan-500/10"
                 whileHover={{ y: -4, scale: 1.01 }}
                 transition={{ duration: 0.25, delay: 0.05 }}
               >
                 <p className="text-[11px] uppercase tracking-[0.2em] text-emerald-300 mb-1">
                   What you get
                 </p>
-                <ul className="text-[11px] md:text-xs text-slate-300 space-y-1.5 list-disc list-inside">
-                  <li>Priority access to projects & hackathons</li>
-                  <li>Leadership & mentorship opportunities</li>
-                  <li>Portfolio, certificates & recognition</li>
+                <ul className="text-[11px] md:text-xs text-slate-200 space-y-2">
+
+                  <li className="flex items-start gap-2">
+                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-cyan-400" />
+                    <span>Priority access to projects & hackathons</span>
+                  </li>
+
+                  <li className="flex items-start gap-2">
+                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                    <span>Leadership & mentorship opportunities</span>
+                  </li>
+
+                  <li className="flex items-start gap-2">
+                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-purple-400" />
+                    <span>Portfolio, certificates & recognition</span>
+                  </li>
+
                 </ul>
               </motion.div>
             </div>
@@ -313,55 +326,95 @@ export default function Apply() {
               transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
             />
 
-            <div className="relative rounded-3xl bg-slate-950/92 border border-slate-800/80 px-5 py-5 md:px-6 md:py-6 shadow-2xl shadow-slate-950/90 backdrop-blur space-y-4">
-              {/* top row: step + badge */}
-              <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1">
-                <span>
-                  Step 1 of 1 ·{" "}
-                  <span className="text-cyan-300">Tell us about you</span>
+            <div className="relative rounded-3xl bg-white/10 border border-white/10 px-5 py-5 md:px-6 md:py-6 shadow-[0_8px_32px_rgba(0,0,0,0.35)] backdrop-blur-2xl space-y-4 overflow-hidden"> 
+              {/* top glow */}
+              <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-cyan-500/10 to-transparent pointer-events-none" />
+
+              {/* Premium Header */}
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/60 pb-4 mb-2">
+
+                <div className="space-y-1">
+                  <p className="text-[10px] uppercase tracking-[0.25em] text-cyan-400">
+                    GenXCode Recruitment
+                  </p>
+
+                  <h2 className="text-lg md:text-xl font-semibold text-white">
+                    Tell us about yourself
+                  </h2>
+
+                  <p className="text-[11px] text-slate-400">
+                    Fill out the application carefully to join the GenXCode community
+                  </p>
+                </div>
+
+                <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-[10px] font-medium text-emerald-300 shadow-sm shadow-emerald-500/10">
+                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                  Applications Open
                 </span>
-                <span className="inline-flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
-                  Open for Future GenXCode Members
-                </span>
+
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4 text-sm">
                 <div className="grid gap-3 md:grid-cols-2">
                   <div className="space-y-1 md:col-span-2">
-                    <label className="text-[11px] text-slate-400">
+                    <label className="text-[11px] font-medium tracking-wide text-slate-300">
                       Full name <span className="text-red-400">*</span>
                     </label>
-                    <input
-                      ref={fullNameRef}
-                      name="full_name"
-                      type="text"
-                      placeholder="Enter your full name"
-                      className={`input-base ${formErrors.full_name ? "ring-2 ring-red-500/40" : ""}`}
-                      value={form.full_name}
-                      onChange={(e) => handleChange("full_name", e.target.value)}
-                      required
-                    />
-                    {formErrors.full_name && <p className="text-[11px] text-red-300">{formErrors.full_name}</p>}
+
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">
+                        👤
+                      </span>
+
+                      <input
+                        ref={fullNameRef}
+                        name="full_name"
+                        type="text"
+                        placeholder="Enter your full name"
+                        className={`input-base pl-10 bg-slate-900/60 border border-slate-700/60 backdrop-blur-md focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300 focus:scale-[1.01] ${formErrors.full_name ? "ring-2 ring-red-500/40" : ""
+                          }`}
+                        value={form.full_name}
+                        onChange={(e) => handleChange("full_name", e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    {formErrors.full_name && (
+                      <p className="text-[11px] text-red-300">
+                        {formErrors.full_name}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-1 md:col-span-2">
-                    <label className="text-[11px] text-slate-400">
+                    <label className="text-[11px] font-medium tracking-wide text-slate-300">
                       Email <span className="text-red-400">*</span>
                     </label>
-                    <input
-                      ref={emailRef}
-                      name="email"
-                      type="email"
-                      placeholder="you@example.com"
-                      className={`input-base ${formErrors.email ? "ring-2 ring-red-500/40" : ""}`}
-                      value={form.email}
-                      onChange={(e) => handleChange("email", e.target.value)}
-                      required
-                    />
-                    {formErrors.email && <p className="text-[11px] text-red-300">{formErrors.email}</p>}
-                  </div>
 
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">
+                        ✉️
+                      </span>
+
+                      <input
+                        ref={emailRef}
+                        name="email"
+                        type="email"
+                        placeholder="you@example.com"
+                        className={`input-base pl-10 bg-slate-900/60 border border-slate-700/60 backdrop-blur-md focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300 focus:scale-[1.01] ${formErrors.email ? "ring-2 ring-red-500/40" : ""
+                          }`}
+                        value={form.email}
+                        onChange={(e) => handleChange("email", e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    {formErrors.email && (
+                      <p className="text-[11px] text-red-300">
+                        {formErrors.email}
+                      </p>
+                    )}
+                  </div>
                   <div className="space-y-1">
                     <label className="text-[11px] text-slate-400">
                       Branch <span className="text-red-400">*</span>
@@ -370,8 +423,9 @@ export default function Apply() {
                     <select
                       ref={branchRef}
                       name="branch"
-                      className={`input-base ${formErrors.branch ? "ring-2 ring-red-500/40" : ""
+                      className={`input-base bg-slate-900/60 border border-slate-700/60 backdrop-blur-md focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300 focus:scale-[1.01] ${formErrors.branch ? "ring-2 ring-red-500/40" : ""
                         }`}
+
                       value={form.branch}
                       onChange={(e) => handleChange("branch", e.target.value)}
                       required
@@ -401,7 +455,7 @@ export default function Apply() {
                     <select
                       ref={yearRef}
                       name="year"
-                      className={`input-base ${formErrors.year ? "ring-2 ring-red-500/40" : ""
+                      className={`input-base bg-slate-900/60 border border-slate-700/60 backdrop-blur-md focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300 focus:scale-[1.01] ${formErrors.year ? "ring-2 ring-red-500/40" : ""
                         }`}
                       value={form.year}
                       onChange={(e) => handleChange("year", e.target.value)}
@@ -422,107 +476,166 @@ export default function Apply() {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[11px] text-slate-400">Phone <span className="text-red-400">*</span></label>
-                    <input
-                      ref={phoneRef}
-                      name="phone"
-                      type="tel"
-                      className={`input-base ${formErrors.phone ? "ring-2 ring-red-500/40" : ""}`}
-                      value={form.phone}
-                      onChange={(e) => handleChange("phone", e.target.value)}
-                      placeholder="+91 xxxxx-xxxxx"
-                      required
-                    />
-                    {formErrors.phone && <p className="text-[11px] text-red-300">{formErrors.phone}</p>}
+                    <label className="text-[11px] font-medium tracking-wide text-slate-300">
+                      Phone Number <span className="text-red-400">*</span>
+                    </label>
+
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">
+                        📞
+                      </span>
+
+                      <input
+                        ref={phoneRef}
+                        name="phone"
+                        type="tel"
+                        placeholder="+91 xxxxx-xxxxx"
+                        className={`input-base pl-10 bg-slate-900/60 border border-slate-700/60 backdrop-blur-md focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300 focus:scale-[1.01] ${formErrors.phone ? "ring-2 ring-red-500/40" : ""
+                          }`}
+                        value={form.phone}
+                        onChange={(e) => handleChange("phone", e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    {formErrors.phone && (
+                      <p className="text-[11px] text-red-300">
+                        {formErrors.phone}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[11px] text-slate-400">GitHub profile <span className="text-red-400">*</span></label>
-                    <input
-                      ref={githubRef}
-                      name="github"
-                      type="url"
-                      className={`input-base ${formErrors.github ? "ring-2 ring-red-500/40" : ""}`}
-                      value={form.github}
-                      onChange={(e) => handleChange("github", e.target.value)}
-                      placeholder="https://github.com/username"
-                      required
-                    />
-                    {formErrors.github && <p className="text-[11px] text-red-300">{formErrors.github}</p>}
-                  </div>
-
-                  <div className="space-y-1 md:col-span-2">
-                    <label className="text-[11px] text-slate-400">
-                      Why do you want to join GenXCode?{" "}
-                      <span className="text-red-400">*</span>
+                    <label className="text-[11px] font-medium tracking-wide text-slate-300">
+                      GitHub Profile <span className="text-red-400">*</span>
                     </label>
 
-                    <textarea
-                      ref={whyRef}
-                      name="why_join"
-                      rows={4}
-                      maxLength={300}
-                      className={`input-base resize-y ${formErrors.why_join ? "ring-2 ring-red-500/40" : ""
-                        }`}
-                      value={form.why_join}
-                      onChange={(e) => handleChange("why_join", e.target.value)}
-                      placeholder="Tell us about your interests, experience and what you want to build with the community."
-                      required
-                    />
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">
+                        🚀
+                      </span>
 
-                    {formErrors.why_join && (
+                      <input
+                        ref={githubRef}
+                        name="github"
+                        type="url"
+                        placeholder="https://github.com/username"
+                        className={`input-base pl-10 bg-slate-900/60 border border-slate-700/60 backdrop-blur-md focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300 focus:scale-[1.01] ${formErrors.github ? "ring-2 ring-red-500/40" : ""
+                          }`}
+                        value={form.github}
+                        onChange={(e) => handleChange("github", e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    {formErrors.github && (
                       <p className="text-[11px] text-red-300">
-                        {formErrors.why_join}
+                        {formErrors.github}
                       </p>
                     )}
 
-                    <p className="text-[10px] text-slate-500 text-right mt-1">
-                      {form.why_join.length}/300 characters
+                    <p className="text-[10px] text-slate-500 mt-1">
+                      Share your GitHub profile to showcase your projects and coding experience.
                     </p>
                   </div>
-                </div>
 
-                <p className="text-[10px] text-slate-500 leading-relaxed">
-                  Once you submit, the core team will review your application.
-                  You&apos;ll be contacted by email if selected for the next
-                  steps (intro call / onboarding).
-                </p>
+                  <div className="space-y-2 md:col-span-2">
 
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pt-2">
-                  <p className="text-[10px] text-slate-500 max-w-xs">
-                    By applying you agree to follow the{" "}
-                    <span className="text-slate-300">
-                      GenXCode community guidelines.
-                    </span>
-                  </p>
-                  <motion.button
-                    type="submit"
-                    disabled={submitting || !isFormValid}
-                    className="btn-primary text-xs px-6 py-2.5 disabled:opacity-60 disabled:cursor-not-allowed relative overflow-hidden group"
-                    whileHover={shouldReduceMotion ? {} : { scale: submitting ? 1 : 1.04, y: submitting ? 0 : -2, boxShadow: submitting ? "" : "0 10px 30px rgba(34,211,238,0.12)" }}
-                    whileTap={shouldReduceMotion ? {} : { scale: submitting ? 1 : 0.98 }}
-                  >
-                    <span className="relative z-[1] flex items-center gap-2">
-                      {submitting ? (
-                        <>
-                          <span className="h-3 w-3 rounded-full border-2 border-cyan-300 border-t-transparent animate-spin" />
-                          Submitting…
-                        </>
+                    <div className="flex items-center justify-between">
+                      <label className="text-[11px] font-medium tracking-wide text-slate-300">
+                        Why do you want to join GenXCode?
+                        <span className="text-red-400 ml-1">*</span>
+                      </label>
+
+                      <span className="text-[10px] text-cyan-400">
+                        Share your motivation ✨
+                      </span>
+                    </div>
+
+                    <div className="relative">
+
+                      <div className="absolute top-3 left-3 text-slate-500">
+                        💡
+                      </div>
+
+                      <textarea
+                        ref={whyRef}
+                        name="why_join"
+                        rows={5}
+                        maxLength={300}
+                        className={`input-base pl-10 pt-3 resize-none bg-slate-900/60 border border-slate-700/60 backdrop-blur-md focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300 focus:scale-[1.01] ${formErrors.why_join ? "ring-2 ring-red-500/40" : ""
+                          }`}
+                        value={form.why_join}
+                        onChange={(e) => handleChange("why_join", e.target.value)}
+                        placeholder="Tell us about your interests, skills, experience and what you want to build with GenXCode..."
+                        required
+                      />
+
+                    </div>
+
+                    <div className="flex items-center justify-between">
+
+                      {formErrors.why_join ? (
+                        <p className="text-[11px] text-red-300">
+                          {formErrors.why_join}
+                        </p>
                       ) : (
-                        <>
-                          <span>Submit application</span>
-                          <span>↗</span>
-                        </>
+                        <p className="text-[10px] text-slate-500">
+                          Be genuine and concise.
+                        </p>
                       )}
-                    </span>
-                    <span className="pointer-events-none absolute inset-0 bg-gradient-to-r from-cyan-400/40 via-sky-500/30 to-indigo-500/40 opacity-0 transition group-hover:opacity-100" />
-                  </motion.button>
+
+                      <p className="text-[10px] text-slate-500">
+                        {form.why_join.length}/300
+                      </p>
+
+                    </div>
+
+                  </div>
+                  <p className="text-[10px] text-slate-500 leading-relaxed">
+                    Once you submit, the core team will review your application.
+                    You will be contacted by email if selected for the next
+                    steps (intro call / onboarding).
+                  </p>
+
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pt-2">
+                    <p className="text-[10px] text-slate-500 max-w-xs">
+                      By applying you agree to follow the{" "}
+                      <span className="text-slate-300">
+                        GenXCode community guidelines.
+                      </span>
+                    </p>
+                    <motion.button
+                      type="submit"
+                      disabled={submitting || !isFormValid}
+                      className="btn-primary text-xs px-6 py-3 rounded-xl disabled:opacity-60 disabled:cursor-not-allowed relative overflow-hidden group transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20"
+                      whileHover={shouldReduceMotion ? {} : { scale: submitting ? 1 : 1.04, y: submitting ? 0 : -2, boxShadow: submitting ? "" : "0 10px 30px rgba(34,211,238,0.12)" }}
+                      whileTap={shouldReduceMotion ? {} : { scale: submitting ? 1 : 0.98 }}
+                    >
+                      <span className="relative z-[1] flex items-center gap-2">
+                        {submitting ? (
+                          <>
+                            <span className="h-3 w-3 rounded-full border-2 border-cyan-300 border-t-transparent animate-spin" />
+                            Submitting…
+                          </>
+                        ) : (
+                          <>
+                            <span className="font-medium tracking-wide">
+                              Submit Application
+                            </span>
+                            <span>↗</span>
+                          </>
+                        )}
+                      </span>
+                     <span className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-500/30 via-sky-500/20 to-indigo-500/30 opacity-0 transition-all duration-300 group-hover:opacity-100" />
+                    </motion.button>
+                  </div>
                 </div>
               </form>
             </div>
           </motion.div>
-        </motion.section>
-      </div>
-    </main>
+        </motion.section >
+      </div >
+    </main >
   );
 }
