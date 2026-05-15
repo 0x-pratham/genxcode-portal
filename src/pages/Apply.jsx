@@ -179,7 +179,7 @@ navigate("/apply/success");
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
           <motion.div
-            className="inline-flex items-center gap-2 rounded-full border border-slate-700/70 bg-slate-900/80 px-3 py-1.5 text-[11px] text-slate-300 shadow-xl shadow-cyan-600/18 backdrop-blur"
+            className="inline-flex items-center gap-2 rounded-full border border-slate-700/70 bg-slate-900/85 px-3 py-1.5 text-[11px] text-slate-300 shadow-xl shadow-cyan-600/18 backdrop-blur"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.1 }}
@@ -191,7 +191,7 @@ navigate("/apply/success");
           </motion.div>
 
           <motion.div
-            className="flex items-center gap-2 text-[11px] text-slate-400"
+            className="flex items-center gap-2 text-[11px] text-slate-300"
             initial={{ opacity: 0, x: 10 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4, delay: 0.15 }}
@@ -201,7 +201,7 @@ navigate("/apply/success");
               <span className="text-cyan-300">24–72 hours</span>
             </span>
             <span className="h-1 w-1 rounded-full bg-slate-600" />
-            <span className="text-slate-500">
+            <span className="text-slate-300">
               Already a member?{" "}
               <Link
                 to="/dashboard"
@@ -225,12 +225,12 @@ navigate("/apply/success");
             <div className="space-y-4">
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight leading-tight md:leading-[1.1]">
                 Apply to{" "}
-                <span className="bg-gradient-to-r from-cyan-300 via-sky-400 to-indigo-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-cyan-300 via-indigo-400 to-indigo-400 bg-clip-text text-transparent">
                   join the GenXCode core squad
                 </span>
                 .
               </h1>
-              <p className="text-sm md:text-base text-slate-400 max-w-xl">
+              <p className="text-sm md:text-base text-slate-300 max-w-xl">
                 You&apos;re not just filling another club form. You&apos;re
                 joining a focused community that ships real products, runs
                 events and mentors juniors on your campus.
@@ -240,7 +240,7 @@ navigate("/apply/success");
             {/* cards: what we look for / what you get */}
             <div className="grid gap-3 md:grid-cols-2">
               <motion.div
-                className="rounded-2xl border border-slate-800 bg-slate-950/80 px-4 py-3 shadow-lg shadow-slate-950/50"
+                className="rounded-2xl border border-fuchsia-500/20 bg-slate-900/90 px-4 py-3 shadow-lg shadow-slate-950/50"
                 whileHover={{ y: -4, scale: 1.01 }}
                 transition={{ duration: 0.25 }}
               >
@@ -255,7 +255,7 @@ navigate("/apply/success");
               </motion.div>
 
               <motion.div
-                className="rounded-2xl border border-slate-800 bg-slate-950/80 px-4 py-3 shadow-lg shadow-slate-950/50"
+                className="rounded-2xl border border-fuchsia-500/20 bg-slate-900/90 px-4 py-3 shadow-lg shadow-slate-950/50"
                 whileHover={{ y: -4, scale: 1.01 }}
                 transition={{ duration: 0.25, delay: 0.05 }}
               >
@@ -272,12 +272,12 @@ navigate("/apply/success");
 
             {/* Small horizontal “timeline” */}
             <motion.div
-              className="rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 shadow-md shadow-slate-950/60 space-y-2"
+              className="rounded-2xl border border-fuchsia-500/20 bg-[#0F172A]/70 px-4 py-3 shadow-md shadow-slate-950/60 space-y-2"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400">
+              <p className="text-[11px] uppercase tracking-[0.22em] text-slate-300">
                 Your journey inside GenXCode
               </p>
               <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-300">
@@ -285,12 +285,12 @@ navigate("/apply/success");
                   <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
                   Apply
                 </span>
-                <span className="text-slate-500">——</span>
+                <span className="text-slate-300">——</span>
                 <span className="inline-flex items-center gap-1">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                   Intro & onboarding
                 </span>
-                <span className="text-slate-500">——</span>
+                <span className="text-slate-300">——</span>
                 <span className="inline-flex items-center gap-1">
                   <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
                   Projects, events, mentoring
@@ -313,9 +313,9 @@ navigate("/apply/success");
               transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
             />
 
-              <div className="relative rounded-3xl bg-slate-950/92 border border-slate-800/80 px-5 py-5 md:px-6 md:py-6 shadow-2xl shadow-slate-950/90 backdrop-blur space-y-4">
+              <div className="relative rounded-3xl bg-[#0F172A]/92 border border-fuchsia-500/20 px-5 py-5 md:px-6 md:py-6 shadow-2xl shadow-slate-950/90 backdrop-blur space-y-4">
               {/* top row: step + badge */}
-              <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1">
+              <div className="flex items-center justify-between text-[11px] text-slate-300 mb-1">
                 <span>
                   Step 1 of 1 ·{" "}
                   <span className="text-cyan-300">Tell us about you</span>
@@ -329,7 +329,7 @@ navigate("/apply/success");
               <form onSubmit={handleSubmit} className="space-y-4 text-sm">
                 <div className="grid gap-3 md:grid-cols-2">
                   <div className="space-y-1 md:col-span-2">
-                    <label className="text-[11px] text-slate-400">
+                    <label className="text-[11px] text-slate-300">
                       Full name <span className="text-red-400">*</span>
                     </label>
                     <input
@@ -345,7 +345,7 @@ navigate("/apply/success");
                   </div>
 
                   <div className="space-y-1 md:col-span-2">
-                    <label className="text-[11px] text-slate-400">
+                    <label className="text-[11px] text-slate-300">
                       Email <span className="text-red-400">*</span>
                     </label>
                     <input
@@ -361,7 +361,7 @@ navigate("/apply/success");
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[11px] text-slate-400">Branch <span className="text-red-400">*</span></label>
+                    <label className="text-[11px] text-slate-300">Branch <span className="text-red-400">*</span></label>
                     <input
                       ref={branchRef}
                       name="branch"
@@ -376,7 +376,7 @@ navigate("/apply/success");
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[11px] text-slate-400">Year <span className="text-red-400">*</span></label>
+                    <label className="text-[11px] text-slate-300">Year <span className="text-red-400">*</span></label>
                     <input
                       ref={yearRef}
                       name="year"
@@ -391,7 +391,7 @@ navigate("/apply/success");
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[11px] text-slate-400">Phone <span className="text-red-400">*</span></label>
+                    <label className="text-[11px] text-slate-300">Phone <span className="text-red-400">*</span></label>
                     <input
                       ref={phoneRef}
                       name="phone"
@@ -406,7 +406,7 @@ navigate("/apply/success");
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[11px] text-slate-400">GitHub profile <span className="text-red-400">*</span></label>
+                    <label className="text-[11px] text-slate-300">GitHub profile <span className="text-red-400">*</span></label>
                     <input
                       ref={githubRef}
                       name="github"
@@ -421,7 +421,7 @@ navigate("/apply/success");
                   </div>
 
                   <div className="space-y-1 md:col-span-2">
-                    <label className="text-[11px] text-slate-400">
+                    <label className="text-[11px] text-slate-300">
                       Why do you want to join GenXCode? <span className="text-red-400">*</span>
                     </label>
                     <textarea
@@ -438,14 +438,14 @@ navigate("/apply/success");
                   </div>
                 </div>
 
-                <p className="text-[10px] text-slate-500 leading-relaxed">
+                <p className="text-[10px] text-slate-300 leading-relaxed">
                   Once you submit, the core team will review your application.
                   You&apos;ll be contacted by email if selected for the next
                   steps (intro call / onboarding).
                 </p>
 
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pt-2">
-                  <p className="text-[10px] text-slate-500 max-w-xs">
+                  <p className="text-[10px] text-slate-300 max-w-xs">
                     By applying you agree to follow the{" "}
                     <span className="text-slate-300">
                       GenXCode community guidelines.
@@ -471,7 +471,7 @@ navigate("/apply/success");
                         </>
                       )}
                     </span>
-                    <span className="pointer-events-none absolute inset-0 bg-gradient-to-r from-cyan-400/40 via-sky-500/30 to-indigo-500/40 opacity-0 transition group-hover:opacity-100" />
+                    <span className="pointer-events-none absolute inset-0 bg-gradient-to-r from-cyan-400/40 via-indigo-500/30 to-indigo-500/40 opacity-0 transition group-hover:opacity-100" />
                   </motion.button>
                 </div>
               </form>

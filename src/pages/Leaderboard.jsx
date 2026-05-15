@@ -199,7 +199,7 @@ const maxPoints = Math.max(...filteredLeaders.map(l => l.points || 0), 1);
             <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-cyan-300 via-indigo-300 to-fuchsia-300 bg-clip-text text-transparent">
               Leaderboard
             </h1>
-            <p className="text-sm text-slate-400 mt-1">
+            <p className="text-sm text-slate-300 mt-1">
               Top builders and contributors · Climb the leagues
             </p>
           </div>
@@ -220,19 +220,19 @@ const maxPoints = Math.max(...filteredLeaders.map(l => l.points || 0), 1);
         >
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1 relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm">🔍</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-sm">🔍</span>
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search by name, branch, or GitHub…"
-                className="w-full pl-9 pr-4 py-3 rounded-xl border border-slate-700/80 bg-slate-950/70 backdrop-blur-xl text-slate-100 placeholder:text-slate-500 outline-none focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20 transition"
+                className="w-full pl-9 pr-4 py-3 rounded-xl border border-slate-700/80 bg-[#0F172A]/70 backdrop-blur-xl text-slate-100 placeholder:text-slate-300 outline-none focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20 transition"
               />
             </div>
             <div className="sm:w-44">
               <select
                 value={leagueFilter}
                 onChange={(e) => setLeagueFilter(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-slate-700/80 bg-slate-950/70 backdrop-blur-xl text-slate-100 outline-none focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20 transition"
+                className="w-full px-4 py-3 rounded-xl border border-slate-700/80 bg-[#0F172A]/70 backdrop-blur-xl text-slate-100 outline-none focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20 transition"
               >
                 <option value="All">All leagues</option>
                 {Object.keys(leagueImages).map((lg) => (
@@ -251,7 +251,7 @@ const maxPoints = Math.max(...filteredLeaders.map(l => l.points || 0), 1);
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className="rounded-2xl border border-cyan-400/30 bg-slate-950/80 backdrop-blur-xl p-4 shadow-lg shadow-cyan-500/5"
+                className="rounded-2xl border border-cyan-400/30 bg-slate-900/90 backdrop-blur-xl p-4 shadow-lg shadow-cyan-500/5"
               >
                 <div className="flex items-center justify-between gap-4 flex-wrap">
                   <div className="flex items-center gap-3">
@@ -259,8 +259,8 @@ const maxPoints = Math.max(...filteredLeaders.map(l => l.points || 0), 1);
                     <LeagueIcon league={yourEntryAll.league} variant="lg" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-slate-50">Your rank</p>
-                      <p className="text-xs text-slate-400">
+                      <p className="text-sm font-semibold text-slate-900">Your rank</p>
+                      <p className="text-xs text-slate-300">
                         <span className="text-cyan-300 font-semibold">#{yourRankAll}</span>
                         {" · "}
                         {yourEntryAll.league}
@@ -271,7 +271,7 @@ const maxPoints = Math.max(...filteredLeaders.map(l => l.points || 0), 1);
                   </div>
                   <div className="text-right">
                     <p className="text-2xl font-bold text-cyan-300">{yourEntryAll.points}</p>
-                    <p className="text-[10px] text-slate-500">points</p>
+                    <p className="text-[10px] text-slate-300">points</p>
                   </div>
                 </div>
               </motion.div>
@@ -281,7 +281,7 @@ const maxPoints = Math.max(...filteredLeaders.map(l => l.points || 0), 1);
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="rounded-2xl border border-slate-700/60 bg-slate-950/50 backdrop-blur-xl p-4 text-sm text-slate-400"
+                className="rounded-2xl border border-slate-700/60 bg-[#0F172A]/50 backdrop-blur-xl p-4 text-sm text-slate-300"
               >
                 Your leaderboard entry isn&apos;t available yet. Submit a challenge to get ranked.
               </motion.div>
@@ -312,7 +312,7 @@ const maxPoints = Math.max(...filteredLeaders.map(l => l.points || 0), 1);
               {[0, 1, 2].map((i) => (
                 <div
                   key={i}
-                  className="rounded-2xl bg-slate-950/60 border border-slate-800/60 p-6 animate-pulse"
+                  className="rounded-2xl bg-[#0F172A]/60 border border-fuchsia-500/20/60 p-6 animate-pulse"
                 >
                   <div className="h-4 w-24 rounded bg-slate-800 mb-4" />
                   <div className="flex items-center gap-4 mb-4">
@@ -328,7 +328,7 @@ const maxPoints = Math.max(...filteredLeaders.map(l => l.points || 0), 1);
             </div>
             <div className="space-y-3">
               {[0, 1, 2, 3].map((i) => (
-                <div key={i} className="h-16 rounded-xl bg-slate-950/60 border border-slate-800/60 animate-pulse" />
+                <div key={i} className="h-16 rounded-xl bg-[#0F172A]/60 border border-fuchsia-500/20/60 animate-pulse" />
               ))}
             </div>
           </motion.section>
@@ -336,20 +336,20 @@ const maxPoints = Math.max(...filteredLeaders.map(l => l.points || 0), 1);
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
 
-  <div className="p-4 rounded-xl border border-slate-800 bg-slate-950/60">
-    <p className="text-xs text-slate-400">Total Builders</p>
+  <div className="p-4 rounded-xl border border-fuchsia-500/20 bg-[#0F172A]/60">
+    <p className="text-xs text-slate-300">Total Builders</p>
     <p className="text-2xl font-bold text-cyan-300">{leaders.length}</p>
   </div>
 
-  <div className="p-4 rounded-xl border border-slate-800 bg-slate-950/60">
-    <p className="text-xs text-slate-400">Top Score</p>
+  <div className="p-4 rounded-xl border border-fuchsia-500/20 bg-[#0F172A]/60">
+    <p className="text-xs text-slate-300">Top Score</p>
     <p className="text-2xl font-bold text-indigo-300">
       {leaders[0]?.points || 0}
     </p>
   </div>
 
-  <div className="p-4 rounded-xl border border-slate-800 bg-slate-950/60">
-    <p className="text-xs text-slate-400">Your Rank</p>
+  <div className="p-4 rounded-xl border border-fuchsia-500/20 bg-[#0F172A]/60">
+    <p className="text-xs text-slate-300">Your Rank</p>
     <p className="text-2xl font-bold text-fuchsia-300">
       {yourRankAll || "-"}
     </p>
@@ -388,7 +388,7 @@ const glowColor = podiumGlow[rank];
   animate={{ opacity: 1, y: 0 }}
   transition={{ duration: 0.5, delay: index * 0.1 }}
   whileHover={!shouldReduce ? { y: -8, scale: 1.04 } : {}}
-  className={`relative rounded-2xl overflow-hidden border bg-slate-950/80 backdrop-blur-xl border-slate-700/60 shadow-xl ${crownGlow}`}
+  className={`relative rounded-2xl overflow-hidden border bg-slate-900/90 backdrop-blur-xl border-slate-700/60 shadow-xl ${crownGlow}`}
 > 
           {/* Glow background */}
           <div
@@ -411,7 +411,7 @@ const glowColor = podiumGlow[rank];
                   rank === 1
                     ? "bg-yellow-500/20 text-yellow-300 border border-yellow-400/40"
                     : rank === 2
-                    ? "bg-slate-400/20 text-slate-200 border border-slate-300/40"
+                    ? "bg-slate-400/20 text-slate-100 border border-slate-300/40"
                     : "bg-amber-600/20 text-amber-200 border border-amber-500/40"
                 }`}
               >
@@ -423,7 +423,7 @@ const glowColor = podiumGlow[rank];
             <LeagueIcon league={leader.league} variant="lg" />
 
             {/* Name */}
-            <h3 className="font-semibold text-slate-50 mt-3 tracking-wide">
+            <h3 className="font-semibold text-slate-900 mt-3 tracking-wide">
               {leader.full_name}
             </h3>
 
@@ -433,7 +433,7 @@ const glowColor = podiumGlow[rank];
             </span>
 
             {/* Branch */}
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-slate-300 mt-1">
               {leader.branch || "Member"}
               {leader.year && ` · ${leader.year}`}
             </p>
@@ -442,7 +442,7 @@ const glowColor = podiumGlow[rank];
             <p className="text-2xl font-bold text-cyan-300 mt-2">
               {leader.points}
             </p>
-            <p className="text-[10px] text-slate-500">points</p>
+            <p className="text-[10px] text-slate-300">points</p>
 
           </div>
         </motion.div>
@@ -459,7 +459,7 @@ const glowColor = podiumGlow[rank];
             transition={{ duration: 0.4, delay: 0.2 }}
             className="space-y-2"
           >
-            <h2 className="text-sm font-semibold text-slate-400 mb-4">All ranks</h2>
+            <h2 className="text-sm font-semibold text-slate-300 mb-4">All ranks</h2>
             <div className="space-y-2">
               {rest.map((r, idx) => {
                 const rank = idx + 4;
@@ -487,10 +487,10 @@ const glowColor = podiumGlow[rank];
                     className={`flex items-center gap-4 p-4 rounded-xl border transition ${
                       isYou
                         ? "border-cyan-400/30 bg-cyan-500/5"
-                        : "border-slate-800/60 bg-slate-950/50 hover:border-slate-700/80"
+                        : "border-fuchsia-500/20/60 bg-[#0F172A]/50 hover:border-slate-700/80"
                     }`}
                   >
-                    <span className="text-sm font-mono text-slate-500 w-8">#{rank}</span>
+                    <span className="text-sm font-mono text-slate-300 w-8">#{rank}</span>
                     <LeagueIcon league={r.league} variant="sm" />
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-slate-100 truncate">
@@ -501,7 +501,7 @@ const glowColor = podiumGlow[rank];
                           </span>
                         )}
                       </p>
-                      <p className="text-xs text-slate-400 truncate">
+                      <p className="text-xs text-slate-300 truncate">
                         {r.branch || "Member"}
 
 {r.github && (
@@ -543,11 +543,11 @@ const glowColor = podiumGlow[rank];
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            className="rounded-2xl border border-slate-800/60 bg-slate-950/50 backdrop-blur-xl p-12 text-center"
+            className="rounded-2xl border border-fuchsia-500/20/60 bg-[#0F172A]/50 backdrop-blur-xl p-12 text-center"
           >
             <p className="text-4xl mb-4">🏆</p>
-            <h3 className="text-lg font-semibold text-slate-200 mb-2">No results found</h3>
-            <p className="text-sm text-slate-400 max-w-sm mx-auto">
+            <h3 className="text-lg font-semibold text-slate-100 mb-2">No results found</h3>
+            <p className="text-sm text-slate-300 max-w-sm mx-auto">
               {query || leagueFilter !== "All"
                 ? "Try adjusting your search or league filter."
                 : "Be the first to climb the leaderboard. Submit a challenge!"}

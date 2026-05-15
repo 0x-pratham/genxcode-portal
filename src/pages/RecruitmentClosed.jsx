@@ -47,7 +47,7 @@ export default function RecruitmentClosed() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="text-xs uppercase tracking-[0.3em] text-slate-500 mb-6"
+          className="text-xs uppercase tracking-[0.3em] text-slate-300 mb-6"
         >
           GenXCode Recruitment
         </motion.p>
@@ -67,7 +67,7 @@ export default function RecruitmentClosed() {
         </h1>
 
         {/* Sub text */}
-        <p className="mt-6 text-slate-400 text-base md:text-lg leading-relaxed">
+        <p className="mt-6 text-slate-300 text-base md:text-lg leading-relaxed">
           Thank you for your interest in joining{" "}
           <span className="text-cyan-400 font-medium">GenXCode</span>.
           This recruitment cycle has officially concluded.
@@ -80,13 +80,13 @@ export default function RecruitmentClosed() {
         {/* Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link to="/">
-            <button className="px-7 py-3 rounded-full bg-white text-black text-sm font-medium hover:opacity-90 transition-all">
+            <button className="px-7 py-3 rounded-full bg-slate-900 text-black text-sm font-medium hover:opacity-90 transition-all">
               Back to Home
             </button>
           </Link>
 
           <Link to="/announcements">
-            <button className="px-7 py-3 rounded-full border border-slate-700 text-sm text-slate-300 hover:border-slate-500 hover:text-white transition-all">
+            <button className="px-7 py-3 rounded-full border border-slate-700 text-sm text-slate-300 hover:border-slate-9000 hover:text-white transition-all">
               View Updates
             </button>
           </Link>

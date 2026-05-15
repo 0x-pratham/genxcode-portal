@@ -25,11 +25,11 @@ export default function PresidentTeam({ presidentTeam }) {
           <h2 className="text-xl md:text-2xl font-semibold">
             Meet our <span className="text-cyan-300">President Team</span>
           </h2>
-          <p className="text-xs md:text-sm text-slate-400 max-w-xl mt-1">
+          <p className="text-xs md:text-sm text-slate-300 max-w-xl mt-1">
             Four presidents jointly shaping strategy, execution and member experience across the whole community.
           </p>
         </div>
-        <p className="text-[11px] text-slate-500">4 Presidents · Operations · Tech · Community · Growth</p>
+        <p className="text-[11px] text-slate-300">4 Presidents · Operations · Tech · Community · Growth</p>
       </div>
 
       <motion.div
@@ -42,7 +42,7 @@ export default function PresidentTeam({ presidentTeam }) {
         {presidentTeam.map((p) => (
           <motion.div
             key={p.name}
-            className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/80 px-4 py-4 shadow-lg shadow-slate-950/40"
+            className="relative overflow-hidden rounded-2xl border border-fuchsia-500/20 bg-slate-900/90 px-4 py-4 shadow-lg shadow-slate-950/40 backdrop-blur-xl"
             variants={itemVariants}
             whileHover={{
               y: -8,
@@ -55,9 +55,9 @@ export default function PresidentTeam({ presidentTeam }) {
             <div className="pointer-events-none absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-cyan-400 via-emerald-400 to-sky-500 opacity-80" />
             <p className="text-[11px] text-cyan-300 mb-1">{p.role}</p>
             <h3 className="text-sm font-semibold">{p.name}</h3>
-            <p className="text-[11px] text-slate-400 mb-1.5">{p.role}</p>
+            <p className="text-[11px] text-slate-300 mb-1.5">{p.role}</p>
             <p className="text-[11px] text-slate-300 mb-1.5">{p.focus}</p>
-            <p className="text-[10px] text-slate-500">{p.yearBranch}</p>
+            <p className="text-[10px] text-slate-300">{p.yearBranch}</p>
           </motion.div>
         ))}
       </motion.div>

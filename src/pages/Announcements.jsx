@@ -41,7 +41,7 @@ export default function Announcements() {
   }, []);
 
   return (
-    // ❗ no bg-slate-950 here so global BackgroundOrbs stays visible
+    // ❗ no bg-[#0F172A] here so global BackgroundOrbs stays visible
     <main className="relative min-h-screen scroll-smooth text-slate-100 pb-24 overflow-hidden">
       <BackgroundOrbs />
       {/* All page content sits above global BG */}
@@ -62,7 +62,7 @@ export default function Announcements() {
 <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[500px] h-[200px] bg-cyan-500/10 blur-3xl rounded-full pointer-events-none" />
           {/* pill */}
           <motion.div
-            className="inline-flex items-center gap-2 rounded-full border border-slate-700/70 bg-slate-900/80 px-3 py-1.5 text-[11px] text-slate-300 shadow-lg shadow-cyan-500/20 backdrop-blur"
+            className="inline-flex items-center gap-2 rounded-full border border-slate-700/70 bg-slate-900/85 px-3 py-1.5 text-[11px] text-slate-300 shadow-lg shadow-cyan-500/20 backdrop-blur"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.1 }}
@@ -77,14 +77,14 @@ export default function Announcements() {
             <h1 className="text-4xl md:text-5xl font-semibold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
               Announcements
             </h1>
-            <p className="text-sm md:text-base text-slate-400 max-w-2xl leading-relaxed">
+            <p className="text-sm md:text-base text-slate-300 max-w-2xl leading-relaxed">
               Stay in sync with sessions, events, challenge drops and important
               updates from the GenXCode core team.
             </p>
           </div>
 
           {!loading && (
-            <p className="text-[11px] text-slate-500">
+            <p className="text-[11px] text-slate-300">
               {announcements.length === 0
                 ? "No announcements right now."
                 : `Showing ${announcements.length} announcement${
@@ -98,7 +98,7 @@ export default function Announcements() {
         {loading ? (
           // loading state
           <motion.div
-            className="rounded-2xl border border-slate-800 bg-slate-950/70 px-5 py-6 text-sm text-slate-300 shadow-lg shadow-slate-950/70"
+            className="rounded-2xl border border-fuchsia-500/20 bg-[#0F172A]/70 px-5 py-6 text-sm text-slate-300 shadow-lg shadow-slate-950/70"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
           >
@@ -112,7 +112,7 @@ export default function Announcements() {
         ) : announcements.length === 0 ? (
           // empty state
           <motion.div
-  className="relative overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-950/70 backdrop-blur-xl px-5 py-6 shadow-xl shadow-slate-950/80 transition-all"
+  className="relative overflow-hidden rounded-2xl border border-fuchsia-500/20 bg-[#0F172A]/70 backdrop-blur-xl px-5 py-6 shadow-xl shadow-slate-950/80 transition-all"
   initial={{ opacity: 0, y: 12 }}
   animate={{ opacity: 1, y: 0 }}
 >
@@ -120,7 +120,7 @@ export default function Announcements() {
             <p className="text-base md:text-lg font-medium mb-1">
               No announcements yet
             </p>
-            <p className="text-xs md:text-sm text-slate-400 max-w-md mx-auto">
+            <p className="text-xs md:text-sm text-slate-300 max-w-md mx-auto">
               New events, workshops, challenges and important notices will
               appear here as soon as the core team posts them. Check back soon.
             </p>
@@ -140,8 +140,8 @@ export default function Announcements() {
                   className={`relative overflow-hidden rounded-2xl border ${
   isLatest
     ? "border-cyan-500/40 shadow-[0_0_40px_rgba(34,211,238,0.15)]"
-    : "border-slate-800/70"
-} bg-gradient-to-b from-slate-900/70 to-slate-950/70 backdrop-blur-2xl px-6 py-6 md:px-10 md:py-8 shadow-2xl shadow-slate-950/80 transition-all`}
+    : "border-fuchsia-500/20/70"
+} bg-gradient-to-b from-slate-900/70 to-slate-950/70 backdrop-blur-xl px-6 py-6 md:px-10 md:py-8 shadow-2xl shadow-slate-950/80 transition-all`}
                   initial={{ opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: index * 0.06, ease: "easeOut" }}
@@ -155,7 +155,7 @@ export default function Announcements() {
   }
 >
                   {/* gradient top accent */}
-                  <div className="pointer-events-none absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-cyan-400 via-sky-500 to-fuchsia-400 opacity-80" />
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-cyan-400 via-indigo-500 to-fuchsia-400 opacity-80" />
 
                   <div className="flex items-start justify-between gap-3">
                     <div className="space-y-1">
@@ -171,7 +171,7 @@ export default function Announcements() {
                       </div>
 
                       {created && (
-                        <p className="text-[11px] text-slate-500 tracking-wide">
+                        <p className="text-[11px] text-slate-300 tracking-wide">
                           {created.toLocaleDateString(undefined, {
   year: "numeric",
   month: "short",
@@ -183,7 +183,7 @@ export default function Announcements() {
                     </div>
 
                     <div className="flex items-start gap-3">
-                      <span className="text-[10px] text-slate-500 uppercase tracking-wider">
+                      <span className="text-[10px] text-slate-300 uppercase tracking-wider">
                       Post {reversedIndex}
                       </span>
                       <div className="flex gap-2">
@@ -194,7 +194,7 @@ export default function Announcements() {
                             alert("Link copied");
                             // small inline feedback could be improved with toasts
                           }}
-                          className="text-[11px] text-slate-400 hover:text-white px-3 py-1.5 rounded-lg border border-slate-800/70 bg-slate-900/60 hover:bg-slate-800/70 transition-all"
+                          className="text-[11px] text-slate-300 hover:text-white px-3 py-1.5 rounded-lg border border-fuchsia-500/20/70 bg-slate-900/60 hover:bg-slate-800/70 transition-all"
                         >
                           Copy link
                         </button>
@@ -207,7 +207,7 @@ export default function Announcements() {
                               window.open(url, "_blank");
                             }
                           }}
-                          className="text-[11px] text-slate-400 hover:text-white px-3 py-1.5 rounded-lg border border-slate-800/70 bg-slate-900/60 hover:bg-slate-800/70 transition-all"
+                          className="text-[11px] text-slate-300 hover:text-white px-3 py-1.5 rounded-lg border border-fuchsia-500/20/70 bg-slate-900/60 hover:bg-slate-800/70 transition-all"
                         >
                           Share
                         </button>
@@ -216,7 +216,7 @@ export default function Announcements() {
                   </div>
 
                   {a.content && (
-  <div className="mt-5 text-sm md:text-[15px] text-slate-200 leading-[1.8]">
+  <div className="mt-5 text-sm md:text-[15px] text-slate-100 leading-[1.8]">
     <AnimatePresence mode="wait">
       <motion.p
         key={expandedId === a.id ? "full" : "preview"}

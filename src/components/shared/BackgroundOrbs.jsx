@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 export default function BackgroundOrbs() {
   return (
     <motion.div
-      className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-slate-950"
+      className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#0F172A]"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8 }}

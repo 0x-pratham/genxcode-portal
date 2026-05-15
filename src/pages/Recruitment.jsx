@@ -143,17 +143,17 @@ export default function Recruitment() {
       <div className="relative min-h-screen text-slate-100 px-4 sm:px-6 py-16 sm:py-24">
 
         <div className="max-w-4xl mx-auto text-center mb-10 sm:mb-16">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold bg-gradient-to-r from-cyan-300 via-sky-400 to-indigo-400 bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold bg-gradient-to-r from-cyan-300 via-indigo-400 to-indigo-400 bg-clip-text text-transparent">
             Become a Part of GenXCode
           </h2>
 
-          <p className="mt-4 text-slate-400 text-sm sm:text-base max-w-2xl mx-auto">
+          <p className="mt-4 text-slate-300 text-sm sm:text-base max-w-2xl mx-auto">
             Complete the application below and join a team that builds, leads,
             and creates meaningful impact.
           </p>
         </div>
 
-        <div className="max-w-4xl mx-auto rounded-3xl border border-slate-800 bg-slate-900/60 backdrop-blur-2xl p-6 sm:p-12">
+        <div className="max-w-4xl mx-auto rounded-3xl border border-fuchsia-500/20 bg-slate-900/60 backdrop-blur-xl p-6 sm:p-12">
 
           <div className="text-center mb-10">
             <h2 className="text-2xl sm:text-3xl font-semibold">
@@ -205,11 +205,11 @@ export default function Recruitment() {
                 onChange={handleChange}
                 className={`w-full rounded-xl border ${
                   errors.motivation ? "border-red-500" : "border-slate-700"
-                } bg-slate-950/70 px-4 py-3 text-sm focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all`}
+                } bg-[#0F172A]/70 px-4 py-3 text-sm focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all`}
               />
               <div className="flex justify-between text-xs">
                 <span className="text-red-400">{errors.motivation}</span>
-                <span className="text-slate-400">{form.motivation.length}/30+</span>
+                <span className="text-slate-300">{form.motivation.length}/30+</span>
               </div>
             </div>
 
@@ -218,7 +218,7 @@ export default function Recruitment() {
               disabled={isSubmitting}
               className={`w-full rounded-full px-6 py-3 text-sm font-semibold text-slate-950 transition-all ${
                 isSubmitting
-                  ? "bg-slate-500 cursor-not-allowed"
+                  ? "bg-slate-9000 cursor-not-allowed"
                   : "bg-gradient-to-r from-cyan-500 to-indigo-500 hover:brightness-110"
               }`}
             >
@@ -242,7 +242,7 @@ export default function Recruitment() {
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.7, opacity: 0 }}
         transition={{ type: "spring", stiffness: 120 }}
-        className="relative bg-slate-900 border border-slate-800 rounded-3xl p-8 max-w-md w-full text-center shadow-[0_0_60px_rgba(34,211,238,0.2)]"
+        className="relative bg-slate-900 border border-fuchsia-500/20 rounded-3xl p-8 max-w-md w-full text-center shadow-[0_0_60px_rgba(34,211,238,0.2)]"
       >
         {/* Floating Glow */}
         <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-cyan-500/10 via-green-400/10 to-indigo-500/10 blur-2xl -z-10" />
@@ -276,7 +276,7 @@ export default function Recruitment() {
           Application Submitted Successfully!
         </h3>
 
-        <p className="text-slate-400 text-sm mb-6">
+        <p className="text-slate-300 text-sm mb-6">
           You're one step closer 🚀  
           Join our WhatsApp community to stay updated about announcements,
           shortlists, and next steps.
@@ -293,7 +293,7 @@ export default function Recruitment() {
 
         <button
           onClick={() => setShowSuccessModal(false)}
-          className="text-slate-400 text-sm hover:text-white transition"
+          className="text-slate-300 text-sm hover:text-white transition"
         >
           Maybe Later
         </button>
@@ -320,7 +320,7 @@ function InputField({ label, name, type = "text", value, onChange, error }) {
         onChange={onChange}
         className={`w-full rounded-xl border ${
           error ? "border-red-500" : "border-slate-700"
-        } bg-slate-950/70 px-4 py-3 text-sm focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all`}
+        } bg-[#0F172A]/70 px-4 py-3 text-sm focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all`}
       />
       {error && <p className="text-xs text-red-400">{error}</p>}
     </div>
@@ -339,7 +339,7 @@ function SelectField({ label, name, value, onChange, error, children }) {
         onChange={onChange}
         className={`w-full rounded-xl border ${
           error ? "border-red-500" : "border-slate-700"
-        } bg-slate-950/70 px-4 py-3 text-sm focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all`}
+        } bg-[#0F172A]/70 px-4 py-3 text-sm focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all`}
       >
         {children}
       </select>

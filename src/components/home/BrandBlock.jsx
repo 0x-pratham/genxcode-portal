@@ -11,7 +11,7 @@ export default function BrandBlock() {
       transition={{ duration: 0.6 }}
     >
       <motion.div
-        className="relative overflow-hidden rounded-3xl border border-cyan-400/40 bg-slate-950/90 px-5 py-4 md:px-7 md:py-5 shadow-[0_0_40px_rgba(34,211,238,0.35)]"
+        className="relative overflow-hidden rounded-3xl border border-cyan-400/40 bg-[#0B1020]/95 px-5 py-4 md:px-7 md:py-5 shadow-[0_0_40px_rgba(34,211,238,0.35)] backdrop-blur-xl"
         whileHover={{ scale: 1.02, y: -4 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
       >
@@ -34,17 +34,17 @@ export default function BrandBlock() {
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div className="space-y-1">
-            <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400">Crafted with care</p>
+            <p className="text-[11px] uppercase tracking-[0.22em] text-slate-300">Crafted with care</p>
             <h2 className="text-lg md:text-xl font-semibold">
-              <span className="bg-gradient-to-r from-cyan-300 via-sky-400 to-indigo-300 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-cyan-300 via-indigo-400 to-indigo-300 bg-clip-text text-transparent">
                 GenXCode
               </span>{" "}
-              <span className="text-slate-200">· A product by</span>{" "}
+              <span className="text-slate-100">· A product by</span>{" "}
               <span className="bg-gradient-to-r from-emerald-300 to-cyan-300 bg-clip-text text-transparent">
                 Cosmolix Pvt Ltd
               </span>
             </h2>
-            <p className="text-[11px] md:text-xs text-slate-400 max-w-xl">
+            <p className="text-[11px] md:text-xs text-slate-300 max-w-xl">
               Built like a real SaaS platform for student communities – with dashboards, leagues, challenges and admin
               tools designed by the Cosmolix product team.
             </p>
@@ -56,7 +56,7 @@ export default function BrandBlock() {
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 <span>Powered by Cosmolix</span>
               </span>
-              <span className="mt-1 text-slate-500">Enterprise-level thinking, tuned for campus scale.</span>
+              <span className="mt-1 text-slate-300">Enterprise-level thinking, tuned for campus scale.</span>
             </div>
           </div>
         </div>

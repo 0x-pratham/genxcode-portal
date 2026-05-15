@@ -35,10 +35,10 @@ const MobileMenu = ({
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -40, opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="fixed top-[72px] left-0 right-0 z-50 md:hidden bg-slate-950/95 backdrop-blur-2xl border-t border-slate-800 shadow-2xl shadow-black/40"
+            className="fixed top-[72px] left-0 right-0 z-50 md:hidden bg-[#0F172A]/95 backdrop-blur-xl border-t border-fuchsia-500/20 shadow-2xl shadow-black/40"
           >
             <div className="px-6 py-6 flex flex-col gap-5">
-              <div className="flex flex-col gap-1 pb-2 border-b border-slate-800/60">
+              <div className="flex flex-col gap-1 pb-2 border-b border-fuchsia-500/20/60">
                 {navItems.map((item) => (
                   <NavLink
                     key={item.to}
@@ -50,7 +50,7 @@ const MobileMenu = ({
                         "flex items-center justify-between px-2 py-2 rounded-lg text-sm transition-colors",
                         isActive
                           ? "bg-slate-900 text-cyan-300"
-                          : "text-slate-300 hover:bg-slate-900/80",
+                          : "text-slate-300 hover:bg-slate-900/85",
                       ].join(" ")
                     }
                   >
@@ -74,7 +74,7 @@ const MobileMenu = ({
                         {initials}
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-[11px] text-slate-200">
+                        <span className="text-[11px] text-slate-100">
                           {userMeta.full_name || email?.split("@")[0]}
                         </span>
                         <span className="text-[10px] text-cyan-300">
@@ -84,7 +84,7 @@ const MobileMenu = ({
                     </div>
                     <button
                       onClick={handleLogout}
-                      className="text-[11px] text-slate-400 hover:text-rose-300"
+                      className="text-[11px] text-slate-300 hover:text-rose-300"
                     >
                       Logout
                     </button>
@@ -128,7 +128,7 @@ const MobileMenu = ({
                 </div>
               )}
 
-              <p className="text-[10px] text-slate-500 pt-1">
+              <p className="text-[10px] text-slate-300 pt-1">
                 You are on:{" "}
                 <span className="font-mono text-cyan-300">
                   {location.pathname || "/"}

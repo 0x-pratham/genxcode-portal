@@ -157,7 +157,7 @@ export default function Profile() {
   // --------------------------------------------------
   if (loadingUser) {
     return (
-      <main className="min-h-screen flex items-center justify-center text-slate-400">
+      <main className="min-h-screen flex items-center justify-center text-slate-300">
         Loading profile…
       </main>
     );
@@ -180,11 +180,11 @@ export default function Profile() {
         >
           <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">
             Your{" "}
-            <span className="bg-gradient-to-r from-cyan-300 via-sky-400 to-indigo-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-cyan-300 via-indigo-400 to-indigo-400 bg-clip-text text-transparent">
               Profile
             </span>
           </h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-slate-300">
             These details appear on your dashboard and leaderboard.
           </p>
         </motion.header>
@@ -214,7 +214,7 @@ export default function Profile() {
             transition={{ duration: 6, repeat: Infinity }}
           />
 
-          <div className="relative rounded-3xl bg-slate-950/90 border border-slate-800 px-6 py-6 shadow-2xl backdrop-blur space-y-5">
+          <div className="relative rounded-3xl bg-[#0F172A]/90 border border-fuchsia-500/20 px-6 py-6 shadow-2xl backdrop-blur space-y-5">
 
             {profileLoading ? (
               <div className="grid gap-4 md:grid-cols-2">
@@ -235,13 +235,13 @@ export default function Profile() {
                 {/* Avatar & quick actions */}
                 <div className="md:col-span-2 flex items-center gap-4">
                   <div className="relative">
-                    <div className="h-20 w-20 rounded-full bg-gradient-to-br from-cyan-500 to-indigo-500 flex items-center justify-center text-slate-900 font-bold text-xl">
+                    <div className="h-20 w-20 rounded-full bg-gradient-to-br from-cyan-500 to-indigo-500 flex items-center justify-center text-slate-100 font-bold text-xl">
                       {initials}
                     </div>
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="absolute -bottom-2 -right-2 bg-slate-800/80 border border-slate-700 rounded-full p-1 text-xs text-slate-200"
+                      className="absolute -bottom-2 -right-2 bg-slate-800/80 border border-slate-700 rounded-full p-1 text-xs text-slate-100"
                     >
                       Edit
                     </button>
@@ -249,19 +249,19 @@ export default function Profile() {
                   </div>
 
                   <div className="flex-1">
-                    <label className="text-xs text-slate-400">Full name</label>
+                    <label className="text-xs text-slate-300">Full name</label>
                     <input
                       className="input-base mt-1"
                       value={profile.full_name}
                       onChange={(e) => setProfile((p) => ({ ...p, full_name: e.target.value }))}
                     />
-                    <p className="text-[11px] text-slate-500 mt-1">This name appears on your leaderboard and profile badge.</p>
+                    <p className="text-[11px] text-slate-300 mt-1">This name appears on your leaderboard and profile badge.</p>
                   </div>
                 </div>
 
                 {/* Branch */}
                 <div>
-                  <label className="text-xs text-slate-400">Branch</label>
+                  <label className="text-xs text-slate-300">Branch</label>
                   <input
                     className="input-base mt-1"
                     value={profile.branch}
@@ -271,7 +271,7 @@ export default function Profile() {
 
                 {/* Year */}
                 <div>
-                  <label className="text-xs text-slate-400">Year</label>
+                  <label className="text-xs text-slate-300">Year</label>
                   <input
                     className="input-base mt-1"
                     value={profile.year}
@@ -281,7 +281,7 @@ export default function Profile() {
 
                 {/* GitHub */}
                 <div className="md:col-span-2">
-                  <label className="text-xs text-slate-400">GitHub</label>
+                  <label className="text-xs text-slate-300">GitHub</label>
                   <div className="flex items-center gap-2 mt-1">
                     <input
                       className="input-base flex-1"
@@ -302,7 +302,7 @@ export default function Profile() {
                       Open
                     </button>
                   </div>
-                  <p className="text-[11px] text-slate-500 mt-1">Add your github username to show on the leaderboard.</p>
+                  <p className="text-[11px] text-slate-300 mt-1">Add your github username to show on the leaderboard.</p>
                 </div>
               </div>
             )}
@@ -310,7 +310,7 @@ export default function Profile() {
             {/* ACTIONS */}
             <div className="flex justify-between items-center pt-4">
               <div className="flex items-center gap-3">
-                <Link to="/dashboard" className="text-xs text-slate-400 hover:text-cyan-300">
+                <Link to="/dashboard" className="text-xs text-slate-300 hover:text-cyan-300">
                   ← Back to dashboard
                 </Link>
                 <button
@@ -321,7 +321,7 @@ export default function Profile() {
                     setSuccessMsg("Profile link copied to clipboard.");
                     setTimeout(() => setSuccessMsg(""), 2000);
                   }}
-                  className="text-xs text-slate-400 hover:text-slate-200 bg-slate-800/40 px-2 py-1 rounded"
+                  className="text-xs text-slate-300 hover:text-slate-100 bg-slate-800/40 px-2 py-1 rounded"
                 >
                   Copy profile link
                 </button>

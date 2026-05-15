@@ -88,7 +88,7 @@ export default function HomeAnimatedBackground() {
       {stars.map((s, i) => (
         <motion.div
           key={`star-${i}`}
-          className="absolute rounded-full bg-white"
+          className="absolute rounded-full bg-slate-900"
           style={{ width: s.size, height: s.size, left: `${s.left}%`, top: `${s.top}%`, opacity: 0.85 }}
           animate={noAnim && isLargeScreen ? { opacity: [0.18, 0.95, 0.18], scale: [0.9, 1.12, 0.9] } : { opacity: 0.75 }}
           transition={noAnim && isLargeScreen ? { duration: 2.5 + i * 0.2, repeat: Infinity, delay: s.delay } : {}}

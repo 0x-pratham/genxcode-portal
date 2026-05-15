@@ -60,8 +60,8 @@ useEffect(() => {
       [
         "relative px-5 py-2 text-sm md:text-[15px] font-medium transition-all duration-200 transform-gpu",
 isActive
-  ? "text-cyan-300"
-  : "text-slate-300 hover:text-white hover:scale-[1.03]",
+  ? "text-fuchsia-300"
+  : "text-slate-300 hover:text-fuchsia-200 hover:scale-[1.05]"
       ].join(" ")
     }
   >
@@ -72,7 +72,7 @@ isActive
         {isActive && (
           <motion.span
             layoutId="nav-underline"
-            className="absolute inset-x-4 -bottom-1 h-0.5 rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 shadow-[0_0_18px_rgba(34,211,238,0.7)]"
+            className="absolute inset-x-4 -bottom-1 h-0.5 rounded-full bg-gradient-to-r from-fuchsia-400 via-pink-400 to-rose-400 shadow-[0_0_18px_rgba(232,121,249,0.7)]"
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
           />
         )}
@@ -82,10 +82,10 @@ isActive
 );
   return (
     <motion.nav
-      className={`sticky top-0 z-50 border-b transition-all duration-300 transition-colors ${
+      className={`sticky top-0 z-50 border-b  duration-300 transition-colors ${
   scrolled
-  ? "border-slate-800/90 bg-slate-950/98 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.6)]"
-  : "border-slate-800/50 bg-slate-950/60 backdrop-blur-xl"
+  ? "border-slate-800/90 bg-transparent/98 backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.6)]"
+  : "border-slate-800/50 bg-transparent/60 backdrop-blur-xl"
 }`}
       initial={shouldReduceMotion ? false : { y: -25, opacity: 0 }}
 animate={{ y: 0, opacity: 1 }}
@@ -94,13 +94,13 @@ transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
     >
       {/* glow line */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-b from-transparent to-slate-950/40" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-cyan-400/20 via-fuchsia-400/20 to-emerald-400/20" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-fuchsia-400/20 via-pink-400/20 to-rose-400/20" />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         {/* main row */}
         <div
   className={`flex items-center justify-between gap-6 transition-all duration-300 ${
-    scrolled ? "py-3 md:py-3.5" : "py-4 md:py-5"
+    scrolled ? "py-3 md:py-3.5" : ""
   }`}
 >
           {/* === Logo (left) === */}
@@ -111,14 +111,14 @@ transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           >
             <div className="relative">
               <motion.div
-                className="absolute inset-0 blur-md bg-cyan-400/40 opacity-0 group-hover:opacity-100"
+                className="absolute inset-0 blur-md bg-fuchsia-400/40 opacity-0 group-hover:opacity-100"
                 initial={false}
                 transition={{ duration: 0.3 }}
               />
               <motion.img
                 src="https://i.ibb.co/FkVqXHZ8/Gen-XCode-Logo.png"
                 alt="GenXCode logo"
-                className={`relative rounded-2xl object-contain ring-1 ring-cyan-400/40 bg-slate-950/80 transition-all duration-300 ${
+                className={`relative rounded-2xl object-contain ring-1 ring-fuchsia-400/40 bg-transparent/80 transition-all duration-300 ${
   scrolled
     ? "h-9 w-9 md:h-10 md:w-10"
     : "h-11 w-11 md:h-12 md:w-12"
@@ -126,10 +126,10 @@ transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               />
             </div>
             <div className="flex flex-col leading-tight">
-              <span className="text-lg md:text-2xl font-semibold tracking-tight">
+              <span className="text-xl md:text-2xl font-bold tracking-tight bg-gradient-to-r from-fuchsia-300 to-rose-400 bg-clip-text text-transparent">
                 GenXCode
               </span>
-              <span className="text-[4px] md:text-[6px] uppercase tracking-[0.3em] text-cyan-300/80">
+              <span className="text-[4px] md:text-[6px] uppercase tracking-[0.3em] text-fuchsia-300/80">
                 Code · Create · Conquer
               </span>
             </div>
@@ -137,7 +137,7 @@ transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
 
           {/* === Center nav (desktop) === */}
           <div className="hidden md:flex flex-1 justify-center">
-            <div className="flex items-center gap-1 rounded-full border border-slate-800/70 bg-slate-950/50 backdrop-blur-xl px-2 py-1.5 shadow-inner shadow-slate-900/40">
+            <div className="flex items-center gap-1 rounded-full border border-slate-800/70 bg-slate-900/40 backdrop-blur-xl px-2 py-1.5 shadow-inner shadow-slate-900/40">
               {navItems.map((item) =>
                 renderNavLink(item.to, item.label, item.to === "/")
               )}
@@ -153,7 +153,7 @@ transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
   <motion.button
     whileHover={{ scale: 1.04 }}
     whileTap={{ scale: 0.96 }}
-    className="relative inline-flex items-center gap-2 rounded-full border border-cyan-400/40 bg-slate-950/50 backdrop-blur-xl px-5 py-2.5 text-xs md:text-sm font-medium text-cyan-200 shadow-lg shadow-cyan-500/10 overflow-hidden transition-all duration-300 hover:border-cyan-300 hover:shadow-cyan-400/30"
+    className="relative inline-flex items-center gap-2 rounded-full border border-fuchsia-400/40 bg-transparent/50 backdrop-blur-xl px-5 py-2.5 text-xs md:text-sm font-medium text-fuchsia-200 shadow-lg shadow-fuchsia-500/10 overflow-hidden transition-all duration-300 hover:border-fuchsia-300 hover:shadow-fuchsia-400/30"
   >
     <span className="relative z-10 flex items-center gap-2">
       <span className="text-[13px]">📊</span>
@@ -161,7 +161,7 @@ transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
     </span>
 
     {/* light sweep */}
-    <span className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500" />
+    <span className="absolute inset-0 bg-gradient-to-r from-transparent via-fuchsia-400/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500" />
   </motion.button>
 </Link>
 
@@ -172,7 +172,7 @@ transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
     whileHover={{ scale: 1.04 }}
     whileTap={{ scale: 0.96 }}
     aria-label="Open admin panel"
-    className="relative inline-flex items-center gap-2 rounded-full border border-fuchsia-400/40 bg-slate-950/50 backdrop-blur-xl px-5 py-2.5 text-xs md:text-sm font-medium text-fuchsia-200 shadow-lg shadow-fuchsia-500/10 overflow-hidden transition-all duration-300 hover:border-fuchsia-300 hover:shadow-fuchsia-400/30"
+    className="relative inline-flex items-center gap-2 rounded-full border border-fuchsia-400/40 bg-transparent/50 backdrop-blur-xl px-5 py-2.5 text-xs md:text-sm font-medium text-fuchsia-200 shadow-lg shadow-fuchsia-500/10 overflow-hidden transition-all duration-300 hover:border-fuchsia-300 hover:shadow-fuchsia-400/30"
   >
     <span className="relative z-10 flex items-center gap-2">
       <span className="text-[13px]">⚙</span>
@@ -201,7 +201,7 @@ transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
   <motion.button
     whileHover={{ scale: 1.04 }}
     whileTap={{ scale: 0.96 }}
-    className="rounded-full border border-slate-700 bg-slate-950/70 px-5 py-2.5 text-xs md:text-sm text-slate-200 hover:border-cyan-400 hover:text-cyan-200 hover:shadow-md hover:shadow-cyan-500/20 transition-all"
+    className="rounded-full border border-slate-700 bg-transparent/70 px-5 py-2.5 text-xs md:text-sm text-slate-200 hover:border-fuchsia-400 hover:text-fuchsia-200 hover:shadow-md hover:shadow-fuchsia-500/20 transition-all"
   >
     Log in
   </motion.button>
@@ -210,7 +210,7 @@ transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
   <motion.button
     whileHover={{ scale: 1.04 }}
     whileTap={{ scale: 0.96 }}
-    className="rounded-full bg-gradient-to-r from-cyan-500 to-indigo-500 px-6 py-2.5 text-xs md:text-sm font-medium text-slate-950 shadow-lg shadow-cyan-500/40 hover:brightness-110 active:scale-95 transition-all"
+    className="rounded-full bg-gradient-to-r  from-fuchsia-400 via-pink-500 to-rose to-purple-500 px-6 py-2.5 text-xs md:text-sm font-medium text-slate-950 shadow-lg shadow-fuchsia-500/40 hover:brightness-110 active:scale-95 transition-all"
   >
     Join now
   </motion.button>
@@ -223,13 +223,13 @@ transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           <div className="md:hidden flex items-center gap-2">
             {user ? (
               <Link to="/dashboard" onClick={() => setMobileOpen(false)}>
-                <button className="text-[11px] px-3 py-1.5 rounded-full border border-cyan-500/60 bg-slate-950/80 text-cyan-200">
+                <button className="text-[11px] px-3 py-1.5 rounded-full border border-fuchsia-500/60 bg-transparent/80 text-fuchsia-200">
                   Dashboard
                 </button>
               </Link>
             ) : (
               <Link to="/login" onClick={() => setMobileOpen(false)}>
-                <button className="text-[11px] px-3 py-1.5 rounded-full border border-slate-700 bg-slate-950/80">
+                <button className="text-[11px] px-3 py-1.5 rounded-full border border-slate-700 bg-transparent/80">
                   Login
                 </button>
               </Link>

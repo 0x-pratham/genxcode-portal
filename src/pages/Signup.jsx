@@ -290,7 +290,7 @@ export default function Signup() {
     return (
       <main className="relative min-h-screen text-slate-100 flex items-center justify-center overflow-hidden">
         <BackgroundOrbs />
-        <p className="relative z-10 text-sm text-slate-400">
+        <p className="relative z-10 text-sm text-slate-300">
           Checking your session…
         </p>
       </main>
@@ -311,7 +311,7 @@ export default function Signup() {
             transition={{ duration: 0.7, ease: "easeOut" }}
           >
             <motion.div
-              className="inline-flex items-center gap-2 rounded-full border border-slate-700/70 bg-slate-900/80 px-3 py-1.5 text-[11px] text-slate-300 shadow-lg shadow-cyan-500/20 backdrop-blur"
+              className="inline-flex items-center gap-2 rounded-full border border-slate-700/70 bg-slate-900/85 px-3 py-1.5 text-[11px] text-slate-300 shadow-lg shadow-cyan-500/20 backdrop-blur"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.1 }}
@@ -334,13 +334,13 @@ export default function Signup() {
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
                 Create your{" "}
-                <span className="bg-gradient-to-r from-cyan-300 via-sky-400 to-indigo-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-cyan-300 via-indigo-400 to-indigo-400 bg-clip-text text-transparent">
                   GenXCode
                 </span>{" "}
                 account.
               </motion.h1>
               <motion.p
-                className="text-sm md:text-base text-slate-400 max-w-xl leading-relaxed"
+                className="text-sm md:text-base text-slate-300 max-w-xl leading-relaxed"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
@@ -386,7 +386,7 @@ export default function Signup() {
             </motion.ul>
 
             <motion.div
-              className="flex items-center gap-2 text-[11px] text-slate-500"
+              className="flex items-center gap-2 text-[11px] text-slate-300"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.8 }}
@@ -419,7 +419,7 @@ export default function Signup() {
             />
 
             <motion.div
-              className="relative rounded-3xl bg-slate-950/90 border border-slate-700/80 px-6 py-6 md:px-8 md:py-8 backdrop-blur shadow-2xl shadow-slate-950/80"
+              className="relative rounded-3xl bg-[#0F172A]/90 border border-slate-700/80 px-6 py-6 md:px-8 md:py-8 backdrop-blur shadow-2xl shadow-slate-950/80"
               animate={{ y: [0, -6, 0] }}
               transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
             >
@@ -427,7 +427,7 @@ export default function Signup() {
                 <h2 className="text-2xl md:text-3xl font-semibold mb-2">
                   Get started
                 </h2>
-                <p className="text-xs md:text-sm text-slate-400">
+                <p className="text-xs md:text-sm text-slate-300">
                   Fill in your details to create your account
                 </p>
               </header>
@@ -459,7 +459,7 @@ export default function Signup() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Full Name */}
                 <div className="space-y-1.5">
-                  <label className="text-xs text-slate-400">
+                  <label className="text-xs text-slate-300">
                     Full Name <span className="text-red-400">*</span>
                   </label>
                   <input
@@ -483,7 +483,7 @@ export default function Signup() {
 
                 {/* Email */}
                 <div className="space-y-1.5">
-                  <label className="text-xs text-slate-400">
+                  <label className="text-xs text-slate-300">
                     Email <span className="text-red-400">*</span>
                   </label>
                   <input
@@ -508,7 +508,7 @@ export default function Signup() {
                 {/* Branch and Year - Grid */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs text-slate-400">
+                    <label className="text-xs text-slate-300">
                       Branch <span className="text-red-400">*</span>
                     </label>
                     <select
@@ -536,7 +536,7 @@ export default function Signup() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs text-slate-400">
+                    <label className="text-xs text-slate-300">
                       Year <span className="text-red-400">*</span>
                     </label>
                     <select
@@ -566,7 +566,7 @@ export default function Signup() {
 
                 {/* GitHub */}
                 <div className="space-y-1.5">
-                  <label className="text-xs text-slate-400">
+                  <label className="text-xs text-slate-300">
                     GitHub Profile <span className="text-red-400">*</span>
                   </label>
                   <input
@@ -586,15 +586,15 @@ export default function Signup() {
                   {errors.github && (
                     <p className="text-[10px] text-red-400">{errors.github}</p>
                   )}
-                  <p className="text-[10px] text-slate-500">
+                  <p className="text-[10px] text-slate-300">
                     Your GitHub profile URL (e.g., https://github.com/username)
                   </p>
                 </div>
 
                 {/* Phone - Optional */}
                 <div className="space-y-1.5">
-                  <label className="text-xs text-slate-400">
-                    Phone <span className="text-slate-500">(Optional)</span>
+                  <label className="text-xs text-slate-300">
+                    Phone <span className="text-slate-300">(Optional)</span>
                   </label>
                   <input
                     type="tel"
@@ -613,7 +613,7 @@ export default function Signup() {
 
                 {/* Password */}
                 <div className="space-y-1.5">
-                  <label className="text-xs text-slate-400">
+                  <label className="text-xs text-slate-300">
                     Password <span className="text-red-400">*</span>
                   </label>
                   <div className="relative">
@@ -634,7 +634,7 @@ export default function Signup() {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 text-xs"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-100 text-xs"
                     >
                       {showPassword ? "Hide" : "Show"}
                     </button>
@@ -673,7 +673,7 @@ export default function Signup() {
                           {passwordStrength.label}
                         </span>
                       </div>
-                      <p className="text-[10px] text-slate-500">
+                      <p className="text-[10px] text-slate-300">
                         Use 8+ characters with mix of letters, numbers & symbols
                       </p>
                     </div>
@@ -682,7 +682,7 @@ export default function Signup() {
 
                 {/* Confirm Password */}
                 <div className="space-y-1.5">
-                  <label className="text-xs text-slate-400">
+                  <label className="text-xs text-slate-300">
                     Confirm Password <span className="text-red-400">*</span>
                   </label>
                   <div className="relative">
@@ -709,7 +709,7 @@ export default function Signup() {
                       onClick={() =>
                         setShowConfirmPassword(!showConfirmPassword)
                       }
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 text-xs"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-100 text-xs"
                     >
                       {showConfirmPassword ? "Hide" : "Show"}
                     </button>
@@ -750,11 +750,11 @@ export default function Signup() {
                         </>
                       )}
                     </span>
-                    <span className="pointer-events-none absolute inset-0 bg-gradient-to-r from-cyan-400/40 via-sky-500/30 to-indigo-500/40 opacity-0 transition group-hover:opacity-100" />
+                    <span className="pointer-events-none absolute inset-0 bg-gradient-to-r from-cyan-400/40 via-indigo-500/30 to-indigo-500/40 opacity-0 transition group-hover:opacity-100" />
                   </motion.button>
                 </div>
 
-                <p className="text-[10px] text-slate-500 text-center pt-2">
+                <p className="text-[10px] text-slate-300 text-center pt-2">
                   By signing up, you agree to GenXCode's{" "}
                   <span className="text-cyan-300">Terms of Service</span> and{" "}
                   <span className="text-cyan-300">Privacy Policy</span>

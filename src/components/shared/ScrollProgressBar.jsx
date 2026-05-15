@@ -8,7 +8,7 @@ export default function ScrollProgressBar() {
 
   return (
     <motion.div
-      className="fixed top-0 left-0 h-1.5 bg-gradient-to-r from-cyan-500 via-sky-500 to-indigo-500 z-50 origin-left shadow-lg shadow-cyan-500/50"
+      className="fixed top-0 left-0 h-1.5 bg-gradient-to-r from-cyan-500 via-indigo-500 to-indigo-500 z-50 origin-left shadow-lg shadow-cyan-500/50"
       style={{ width, transformOrigin: "left" }}
     />
   );

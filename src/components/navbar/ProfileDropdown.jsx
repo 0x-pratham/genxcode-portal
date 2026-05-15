@@ -45,14 +45,14 @@ const ProfileDropdown = ({ user, isAdmin, onLogout }) => {
       <motion.button
         whileTap={{ scale: 0.96 }}
         onClick={() => setOpen((prev) => !prev)}
-        className="flex items-center gap-3 rounded-full border border-slate-700/60 bg-slate-950/50 backdrop-blur-xl px-3 py-2 shadow-lg shadow-slate-900/40 hover:border-cyan-400/50 transition-all"
+        className="flex items-center gap-3 rounded-full border border-slate-700/60 bg-[#0F172A]/50 backdrop-blur-xl px-3 py-2 shadow-lg shadow-slate-900/40 hover:border-cyan-400/50 transition-all"
       >
         <div className="relative h-9 w-9 md:h-10 md:w-10 rounded-full bg-gradient-to-br from-cyan-500 to-indigo-500 flex items-center justify-center text-xs font-semibold text-slate-950">
           {initials}
         </div>
 
         <div className="hidden lg:flex flex-col text-left">
-          <span className="text-xs md:text-sm text-slate-200 max-w-[120px] truncate">
+          <span className="text-xs md:text-sm text-slate-100 max-w-[120px] truncate">
             {userMeta.full_name || email?.split("@")[0]}
           </span>
           <span className="text-[10px] text-cyan-300">
@@ -62,7 +62,7 @@ const ProfileDropdown = ({ user, isAdmin, onLogout }) => {
 
         <motion.span
           animate={{ rotate: open ? 180 : 0 }}
-          className="text-slate-400 text-xs"
+          className="text-slate-300 text-xs"
         >
           ▼
         </motion.span>
@@ -75,13 +75,13 @@ const ProfileDropdown = ({ user, isAdmin, onLogout }) => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.98 }}
             transition={{ duration: 0.18 }}
-            className="absolute right-0 mt-3 w-56 rounded-2xl border border-slate-800 bg-slate-950/95 backdrop-blur-2xl shadow-2xl shadow-slate-950/70 overflow-hidden z-50"
+            className="absolute right-0 mt-3 w-56 rounded-2xl border border-fuchsia-500/20 bg-[#0F172A]/95 backdrop-blur-xl shadow-2xl shadow-slate-950/70 overflow-hidden z-50"
           >
             <div className="flex flex-col py-2 text-sm">
               <Link
                 to="/profile"
                 onClick={() => setOpen(false)}
-                className="px-4 py-2 hover:bg-slate-900 transition-colors text-slate-200"
+                className="px-4 py-2 hover:bg-slate-900 transition-colors text-slate-100"
               >
                 Profile
               </Link>
@@ -89,7 +89,7 @@ const ProfileDropdown = ({ user, isAdmin, onLogout }) => {
               <Link
                 to="/dashboard"
                 onClick={() => setOpen(false)}
-                className="px-4 py-2 hover:bg-slate-900 transition-colors text-slate-200"
+                className="px-4 py-2 hover:bg-slate-900 transition-colors text-slate-100"
               >
                 Dashboard
               </Link>
@@ -104,7 +104,7 @@ const ProfileDropdown = ({ user, isAdmin, onLogout }) => {
                 </Link>
               )}
 
-              <div className="border-t border-slate-800 my-2" />
+              <div className="border-t border-fuchsia-500/20 my-2" />
 
               <button
                 onClick={() => {

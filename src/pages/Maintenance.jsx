@@ -49,7 +49,7 @@ export default function Maintenance() {
   }, [launchDate]);
 
   return (
-    <div className="relative min-h-screen bg-slate-950 text-slate-100 overflow-x-hidden">
+    <div className="relative min-h-screen bg-[#0F172A] text-slate-100 overflow-x-hidden">
 
       {/* 🔥 Same Background as Home */}
       <BackgroundOrbs />
@@ -57,7 +57,7 @@ export default function Maintenance() {
       {/* Content */}
       <div className="relative z-10 max-w-2xl mx-auto px-6 pt-32 pb-20">
 
-        <div className="rounded-3xl border border-slate-800 bg-slate-950/85 backdrop-blur-2xl shadow-[0_0_80px_rgba(56,189,248,0.15)] px-8 py-12 text-center transition-all duration-500 hover:scale-[1.02]">
+        <div className="rounded-3xl border border-fuchsia-500/20 bg-[#0F172A]/85 backdrop-blur-xl shadow-[0_0_80px_rgba(56,189,248,0.15)] px-8 py-12 text-center transition-all duration-500 hover:scale-[1.02]">
 
           {/* Logo */}
           <div className="mb-6">
@@ -69,11 +69,11 @@ export default function Maintenance() {
           </div>
 
           {/* Heading */}
-          <h1 className="text-4xl md:text-5xl font-semibold bg-gradient-to-r from-cyan-300 via-sky-400 to-indigo-400 bg-clip-text text-transparent mb-6">
+          <h1 className="text-4xl md:text-5xl font-semibold bg-gradient-to-r from-cyan-300 via-indigo-400 to-indigo-400 bg-clip-text text-transparent mb-6">
             We’re Upgrading GenXCode
           </h1>
 
-          <p className="text-sm md:text-base text-slate-400 mb-10">
+          <p className="text-sm md:text-base text-slate-300 mb-10">
             We are deploying major improvements to enhance performance,
             scalability and overall experience.
           </p>
@@ -83,19 +83,19 @@ export default function Maintenance() {
             {["days", "hours", "minutes", "seconds"].map((unit) => (
               <div
                 key={unit}
-                className="rounded-xl bg-slate-900 border border-slate-800 py-5"
+                className="rounded-xl bg-slate-900 border border-fuchsia-500/20 py-5"
               >
                 <p className="text-2xl md:text-3xl font-semibold text-cyan-300 animate-pulse-glow">
                   {timeLeft[unit] ?? "00"}
                 </p>
-                <p className="text-[11px] uppercase text-slate-500 tracking-wide mt-1">
+                <p className="text-[11px] uppercase text-slate-300 tracking-wide mt-1">
                   {unit}
                 </p>
               </div>
             ))}
           </div>
 
-          <div className="mt-12 text-xs text-slate-500">
+          <div className="mt-12 text-xs text-slate-300">
             Expected relaunch soon. Thank you for your patience.
           </div>
 

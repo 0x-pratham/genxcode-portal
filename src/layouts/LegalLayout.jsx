@@ -10,7 +10,7 @@ export default function LegalLayout({ title, accent, children }) {
 
       {/* Scroll progress */}
       <motion.div
-        className="fixed top-0 left-0 h-1 bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 z-50"
+        className="fixed top-0 left-0 h-1 bg-gradient-to-r from-cyan-400 via-indigo-400 to-indigo-400 z-50"
         style={{ width }}
       />
 
@@ -33,7 +33,7 @@ export default function LegalLayout({ title, accent, children }) {
         <motion.div whileHover={{ x: -4 }}>
           <Link
             to="/"
-            className="text-xs text-slate-400 hover:text-cyan-300 transition"
+            className="text-xs text-slate-300 hover:text-cyan-300 transition"
           >
             ← Back to Home
           </Link>
@@ -50,7 +50,7 @@ export default function LegalLayout({ title, accent, children }) {
 
         {/* Glass Card */}
         <motion.div
-          className="relative rounded-3xl border border-slate-800 bg-slate-950/70 p-10 shadow-2xl backdrop-blur-xl overflow-hidden"
+          className="relative rounded-3xl border border-fuchsia-500/20 bg-[#0F172A]/70 p-10 shadow-2xl backdrop-blur-xl overflow-hidden"
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
         >

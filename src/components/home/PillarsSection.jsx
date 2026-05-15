@@ -22,7 +22,7 @@ export default function PillarsSection({ pillars }) {
     >
       <div className="flex items-center justify-between gap-2">
         <h2 className="text-xl md:text-2xl font-semibold">How GenXCode works for you</h2>
-        <p className="text-[11px] md:text-xs text-slate-500">Build · Learn · Get noticed</p>
+        <p className="text-[11px] md:text-xs text-slate-300">Build · Learn · Get noticed</p>
       </div>
 
       <motion.div
@@ -35,7 +35,7 @@ export default function PillarsSection({ pillars }) {
         {pillars.map((p) => (
           <motion.div
             key={p.title}
-            className="card bg-slate-950/80 border border-slate-800 px-5 py-5 rounded-2xl transition-all relative overflow-hidden"
+            className="card bg-slate-900/90 border border-fuchsia-500/20 px-5 py-5 rounded-2xl transition-all relative overflow-hidden"
             variants={itemVariants}
             whileHover={{
               y: -8,

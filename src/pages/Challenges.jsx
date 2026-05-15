@@ -167,7 +167,7 @@ export default function Challenges() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, ease: "easeOut" }}
         >
-          <div className="inline-flex items-center gap-2 rounded-full border border-slate-800 bg-slate-950/80 px-3 py-1.5 text-[11px] text-slate-300 shadow-lg shadow-cyan-500/25 backdrop-blur">
+          <div className="inline-flex items-center gap-2 rounded-full border border-fuchsia-500/20 bg-slate-900/90 px-3 py-1.5 text-[11px] text-slate-300 shadow-lg shadow-cyan-500/25 backdrop-blur">
             <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
             <span>GenXCode · Live Coding Challenges</span>
           </div>
@@ -176,18 +176,18 @@ export default function Challenges() {
             <div className="space-y-2">
               <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold tracking-tight">
                 Pick a challenge,{" "}
-                <span className="bg-gradient-to-r from-cyan-300 via-sky-400 to-indigo-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-cyan-300 via-indigo-400 to-indigo-400 bg-clip-text text-transparent">
                   ship your solution
                 </span>
                 .
               </h1>
-              <p className="text-sm md:text-base text-slate-400 max-w-2xl">
+              <p className="text-sm md:text-base text-slate-300 max-w-2xl">
                 Build your solution on GitHub, submit the repo link and earn
                 points as the core team reviews and approves your work.
               </p>
             </div>
 
-            <p className="text-[11px] text-slate-500">
+            <p className="text-[11px] text-slate-300">
               Track your progress in the{" "}
               <Link
                 to="/dashboard"
@@ -201,19 +201,19 @@ export default function Challenges() {
 
         {/* FILTERS */}
         <motion.section
-          className="flex flex-wrap gap-3 items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 shadow-lg shadow-slate-950/60"
+          className="flex flex-wrap gap-3 items-center justify-between rounded-2xl border border-fuchsia-500/20 bg-[#0F172A]/70 px-4 py-3 shadow-lg shadow-slate-950/60"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, delay: 0.1 }}
         >
           <div className="flex flex-wrap gap-2 text-[11px] md:text-xs">
-            <span className="text-slate-400 mr-1">Difficulty:</span>
+            <span className="text-slate-300 mr-1">Difficulty:</span>
             <button
               onClick={() => setDifficultyFilter("all")}
               className={`px-3 py-1.5 rounded-full border transition-all ${
                 difficultyFilter === "all"
                   ? "bg-slate-900 border-cyan-500/70 text-cyan-200 shadow-md shadow-cyan-500/30"
-                  : "bg-slate-950 border-slate-700 text-slate-400 hover:border-slate-500"
+                  : "bg-[#0F172A] border-slate-700 text-slate-300 hover:border-slate-9000"
               }`}
             >
               All
@@ -223,7 +223,7 @@ export default function Challenges() {
               className={`px-3 py-1.5 rounded-full border transition-all ${
                 difficultyFilter === "easy"
                   ? "bg-emerald-900/60 border-emerald-500/80 text-emerald-100 shadow-md shadow-emerald-500/25"
-                  : "bg-slate-950 border-slate-700 text-slate-400 hover:border-slate-500"
+                  : "bg-[#0F172A] border-slate-700 text-slate-300 hover:border-slate-9000"
               }`}
             >
               Easy
@@ -233,7 +233,7 @@ export default function Challenges() {
               className={`px-3 py-1.5 rounded-full border transition-all ${
                 difficultyFilter === "medium"
                   ? "bg-amber-900/60 border-amber-500/80 text-amber-100 shadow-md shadow-amber-500/25"
-                  : "bg-slate-950 border-slate-700 text-slate-400 hover:border-slate-500"
+                  : "bg-[#0F172A] border-slate-700 text-slate-300 hover:border-slate-9000"
               }`}
             >
               Medium
@@ -243,7 +243,7 @@ export default function Challenges() {
               className={`px-3 py-1.5 rounded-full border transition-all ${
                 difficultyFilter === "hard"
                   ? "bg-red-900/60 border-red-500/80 text-red-100 shadow-md shadow-red-500/25"
-                  : "bg-slate-950 border-slate-700 text-slate-400 hover:border-slate-500"
+                  : "bg-[#0F172A] border-slate-700 text-slate-300 hover:border-slate-9000"
               }`}
             >
               Hard
@@ -256,7 +256,7 @@ export default function Challenges() {
               placeholder="Search by title or description…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="input-base text-xs w-full bg-slate-950/80 border-slate-700/80"
+              className="input-base text-xs w-full bg-slate-900/90 border-slate-700/80"
             />
           </div>
         </motion.section>
@@ -267,7 +267,7 @@ export default function Challenges() {
             {[0, 1, 2].map((i) => (
               <motion.div
                 key={i}
-                className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/85 px-5 py-4 shadow-lg"
+                className="relative overflow-hidden rounded-2xl border border-fuchsia-500/20 bg-[#0F172A]/85 px-5 py-4 shadow-lg"
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
@@ -280,7 +280,7 @@ export default function Challenges() {
           </div>
         ) : filteredChallenges.length === 0 ? (
           <motion.div
-            className="card px-5 py-8 text-sm text-slate-300 text-center border border-dashed border-slate-700 bg-slate-950/70"
+            className="card px-5 py-8 text-sm text-slate-300 text-center border border-dashed border-slate-700 bg-[#0F172A]/70"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
           >
@@ -305,14 +305,14 @@ export default function Challenges() {
               return (
                 <motion.article
                   key={c.id}
-                  className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/85 px-5 py-4 shadow-lg shadow-slate-950/70 transition-all"
+                  className="relative overflow-hidden rounded-2xl border border-fuchsia-500/20 bg-[#0F172A]/85 px-5 py-4 shadow-lg shadow-slate-950/70 transition-all"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.35, delay: index * 0.04 }}
                   whileHover={shouldReduce ? {} : { y: -3, scale: 1.01 }}
                 >
                   {/* accent bar */}
-                  <div className="pointer-events-none absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-cyan-400 via-sky-500 to-fuchsia-400 opacity-70" />
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-cyan-400 via-indigo-500 to-fuchsia-400 opacity-70" />
 
                   <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
                     <div className="space-y-1">
@@ -322,7 +322,7 @@ export default function Challenges() {
                         </h2>
                         <div className="flex-shrink-0 text-right">
                           <div className="inline-flex items-center gap-2">
-                            <span className="text-[11px] text-slate-400">{difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}</span>
+                            <span className="text-[11px] text-slate-300">{difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}</span>
                             <div className={`ml-2 px-2 py-1 rounded-full text-xs font-semibold ${diffClass}`}>
                               {difficulty}
                             </div>
@@ -331,11 +331,11 @@ export default function Challenges() {
                         </div>
                       </div>
 
-                      <div className="flex flex-wrap gap-2 text-[11px] text-slate-400 mt-2">
+                      <div className="flex flex-wrap gap-2 text-[11px] text-slate-300 mt-2">
                         {tagsArray.map((tag, i) => (
                           <span
                             key={i}
-                            className="inline-flex items-center px-2 py-1 rounded-full bg-gradient-to-br from-slate-900/70 to-slate-950/70 border border-slate-800 text-slate-300 text-xs"
+                            className="inline-flex items-center px-2 py-1 rounded-full bg-gradient-to-br from-slate-900/70 to-slate-950/70 border border-fuchsia-500/20 text-slate-300 text-xs"
                           >
                             #{tag}
                           </span>
@@ -356,13 +356,13 @@ export default function Challenges() {
                   </div>
 
                   {c.description && (
-                    <p className="text-sm text-slate-200 whitespace-pre-line mt-3 leading-relaxed">
+                    <p className="text-sm text-slate-100 whitespace-pre-line mt-3 leading-relaxed">
                       {c.description}
                     </p>
                   )}
 
                   {c.resources && (
-                    <p className="text-[11px] text-slate-400 whitespace-pre-line mt-2">
+                    <p className="text-[11px] text-slate-300 whitespace-pre-line mt-2">
                       <span className="font-semibold text-slate-300">
                         Resources:{" "}
                       </span>
@@ -371,13 +371,13 @@ export default function Challenges() {
                   )}
 
                   {/* submission area */}
-                  <div className="border-t border-slate-800 mt-3 pt-3 space-y-2">
+                  <div className="border-t border-fuchsia-500/20 mt-3 pt-3 space-y-2">
                     {loadingUser ? (
-                      <p className="text-[11px] text-slate-400">
+                      <p className="text-[11px] text-slate-300">
                         Checking login status…
                       </p>
                     ) : !user ? (
-                      <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-400">
+                      <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-300">
                         <span>Login to submit your solution.</span>
                         <Link
                           to="/login"
@@ -388,7 +388,7 @@ export default function Challenges() {
                       </div>
                     ) : (
                       <>
-                        <p className="text-[11px] text-slate-400">
+                        <p className="text-[11px] text-slate-300">
                           Submit your GitHub repository URL for this challenge.
                         </p>
                         <div className="flex flex-col md:flex-row gap-2 items-center">
@@ -397,7 +397,7 @@ export default function Challenges() {
                             placeholder="https://github.com/your-username/your-repo"
                             value={links[c.id] || ""}
                             onChange={(e) => handleChangeLink(c.id, e.target.value)}
-                            className="input-base text-xs flex-1 bg-slate-950/80 border-slate-700/80"
+                            className="input-base text-xs flex-1 bg-slate-900/90 border-slate-700/80"
                           />
 
                           <div className="flex items-center gap-2">

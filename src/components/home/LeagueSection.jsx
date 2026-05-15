@@ -38,12 +38,12 @@ export default function LeagueSection({
               GenXCode <span className="bg-gradient-to-r from-cyan-300 to-amber-300 bg-clip-text text-transparent">League System</span>
             </h2>
           </motion.div>
-          <p className="text-xs md:text-sm text-slate-400 max-w-xl mt-1">
+          <p className="text-xs md:text-sm text-slate-300 max-w-xl mt-1">
             Every submission, event and contribution pushes you up this rank ladder – from Bronze GenX all the way to Legend.
           </p>
         </div>
         <motion.div
-          className="inline-flex items-center gap-2 rounded-full border border-slate-800 bg-slate-900/50 px-3 py-1.5 text-[11px] text-slate-400"
+          className="inline-flex items-center gap-2 rounded-full border border-fuchsia-500/20 bg-slate-900/50 px-3 py-1.5 text-[11px] text-slate-300"
           whileHover={{ scale: 1.05, borderColor: "rgb(251, 191, 36)" }}
         >
           <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" />
@@ -61,7 +61,7 @@ export default function LeagueSection({
           animate={{ opacity: [0.3, 0.85, 0.3] }}
           transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
         />
-        <div className="relative rounded-3xl bg-gradient-to-br from-slate-950/95 via-slate-900/95 to-slate-950/95 border border-slate-800/80 px-5 py-6 md:px-8 md:py-7 shadow-2xl shadow-slate-950/80 overflow-hidden backdrop-blur-xl">
+        <div className="relative rounded-3xl bg-gradient-to-br from-slate-950/95 via-slate-900/95 to-slate-950/95 border border-fuchsia-500/20 px-5 py-6 md:px-8 md:py-7 shadow-2xl shadow-slate-950/80 overflow-hidden backdrop-blur-xl">
           <motion.div
             className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-cyan-400 via-amber-400 to-fuchsia-400"
             animate={{
@@ -77,12 +77,12 @@ export default function LeagueSection({
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-fuchsia-500/5" />
 
           <div className="flex items-center justify-between gap-3 mb-4">
-            <div className="inline-flex items-center gap-2 rounded-full bg-slate-900/80 px-3 py-1 border border-slate-700/80">
-              <span className="text-[11px] font-mono text-slate-500">#{activeLeague.id.toString().padStart(2, "0")}</span>
+            <div className="inline-flex items-center gap-2 rounded-full bg-slate-900/85 px-3 py-1 border border-slate-700/80">
+              <span className="text-[11px] font-mono text-slate-300">#{activeLeague.id.toString().padStart(2, "0")}</span>
               <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
-              <span className="text-[11px] text-slate-200">League</span>
+              <span className="text-[11px] text-slate-100">League</span>
             </div>
-            <span className="text-[11px] text-slate-500">
+            <span className="text-[11px] text-slate-300">
               {activeLeague.pointsLabel} · <span className="text-cyan-300 font-medium">{activeLeague.name}</span>
             </span>
           </div>
@@ -105,20 +105,20 @@ export default function LeagueSection({
                   </div>
                   <div className="absolute -inset-[3px] rounded-[1.75rem] border border-cyan-300/50 blur-[2px] opacity-80" />
                 </div>
-                <p className="text-[11px] text-slate-500 text-center">
+                <p className="text-[11px] text-slate-300 text-center">
                   Badge preview used on <span className="text-cyan-300">Dashboard</span> & <span className="text-cyan-300">Leaderboard</span>.
                 </p>
               </div>
 
               <div className="space-y-3">
                 <div>
-                  <p className="text-xs text-slate-400 mb-1">{activeLeague.emoji} {activeLeague.pointsLabel}</p>
+                  <p className="text-xs text-slate-300 mb-1">{activeLeague.emoji} {activeLeague.pointsLabel}</p>
                   <h3 className="text-lg md:text-xl font-semibold">{activeLeague.name}</h3>
                   <p className="text-xs md:text-sm text-cyan-200/90 mt-1">{activeLeague.tagline}</p>
                   <p className="text-sm md:text-base text-slate-300 mt-2">{activeLeague.desc}</p>
                 </div>
                 <div className="mt-2 space-y-2">
-                  <p className="text-[11px] text-slate-400">League path preview</p>
+                  <p className="text-[11px] text-slate-300">League path preview</p>
                   <div className="flex items-center gap-1.5">
                     {leagues.map((lg, idx) => {
                       const isActive = lg.key === activeLeague.key;
@@ -133,7 +133,7 @@ export default function LeagueSection({
                       );
                     })}
                   </div>
-                  <div className="flex items-center justify-between text-[10px] text-slate-500">
+                  <div className="flex items-center justify-between text-[10px] text-slate-300">
                     <span>Bronze</span>
                     <span>Legend</span>
                   </div>
@@ -172,7 +172,7 @@ export default function LeagueSection({
             </div>
           </div>
 
-          <p className="mt-3 text-[10px] text-slate-500">
+          <p className="mt-3 text-[10px] text-slate-300">
             This is a visual preview. Actual league depends on your points from challenges, events and verified contributions.
           </p>
         </div>

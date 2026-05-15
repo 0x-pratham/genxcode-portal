@@ -44,7 +44,7 @@ export default function NotFound() {
           transition={{ duration: 0.6 }}
           className="space-y-3"
         >
-          <p className="text-sm text-slate-400">Oops…</p>
+          <p className="text-sm text-slate-300">Oops…</p>
           <div className="flex items-center justify-center gap-3">
             <motion.div
               className="text-4xl"
@@ -53,7 +53,7 @@ export default function NotFound() {
             >
               🚀
             </motion.div>
-            <h1 className="text-4xl md:text-5xl font-semibold leading-tight bg-gradient-to-r from-cyan-300 via-sky-400 to-indigo-400 bg-clip-text text-transparent">
+            <h1 className="text-4xl md:text-5xl font-semibold leading-tight bg-gradient-to-r from-cyan-300 via-indigo-400 to-indigo-400 bg-clip-text text-transparent">
               404 – Page not found
             </h1>
           </div>
@@ -68,7 +68,7 @@ export default function NotFound() {
           initial={{ opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="relative p-6 rounded-3xl bg-slate-950/90 border border-slate-800/70 shadow-xl shadow-slate-950/70 backdrop-blur-sm"
+          className="relative p-6 rounded-3xl bg-[#0F172A]/90 border border-fuchsia-500/20/70 shadow-xl shadow-slate-950/70 backdrop-blur-sm"
         >
           <motion.div
             className="absolute -inset-0.5 rounded-3xl bg-gradient-to-br from-cyan-500/40 via-slate-900/30 to-fuchsia-500/40 blur-xl opacity-70"
@@ -77,7 +77,7 @@ export default function NotFound() {
           />
 
           <div className="relative space-y-5">
-            <p className="text-[13px] text-slate-400">Quickly jump to a route (try <span className="text-cyan-300">/dashboard</span> or <span className="text-cyan-300">/challenges</span>):</p>
+            <p className="text-[13px] text-slate-300">Quickly jump to a route (try <span className="text-cyan-300">/dashboard</span> or <span className="text-cyan-300">/challenges</span>):</p>
 
             <form
               onSubmit={(e) => {
@@ -111,10 +111,10 @@ export default function NotFound() {
               </Link>
             </div>
 
-            <p className="text-[11px] text-slate-500">If you typed the URL manually, check spelling. Click "Report" to send a quick note and we’ll investigate.</p>
+            <p className="text-[11px] text-slate-300">If you typed the URL manually, check spelling. Click "Report" to send a quick note and we’ll investigate.</p>
 
             <div className="flex justify-center mt-2">
-              <a href="mailto:hello@genxcode.example?subject=Broken%20link%20404" className="text-[11px] text-slate-400 hover:text-cyan-300">Report broken link</a>
+              <a href="mailto:hello@genxcode.example?subject=Broken%20link%20404" className="text-[11px] text-slate-300 hover:text-cyan-300">Report broken link</a>
             </div>
           </div>
         </motion.div>

@@ -30,11 +30,11 @@ export default function BenefitsSliderSection({
           <h2 className="text-xl md:text-2xl font-semibold">
             Member benefits, <span className="text-cyan-300">one by one</span>
           </h2>
-          <p className="text-xs md:text-sm text-slate-400 max-w-xl mt-1">
+          <p className="text-xs md:text-sm text-slate-300 max-w-xl mt-1">
             Slide through everything you unlock as a GenXCode member – with a focus on real growth, not just certificates.
           </p>
         </div>
-        <p className="text-[11px] text-slate-500">
+        <p className="text-[11px] text-slate-300">
           {benefits.length}+ structured benefits · Smooth auto‑slide · Manual controls
         </p>
       </div>
@@ -49,7 +49,7 @@ export default function BenefitsSliderSection({
           animate={{ opacity: [0.3, 0.8, 0.3] }}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
         />
-        <div className="relative rounded-3xl bg-slate-950/90 border border-slate-800 px-5 py-6 md:px-8 md:py-7 shadow-2xl shadow-slate-950/70 overflow-hidden">
+        <div className="relative rounded-3xl bg-[#0F172A]/90 border border-fuchsia-500/20 px-5 py-6 md:px-8 md:py-7 shadow-2xl shadow-slate-950/70 overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.div
               key={active.id}
@@ -61,12 +61,12 @@ export default function BenefitsSliderSection({
               className="space-y-3 md:space-y-4"
             >
               <div className="flex items-center justify-between gap-3">
-                <div className="inline-flex items-center gap-2 rounded-full bg-slate-900/80 px-3 py-1 border border-slate-700/80">
-                  <span className="text-[11px] font-mono text-slate-500">#{active.id.toString().padStart(2, "0")}</span>
+                <div className="inline-flex items-center gap-2 rounded-full bg-slate-900/85 px-3 py-1 border border-slate-700/80">
+                  <span className="text-[11px] font-mono text-slate-300">#{active.id.toString().padStart(2, "0")}</span>
                   <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
-                  <span className="text-[11px] text-slate-200">{active.chip}</span>
+                  <span className="text-[11px] text-slate-100">{active.chip}</span>
                 </div>
-                <span className="text-[11px] text-slate-500">
+                <span className="text-[11px] text-slate-300">
                   Benefit {active.id} / {benefits.length}
                 </span>
               </div>
@@ -75,7 +75,7 @@ export default function BenefitsSliderSection({
               <p className="text-xs md:text-sm text-cyan-200/90">{active.highlight}</p>
               <p className="text-xs md:text-sm text-slate-300 leading-relaxed">{active.desc}</p>
 
-              <div className="grid gap-3 md:grid-cols-2 text-[11px] md:text-xs text-slate-400">
+              <div className="grid gap-3 md:grid-cols-2 text-[11px] md:text-xs text-slate-300">
                 <p>
                   • Designed to make your <span className="text-cyan-300">portfolio stronger</span>, not just your
                   attendance sheet.

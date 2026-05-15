@@ -11,7 +11,7 @@ export default function Contact() {
         reach out.
       </p>
 
-      <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
+      <div className="rounded-xl border border-fuchsia-500/20 bg-slate-900/60 p-4">
         <p className="text-cyan-300 font-medium">
           📧 ofc.genxcode@gmail.com
         </p>

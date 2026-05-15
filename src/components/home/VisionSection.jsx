@@ -44,7 +44,7 @@ export default function VisionSection({ visions }) {
               </span>
             </h2>
           </motion.div>
-          <p className="text-sm md:text-base text-slate-400 max-w-xl">
+          <p className="text-sm md:text-base text-slate-300 max-w-xl">
             GenXCode exists so that no motivated student gets limited by the syllabus. We want your college to feel like
             a mini tech hub – with teams, projects, events and mentorship running all year.
           </p>
@@ -59,7 +59,7 @@ export default function VisionSection({ visions }) {
             {visions.map((line, idx) => (
               <motion.li
                 key={line}
-                className="flex items-start gap-2 text-sm md:text-base text-slate-200"
+                className="flex items-start gap-2 text-sm md:text-base text-slate-100"
                 variants={itemVariants}
                 whileHover={{ x: 4, scale: 1.02 }}
               >
@@ -77,7 +77,7 @@ export default function VisionSection({ visions }) {
         </div>
 
         <motion.div
-          className="relative overflow-hidden card bg-gradient-to-br from-slate-950/90 via-slate-900/80 to-slate-950/90 border border-slate-800/80 px-5 py-5 rounded-2xl shadow-xl shadow-slate-950/60 backdrop-blur-xl"
+          className="relative overflow-hidden card bg-gradient-to-br from-slate-950/90 via-slate-900/80 to-slate-950/90 border border-fuchsia-500/20 px-5 py-5 rounded-2xl shadow-xl shadow-slate-950/60 backdrop-blur-xl"
           whileHover={{ y: -6, scale: 1.02 }}
           transition={{ duration: 0.3 }}
         >
@@ -95,7 +95,7 @@ export default function VisionSection({ visions }) {
               >
                 💫
               </motion.span>
-              <p className="text-[11px] uppercase tracking-[0.25em] text-slate-400 font-semibold">How it feels inside</p>
+              <p className="text-[11px] uppercase tracking-[0.25em] text-slate-300 font-semibold">How it feels inside</p>
             </div>
             <ul className="space-y-2.5 text-[11px] md:text-xs text-slate-300">
               {howItFeels.map((item, idx) => (

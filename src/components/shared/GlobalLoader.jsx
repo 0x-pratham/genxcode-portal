@@ -4,7 +4,7 @@ const GlobalLoader = () => {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <div className="flex items-center justify-center min-h-[60vh] bg-slate-950">
+    <div className="flex items-center justify-center min-h-[60vh] bg-[#0F172A]">
       <div className="relative flex flex-col items-center gap-6">
         
         {/* Glow Orb */}
@@ -44,7 +44,7 @@ const GlobalLoader = () => {
 
         {/* Text */}
         <motion.p
-          className="mt-8 text-sm md:text-base text-slate-400 tracking-wide"
+          className="mt-8 text-sm md:text-base text-slate-300 tracking-wide"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6 }}

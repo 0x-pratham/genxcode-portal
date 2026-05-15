@@ -21,11 +21,11 @@ class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-slate-950 text-center px-6">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-[#0F172A] text-center px-6">
           <h1 className="text-3xl font-bold text-rose-400">
             Something went wrong
           </h1>
-          <p className="text-slate-400 mt-4">
+          <p className="text-slate-300 mt-4">
             An unexpected error occurred.
           </p>
 

@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 /* -------------------------------------------------------------------------- */
 
 const FrostCard = ({ children, className = "" }) => (
-  <div className={`rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-xl p-5 transition-all duration-300 transform-gpu hover:scale-[1.01] hover:shadow-cyan-500/20 ${className}`}>
+  <div className={`rounded-2xl bg-slate-900/5 backdrop-blur-xl border border-white/10 shadow-xl p-5 transition-all duration-300 transform-gpu hover:scale-[1.01] hover:shadow-cyan-500/20 ${className}`}>
     {children}
   </div>
 );
@@ -17,21 +17,21 @@ const FrostCard = ({ children, className = "" }) => (
 const Input = (props) => (
   <input
     {...props}
-    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-400/40"
+    className="w-full bg-slate-900/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-slate-100 placeholder-slate-9000 focus:outline-none focus:border-cyan-400/40"
   />
 );
 
 const TextArea = (props) => (
   <textarea
     {...props}
-    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-400/40"
+    className="w-full bg-slate-900/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-slate-100 placeholder-slate-9000 focus:outline-none focus:border-cyan-400/40"
   />
 );
 
 const Select = (props) => (
   <select
     {...props}
-    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400/40"
+    className="w-full bg-slate-900/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-400/40"
   />
 );
 
@@ -957,8 +957,8 @@ const logAdminAction = async ({
   /* -------------------------------------------------------------------------- */
   if (checking) {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-slate-950 text-slate-400">
-        <div className="rounded-2xl border border-cyan-500/40 bg-slate-900/70 px-6 py-4 shadow-xl shadow-cyan-500/30">
+      <main className="min-h-screen flex items-center justify-center bg-[#0F172A] text-slate-300">
+        <div className="rounded-2xl border border-cyan-500/40 bg-[#0B1120]/90 px-6 py-4 shadow-xl shadow-cyan-500/30">
           <p className="text-sm">Checking admin access…</p>
         </div>
       </main>
@@ -969,7 +969,7 @@ const logAdminAction = async ({
   /* UI                                                                         */
   /* -------------------------------------------------------------------------- */
   return (
-    <main className="relative min-h-screen bg-slate-950 text-slate-100 flex overflow-hidden isolate">
+    <main className="relative min-h-screen bg-[#0F172A] text-slate-100 flex overflow-hidden isolate">
       {/* Soft gradient background + glow */}
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute -top-32 -left-32 h-80 w-80 rounded-full bg-cyan-500/20 blur-3xl" />
@@ -979,15 +979,15 @@ const logAdminAction = async ({
       </div>
 
       {/* SIDEBAR */}
-      <aside className="w-64 h-full bg-slate-950/90 backdrop-blur-xl border-r border-slate-800 p-6 flex flex-col">
+      <aside className="w-64 h-full bg-[#0F172A]/90 backdrop-blur-xl border-r border-fuchsia-500/20 p-6 flex flex-col">
         {/* Brand */}
         <div className="flex items-center gap-3 mb-2">
-          <div className="h-9 w-9 rounded-2xl bg-gradient-to-br from-cyan-400 via-sky-500 to-indigo-500 flex items-center justify-center text-xs font-bold text-slate-950 shadow-lg shadow-cyan-500/40">
+          <div className="h-9 w-9 rounded-2xl bg-gradient-to-br from-cyan-400 via-indigo-500 to-indigo-500 flex items-center justify-center text-xs font-bold text-slate-950 shadow-lg shadow-cyan-500/40">
 
           </div>
           <div className="leading-tight">
             <p className="text-sm font-semibold tracking-tight">GenXCode Admin</p>
-            <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-slate-300">
               Control · Insights · Actions
             </p>
           </div>
@@ -999,9 +999,9 @@ const logAdminAction = async ({
             placeholder="Search applications…"
             value={appQuery}
             onChange={(e) => setAppQuery(e.target.value)}
-            className="w-full rounded-xl bg-slate-900/80 border border-slate-700/70 px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400/60"
+            className="w-full rounded-xl bg-slate-900/85 border border-slate-700/70 px-3 py-2 text-xs text-slate-100 placeholder-slate-9000 focus:outline-none focus:border-cyan-400/60"
           />
-          <p className="mt-1 text-[10px] text-slate-500">Filters only Applications tab.</p>
+          <p className="mt-1 text-[10px] text-slate-300">Filters only Applications tab.</p>
         </div>
 
         {/* Nav */}
@@ -1023,7 +1023,7 @@ const logAdminAction = async ({
                 ${
                   tab === item.id
                     ? "bg-gradient-to-r from-cyan-500/25 to-fuchsia-500/25 border border-cyan-400/50 text-white shadow-[0_0_30px_rgba(34,211,238,0.45)]"
-                    : "bg-slate-900/60 border border-slate-800/80 text-slate-400 hover:border-cyan-400/50 hover:text-white hover:bg-slate-800/70"
+                    : "bg-slate-900/60 border border-fuchsia-500/20 text-slate-300 hover:border-cyan-400/50 hover:text-white hover:bg-slate-800/70"
                 }`}
             >
               <span className="flex items-center gap-2">
@@ -1038,8 +1038,8 @@ const logAdminAction = async ({
         </div>
 
         {/* Footer */}
-        <div className="mt-4 pt-3 border-t border-slate-800/80 text-[10px] text-slate-500">
-          <p className="font-mono text-[9px] text-slate-500">ADMIN CONSOLE</p>
+        <div className="mt-4 pt-3 border-t border-fuchsia-500/20 text-[10px] text-slate-300">
+          <p className="font-mono text-[9px] text-slate-300">ADMIN CONSOLE</p>
           <p className="mt-0.5">Designed for GenXCode core team.</p>
         </div>
       </aside>
@@ -1058,13 +1058,13 @@ const logAdminAction = async ({
   <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-white">
     GenXCode Admin Dashboard
   </h1>
-  <p className="text-xs text-slate-500 tracking-wide">
+  <p className="text-xs text-slate-300 tracking-wide">
     A Product of <span className="text-cyan-300 font-medium">Cosmolix Pvt Ltd</span>
   </p>
 </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1 rounded-full border border-slate-700/80 bg-slate-900/80 px-3 py-1 text-[10px] text-slate-300">
+            <span className="inline-flex items-center gap-1 rounded-full border border-slate-700/80 bg-slate-900/85 px-3 py-1 text-[10px] text-slate-300">
               <span
   className={`h-1.5 w-1.5 rounded-full ${
     loadingAll
@@ -1081,7 +1081,7 @@ const logAdminAction = async ({
               className={`px-3 py-1.5 rounded-full text-[11px] font-medium border transition
                 ${
                   loadingAll
-                    ? "border-slate-600 bg-slate-800/80 text-slate-400 cursor-wait"
+                    ? "border-slate-600 bg-slate-800/80 text-slate-300 cursor-wait"
                     : "border-cyan-400/70 bg-cyan-500/15 text-cyan-200 hover:bg-cyan-500/25"
                 }`}
             >
@@ -1110,7 +1110,7 @@ const logAdminAction = async ({
                     <div className="flex items-center justify-between">
                       <span className="inline-flex items-center gap-2 text-xs text-slate-300">
                         <span className="text-base">{icon}</span>
-                        <span className="uppercase tracking-[0.18em] text-slate-400">
+                        <span className="uppercase tracking-[0.18em] text-slate-300">
                           {label}
                         </span>
                       </span>
@@ -1124,7 +1124,7 @@ const logAdminAction = async ({
 >
   {value}
 </motion.p>
-                    <p className="text-[10px] text-slate-500">
+                    <p className="text-[10px] text-slate-300">
                       Total {label.toLowerCase()} in the GenXCode ecosystem.
                     </p>
                   </div>
@@ -1140,7 +1140,7 @@ const logAdminAction = async ({
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
   <div>
     <h2 className="text-lg font-semibold">Member Applications</h2>
-    <p className="text-xs text-slate-400 mt-1">
+    <p className="text-xs text-slate-300 mt-1">
       Review and manage recruitment requests.
     </p>
   </div>
@@ -1165,7 +1165,7 @@ const logAdminAction = async ({
       disabled={!!applicationsError || filteredApplications.length === 0}
       className={`px-3 py-1 rounded-lg text-sm ${
         applicationsError || filteredApplications.length === 0
-          ? "bg-slate-800 text-slate-500 cursor-not-allowed"
+          ? "bg-slate-800 text-slate-300 cursor-not-allowed"
           : "bg-emerald-500/30 hover:bg-emerald-500/40"
       }`}
     >
@@ -1181,7 +1181,7 @@ const logAdminAction = async ({
 
             {filteredApplications.length === 0 ? (
               <FrostCard>
-                <p className="text-sm text-slate-400">No applications found.</p>
+                <p className="text-sm text-slate-300">No applications found.</p>
               </FrostCard>
             ) : (
               <div className="space-y-3">
@@ -1198,7 +1198,7 @@ const logAdminAction = async ({
                       <div className="flex items-start justify-between">
                         <div>
                           <p className="font-semibold">{app.full_name}</p>
-                          <p className="text-xs text-slate-400">{app.email}</p>
+                          <p className="text-xs text-slate-300">{app.email}</p>
                         </div>
                         <span
   className={`px-3 py-1.5 rounded-full text-[11px] font-semibold border transition
@@ -1218,12 +1218,12 @@ const logAdminAction = async ({
 </span>
                       </div>
                       <div className="grid md:grid-cols-2 gap-2 text-xs text-slate-300">
-                        <p><span className="text-slate-500">Branch:</span> {app.branch || "—"}</p>
-                        <p><span className="text-slate-500">Year:</span> {app.year || "—"}</p>
-                        <p><span className="text-slate-500">Phone:</span> {app.phone || "—"}</p>
+                        <p><span className="text-slate-300">Branch:</span> {app.branch || "—"}</p>
+                        <p><span className="text-slate-300">Year:</span> {app.year || "—"}</p>
+                        <p><span className="text-slate-300">Phone:</span> {app.phone || "—"}</p>
                         {app.github && (
                           <p>
-                            <span className="text-slate-500">GitHub:</span>{" "}
+                            <span className="text-slate-300">GitHub:</span>{" "}
                             <a href={app.github} target="_blank" rel="noreferrer" className="text-cyan-300 underline">
                               {app.github}
                             </a>
@@ -1232,7 +1232,7 @@ const logAdminAction = async ({
                       </div>
                       {app.why_join && (
                         <div className="mt-2">
-                          <p className="text-xs text-slate-500 mb-1">Why they want to join:</p>
+                          <p className="text-xs text-slate-300 mb-1">Why they want to join:</p>
                           <p className="text-xs text-slate-300 bg-slate-900/50 p-2 rounded">{app.why_join}</p>
                         </div>
                       )}
@@ -1303,10 +1303,10 @@ const logAdminAction = async ({
                       className="border border-white/10 rounded-xl px-3 py-2 text-xs space-y-1"
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <p className="font-semibold text-slate-50">
+                        <p className="font-semibold text-slate-900">
                           {a.title || "Untitled"}
                         </p>
-                        <span className="text-[10px] text-slate-400">
+                        <span className="text-[10px] text-slate-300">
                           {a.created_at
                             ? new Date(a.created_at).toLocaleString()
                             : ""}
@@ -1329,12 +1329,12 @@ const logAdminAction = async ({
             <FrostCard>
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-lg font-semibold">Leaderboard Management</h2>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-300">
                   Click on any user to manually adjust points
                 </p>
               </div>
               {leaders.length === 0 ? (
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-slate-300">
                   No leaderboard entries yet.
                 </p>
               ) : (
@@ -1371,11 +1371,11 @@ const logAdminAction = async ({
                             </span>
                           </div>
                           {userInfo && (
-                            <p className="text-[11px] text-slate-400 mt-0.5">
+                            <p className="text-[11px] text-slate-300 mt-0.5">
                               {userInfo}
                             </p>
                           )}
-                          <p className="text-[10px] text-slate-500 mt-0.5">
+                          <p className="text-[10px] text-slate-300 mt-0.5">
                             ID: <span className="font-mono">{row.user_id?.slice(0, 8)}…</span>
                           </p>
                         </div>
@@ -1383,7 +1383,7 @@ const logAdminAction = async ({
                           <p className="text-sm font-semibold text-cyan-300">
                             {row.points} pts
                           </p>
-                          <p className="text-[10px] text-slate-500">
+                          <p className="text-[10px] text-slate-300">
                             updated{" "}
                             {row.updated_at
                               ? new Date(row.updated_at).toLocaleDateString()
@@ -1412,7 +1412,7 @@ const logAdminAction = async ({
                     <h3 className="text-lg font-semibold">Adjust Points</h3>
                     <button
                       onClick={closePointsAdjustment}
-                      className="text-slate-400 hover:text-slate-200 text-xl"
+                      className="text-slate-300 hover:text-slate-100 text-xl"
                     >
                       ×
                     </button>
@@ -1424,17 +1424,17 @@ const logAdminAction = async ({
                     return (
                       <div className="space-y-4">
                         <div className="bg-slate-800/50 rounded-xl p-3 space-y-1">
-                          <p className="text-sm font-semibold text-slate-50">
+                          <p className="text-sm font-semibold text-slate-900">
                             {userName}
                           </p>
-                          <div className="flex items-center gap-3 text-xs text-slate-400">
+                          <div className="flex items-center gap-3 text-xs text-slate-300">
                             <span>Current: <span className="text-cyan-300 font-semibold">{selectedUser.points} pts</span></span>
                             <span>League: <span className="text-purple-300 font-semibold">{selectedUser.league}</span></span>
                           </div>
                         </div>
 
                         <div>
-                          <label className="text-xs text-slate-400 mb-1 block">
+                          <label className="text-xs text-slate-300 mb-1 block">
                             Points to adjust (positive to add, negative to subtract)
                           </label>
                           <Input
@@ -1450,7 +1450,7 @@ const logAdminAction = async ({
                             className="text-base"
                           />
                           {pointsAdjustment.points && !isNaN(Number(pointsAdjustment.points)) && (
-                            <p className="text-xs mt-1 text-slate-400">
+                            <p className="text-xs mt-1 text-slate-300">
                               New total:{" "}
                               <span className="text-cyan-300 font-semibold">
                                 {Math.max(0, selectedUser.points + Number(pointsAdjustment.points))} pts
@@ -1463,7 +1463,7 @@ const logAdminAction = async ({
                         </div>
 
                         <div>
-                          <label className="text-xs text-slate-400 mb-1 block">
+                          <label className="text-xs text-slate-300 mb-1 block">
                             Reason (optional) - e.g., "Event participation", "Achievement unlocked"
                           </label>
                           <TextArea
@@ -1482,14 +1482,14 @@ const logAdminAction = async ({
                         <div className="flex gap-2 pt-2">
                           <button
                             onClick={closePointsAdjustment}
-                            className="flex-1 px-4 py-2 rounded-lg bg-slate-800/50 text-slate-200 hover:bg-slate-800 transition"
+                            className="flex-1 px-4 py-2 rounded-lg bg-slate-800/50 text-slate-100 hover:bg-slate-800 transition"
                           >
                             Cancel
                           </button>
                           <button
                             onClick={adjustUserPoints}
                             disabled={adjustingPoints || !pointsAdjustment.points || Number(pointsAdjustment.points) === 0}
-                            className={`flex-1 px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500/30 to-purple-500/30 border border-cyan-400/40 text-slate-50 font-medium transition ${
+                            className={`flex-1 px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500/30 to-purple-500/30 border border-cyan-400/40 text-slate-900 font-medium transition ${
                               adjustingPoints || !pointsAdjustment.points || Number(pointsAdjustment.points) === 0
                                 ? "opacity-50 cursor-not-allowed"
                                 : "hover:from-cyan-500/40 hover:to-purple-500/40"
@@ -1556,7 +1556,7 @@ const logAdminAction = async ({
                       }))
                     }
                   />
-                  <label className="inline-flex items-center gap-2 text-xs text-slate-200">
+                  <label className="inline-flex items-center gap-2 text-xs text-slate-100">
                     <input
                       type="checkbox"
                       checked={challenge.is_active}
@@ -1620,9 +1620,9 @@ const logAdminAction = async ({
                       className="border border-white/10 rounded-xl px-3 py-2 text-xs space-y-1"
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <p className="font-semibold text-slate-50">
+                        <p className="font-semibold text-slate-900">
                           {c.title}{" "}
-                          <span className="text-[10px] text-slate-400">
+                          <span className="text-[10px] text-slate-300">
                             · {c.difficulty} · {c.points} pts
                           </span>
                         </p>
@@ -1631,7 +1631,7 @@ const logAdminAction = async ({
                             className={`px-2 py-0.5 rounded-full text-[10px] ${
                               c.is_active
                                 ? "bg-emerald-500/20 text-emerald-200"
-                                : "bg-slate-700/60 text-slate-200"
+                                : "bg-slate-700/60 text-slate-100"
                             }`}
                           >
                             {c.is_active ? "Active" : "Hidden"}
@@ -1650,7 +1650,7 @@ const logAdminAction = async ({
                         </div>
                       </div>
                       {Array.isArray(c.tags) && c.tags.length > 0 && (
-                        <p className="text-[10px] text-slate-400">
+                        <p className="text-[10px] text-slate-300">
                           Tags: {c.tags.join(", ")}
                         </p>
                       )}
@@ -1680,7 +1680,7 @@ const logAdminAction = async ({
           <div className="space-y-3">
             {submissions.length === 0 ? (
               <FrostCard>
-                <p className="text-sm text-slate-400">No submissions yet.</p>
+                <p className="text-sm text-slate-300">No submissions yet.</p>
               </FrostCard>
             ) : (
               [...submissions]
@@ -1700,10 +1700,10 @@ const logAdminAction = async ({
                   <div className="space-y-4 text-xs">
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1">
-                        <p className="font-semibold text-slate-50">
+                        <p className="font-semibold text-slate-900">
                           {s.challenges?.title || "Challenge"}
                         </p>
-                        <p className="text-slate-400">
+                        <p className="text-slate-300">
   <span
     className={`px-2 py-0.5 rounded text-[10px] font-medium mr-2 ${
       s.challenges?.difficulty === "hard"
@@ -1715,24 +1715,24 @@ const logAdminAction = async ({
   >
     {s.challenges?.difficulty || "—"}
   </span>
-  <span className="text-slate-500">
+  <span className="text-slate-300">
     Base {s.challenges?.points ?? 0} pts
   </span>
 </p>
                         <div className="mt-1 space-y-0.5">
-                          <p className="text-[11px] text-slate-400">
-                            <span className="text-slate-500">Submitted by:</span>{" "}
+                          <p className="text-[11px] text-slate-300">
+                            <span className="text-slate-300">Submitted by:</span>{" "}
                             <span className="font-semibold text-cyan-300">
                               {s.profiles?.full_name || "Unknown User"}
                             </span>
                             {s.profiles?.branch && (
-                              <span className="text-slate-500 ml-2">
+                              <span className="text-slate-300 ml-2">
                                 ({s.profiles.branch}
                                 {s.profiles.year && `, Year ${s.profiles.year}`})
                               </span>
                             )}
                           </p>
-                          <p className="text-[10px] text-slate-500 font-mono">
+                          <p className="text-[10px] text-slate-300 font-mono">
                             ID: {s.user_id?.slice(0, 8)}…
                           </p>
                         </div>
@@ -1753,7 +1753,7 @@ const logAdminAction = async ({
     ? "✕ Rejected"
     : "⏳ Pending"}
 </span>
-                        <p className="mt-1 text-[11px] text-slate-400">
+                        <p className="mt-1 text-[11px] text-slate-300">
                           Submitted{" "}
                           {s.submitted_at
                             ? new Date(s.submitted_at).toLocaleString()
@@ -1781,7 +1781,7 @@ const logAdminAction = async ({
 
                     {s.feedback && (
                       <p className="text-[11px] text-slate-300">
-                        <span className="text-slate-500">Feedback: </span>
+                        <span className="text-slate-300">Feedback: </span>
                         {s.feedback}
                       </p>
                     )}
@@ -1858,7 +1858,7 @@ const logAdminAction = async ({
             <FrostCard>
               <h2 className="text-sm font-semibold mb-2">Existing sessions</h2>
               {sessions.length === 0 ? (
-                <p className="text-sm text-slate-400">No sessions created yet.</p>
+                <p className="text-sm text-slate-300">No sessions created yet.</p>
               ) : (
                 <div className="space-y-2 max-h-80 overflow-auto text-xs">
                   {sessions
@@ -1877,14 +1877,14 @@ const logAdminAction = async ({
                           className="border border-white/10 rounded-xl px-3 py-2 space-y-1"
                         >
                           <div className="flex items-center justify-between gap-2">
-                            <p className="font-semibold text-slate-50">
+                            <p className="font-semibold text-slate-900">
                               {s.title}
                             </p>
-                            <p className="text-[10px] text-slate-400">
+                            <p className="text-[10px] text-slate-300">
                               {new Date(s.session_date).toLocaleString()}
                             </p>
                           </div>
-                          <p className="text-[11px] text-slate-400 line-clamp-2">
+                          <p className="text-[11px] text-slate-300 line-clamp-2">
                             {s.description}
                           </p>
                           <div className="flex items-center justify-between">
@@ -1912,16 +1912,16 @@ const logAdminAction = async ({
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h2 className="text-lg font-semibold mb-1">Mark Attendance</h2>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-slate-300">
                       Session: {sessions.find(s => s.id === selectedSessionForMarking)?.title || "Unknown"}
                     </p>
-                    <p className="text-[10px] text-slate-500 mt-1">
+                    <p className="text-[10px] text-slate-300 mt-1">
                       {new Date(sessions.find(s => s.id === selectedSessionForMarking)?.session_date || "").toLocaleString()}
                     </p>
                   </div>
                   <button
                     onClick={() => setSelectedSessionForMarking(null)}
-                    className="text-slate-400 hover:text-slate-200 text-xl"
+                    className="text-slate-300 hover:text-slate-100 text-xl"
                   >
                     ×
                   </button>
@@ -1969,13 +1969,13 @@ const logAdminAction = async ({
                           className="flex items-center justify-between border border-white/10 rounded-xl px-3 py-2 hover:border-cyan-400/60 hover:bg-slate-800/40 transition-all duration-200"
                         >
                           <div className="flex-1">
-                            <p className="text-sm font-semibold text-slate-50">
+                            <p className="text-sm font-semibold text-slate-900">
                               {student.full_name || "Unknown"}
                             </p>
-                            <div className="flex items-center gap-3 text-xs text-slate-400 mt-0.5">
+                            <div className="flex items-center gap-3 text-xs text-slate-300 mt-0.5">
                               {student.branch && <span>{student.branch}</span>}
                               {student.year && <span>Year {student.year}</span>}
-                              <span className="text-[10px] font-mono text-slate-500">
+                              <span className="text-[10px] font-mono text-slate-300">
                                 {student.id?.slice(0, 8)}…
                               </span>
                             </div>
@@ -1985,7 +1985,7 @@ const logAdminAction = async ({
                               className={`px-2 py-1 rounded text-xs font-medium ${
                                 isPresent
                                   ? "bg-emerald-500/20 text-emerald-300 border border-emerald-400/30"
-                                  : "bg-slate-700/50 text-slate-400 border border-slate-600/50"
+                                  : "bg-slate-700/50 text-slate-300 border border-slate-600/50"
                               }`}
                             >
                               {isPresent ? "Present" : "Absent"}
@@ -2013,13 +2013,13 @@ const logAdminAction = async ({
   (s.branch || "").toLowerCase().includes(attendanceSearchQuery.toLowerCase()) ||
   (s.year || "").toLowerCase().includes(attendanceSearchQuery.toLowerCase())
 ).length === 0 && (
-                  <p className="text-sm text-slate-400 text-center py-4">
+                  <p className="text-sm text-slate-300 text-center py-4">
                     No students found.
                   </p>
                 )}
 
                 {markingAttendance && (
-                  <div className="mt-4 text-center text-xs text-slate-400">
+                  <div className="mt-4 text-center text-xs text-slate-300">
                     Updating attendance...
                   </div>
                 )}
@@ -2034,7 +2034,7 @@ const logAdminAction = async ({
   </FrostCard>
 )}
 
-<div className="mt-12 pt-6 border-t border-slate-800 text-center text-[10px] text-slate-500">
+<div className="mt-12 pt-6 border-t border-fuchsia-500/20 text-center text-[10px] text-slate-300">
   <p>
     GenXCode © {new Date().getFullYear()} · Product engineered by 
     <span className="text-cyan-300 ml-1">Cosmolix Pvt Ltd</span>
@@ -2132,7 +2132,7 @@ const buildMessage = (log) => {
 
   if (logs.length === 0) {
     return (
-      <p className="text-sm text-slate-400">
+      <p className="text-sm text-slate-300">
         No activity recorded yet.
       </p>
     );
@@ -2145,11 +2145,11 @@ const buildMessage = (log) => {
           key={log.id}
           className="border border-white/10 rounded-xl px-3 py-2"
         >
-          <p className="text-slate-200 font-semibold">
+          <p className="text-slate-100 font-semibold">
   {buildMessage(log)}
 </p>
 
-<p className="text-slate-400 text-[11px]">
+<p className="text-slate-300 text-[11px]">
   Target: {log.target_type}
 </p>
 
@@ -2165,13 +2165,13 @@ const buildMessage = (log) => {
       </p>
     )}
     {log.metadata.reason && (
-      <p className="text-slate-400">
+      <p className="text-slate-300">
         Reason: {log.metadata.reason}
       </p>
     )}
   </div>
 )}
-          <p className="text-slate-500 text-[10px]">
+          <p className="text-slate-300 text-[10px]">
             {new Date(log.created_at).toLocaleString()}
           </p>
         </div>

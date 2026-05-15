@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export default function ApplySuccess() {
   return (
-    // ❗ no bg-slate-950 so global/Orbs background stays visible
+    // ❗ no bg-[#0F172A] so global/Orbs background stays visible
     <main className="relative min-h-screen text-slate-100 flex items-center justify-center pb-24">
       <div className="container-page max-w-xl mx-auto relative z-10">
         <motion.section
@@ -15,7 +15,7 @@ export default function ApplySuccess() {
         >
           {/* floating glass card */}
           <motion.div
-            className="relative w-full overflow-hidden rounded-3xl bg-slate-950/90 border border-slate-800/80 px-6 py-7 md:px-8 md:py-8 shadow-2xl shadow-slate-950/80 backdrop-blur space-y-5"
+            className="relative w-full overflow-hidden rounded-3xl bg-[#0F172A]/90 border border-fuchsia-500/20 px-6 py-7 md:px-8 md:py-8 shadow-2xl shadow-slate-950/80 backdrop-blur space-y-5"
             animate={{ y: [0, -4, 0] }}
             transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
           >
@@ -67,7 +67,7 @@ export default function ApplySuccess() {
               </Link>
             </div>
 
-            <p className="text-[11px] text-slate-500 pt-3">
+            <p className="text-[11px] text-slate-300 pt-3">
               If you don&apos;t hear back in a few days, you can reach out to
               the GenXCode team or re‑submit with updated details.
             </p>

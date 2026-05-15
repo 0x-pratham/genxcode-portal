@@ -18,7 +18,7 @@ const containerVariants = {
 
 const leagueBadges = {
   Bronze: "bg-amber-900/50 text-amber-200 border border-amber-500/40",
-  Silver: "bg-slate-500/20 text-slate-100 border border-slate-300/40",
+  Silver: "bg-slate-9000/20 text-slate-100 border border-slate-300/40",
   Gold: "bg-yellow-500/20 text-yellow-100 border border-yellow-400/60",
   Crystal: "bg-cyan-500/15 text-cyan-100 border border-cyan-400/50",
   Master: "bg-emerald-500/15 text-emerald-100 border border-emerald-400/50",
@@ -60,7 +60,7 @@ const leagueImages = {
 };
 
 const glass =
-"bg-slate-900/50 backdrop-blur-2xl border border-slate-700/40 shadow-[0_10px_45px_rgba(0,0,0,0.45)] transition-all duration-300 hover:border-cyan-400/40 hover:shadow-[0_0_35px_rgba(34,211,238,0.12)]";
+"bg-slate-900/50 backdrop-blur-xl border border-slate-700/40 shadow-[0_10px_45px_rgba(0,0,0,0.45)] transition-all duration-300 hover:border-cyan-400/40 hover:shadow-[0_0_35px_rgba(34,211,238,0.12)]";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -252,13 +252,13 @@ return () => {
 
   if (loadingUser) {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-slate-950">
+      <main className="min-h-screen flex items-center justify-center bg-[#0F172A]">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="flex flex-col items-center gap-4 text-slate-400"
+          className="flex flex-col items-center gap-4 text-slate-300"
         >
-          <div className="flex flex-col items-center gap-4 text-slate-400">
+          <div className="flex flex-col items-center gap-4 text-slate-300">
 <motion.div
 animate={{ rotate: 360 }}
 transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
@@ -385,13 +385,13 @@ y: [0, 20, 0]
         >
           <div className="flex items-center gap-3">
    <div>
-    <p className="text-xs text-slate-400">Welcome back</p>
+    <p className="text-xs text-slate-300">Welcome back</p>
 
     <h1 className="text-2xl sm:text-3xl font-semibold bg-gradient-to-r from-cyan-300 to-indigo-300 bg-clip-text text-transparent">
       {displayName}
     </h1>
 
-    <p className="text-sm text-slate-500 truncate max-w-xs">
+    <p className="text-sm text-slate-300 truncate max-w-xs">
       {user.email}
     </p>
   </div>
@@ -423,7 +423,7 @@ transition-all duration-200"
                 Leaderboard
               </motion.button>
             </Link>
-            <span className="text-[11px] text-slate-500 hidden sm:inline">
+            <span className="text-[11px] text-slate-300 hidden sm:inline">
               Updated {lastUpdated ? new Date(lastUpdated).toLocaleTimeString() : "—"}
             </span>
           </div>
@@ -464,11 +464,11 @@ boxShadow: "0 25px 50px rgba(34,211,238,0.2)"
 </motion.span>
 
         <div>
-          <p className="text-sm font-medium text-slate-200">
+          <p className="text-sm font-medium text-slate-100">
             {item.title}
           </p>
 
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-300">
             Open →
           </p>
         </div>
@@ -503,7 +503,7 @@ boxShadow: "0 25px 50px rgba(34,211,238,0.2)"
                   <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium ${leagueBadges[league]}`}>
                     {leagueIcons[league]} {league}
                   </span>
-                  <p className="text-sm text-slate-400 mt-1">
+                  <p className="text-sm text-slate-300 mt-1">
                     {totalPoints} pts
                     {nextLeague && (
                       <span className="text-cyan-300 ml-1">
@@ -514,7 +514,7 @@ boxShadow: "0 25px 50px rgba(34,211,238,0.2)"
                 </div>
               </div>
               <div className="flex-1 sm:min-w-[200px]">
-                <div className="flex justify-between text-xs text-slate-400 mb-1">
+                <div className="flex justify-between text-xs text-slate-300 mb-1">
                   <span>Progress to {nextLeague || "max"}</span>
                   <span className="text-cyan-300 font-semibold">{progressPct}%</span>
                 </div>
@@ -527,7 +527,7 @@ boxShadow: "0 25px 50px rgba(34,211,238,0.2)"
                   />
                 </div>
                 {nextLeague && (
-                  <p className="text-[10px] text-slate-500 mt-1">
+                  <p className="text-[10px] text-slate-300 mt-1">
                     Need {pointsNeeded} pts to reach {nextLeague}
                   </p>
                 )}
@@ -541,7 +541,7 @@ boxShadow: "0 25px 50px rgba(34,211,238,0.2)"
             className={`${glass} rounded-2xl p-5 flex flex-col justify-center`}
             whileHover={!reduce ? { y: -4, scale: 1.01 } : {}}
           >
-            <p className="text-xs text-slate-400 mb-1 flex items-center gap-2">
+            <p className="text-xs text-slate-300 mb-1 flex items-center gap-2">
 ⚡ Total points
 </p>
             <motion.p
@@ -560,7 +560,7 @@ className="text-3xl font-bold text-cyan-300 tabular-nums"
   className={`${glass} rounded-2xl p-5 flex flex-col justify-center`}
   whileHover={!reduce ? { y: -4, scale: 1.01 } : {}}
 >
-  <p className="text-xs text-slate-400 mb-1">🔥 Coding streak</p>
+  <p className="text-xs text-slate-300 mb-1">🔥 Coding streak</p>
 
   <p className="text-3xl font-bold text-orange-300 tabular-nums">
 <motion.span
@@ -579,7 +579,7 @@ className="text-3xl font-bold text-cyan-300 tabular-nums"
             className={`${glass} rounded-2xl p-5 flex flex-col justify-center`}
             whileHover={!reduce ? { y: -4, scale: 1.01 } : {}}
           >
-            <p className="text-xs text-slate-400 mb-1">✅ Approved submissions</p>
+            <p className="text-xs text-slate-300 mb-1">✅ Approved submissions</p>
             <p className="text-3xl font-bold text-emerald-300 tabular-nums">{approvedSubs}</p>
           </motion.div>
         </motion.section>
@@ -599,7 +599,7 @@ className="text-3xl font-bold text-cyan-300 tabular-nums"
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold">Your submissions</h2>
                 {submissions.length > 0 && (
-                  <span className="text-xs text-slate-500">{submissions.length} total</span>
+                  <span className="text-xs text-slate-300">{submissions.length} total</span>
                 )}
               </div>
 
@@ -625,8 +625,8 @@ className="text-3xl font-bold text-cyan-300 tabular-nums"
 >
 🚀
 </motion.p>
-                  <h3 className="text-base font-medium text-slate-200 mb-1">No submissions yet</h3>
-                  <p className="text-sm text-slate-400 mb-4">
+                  <h3 className="text-base font-medium text-slate-100 mb-1">No submissions yet</h3>
+                  <p className="text-sm text-slate-300 mb-4">
                     Solve challenges and submit your solutions to earn points.
                   </p>
                   <Link to="/challenges">
@@ -676,12 +676,12 @@ transition={{ duration: 2, repeat: Infinity }}
 />
                                 {s.challenges?.title || "Challenge"}
                               </h3>
-                              <p className="text-xs text-slate-400 mt-0.5">
+                              <p className="text-xs text-slate-300 mt-0.5">
                                 <span className={diffColor}>{s.challenges?.difficulty || "—"}</span>
                                 {" · "}
                                 Base: {s.challenges?.points ?? 0} pts
                               </p>
-                              <p className="text-[11px] text-slate-500 mt-1">
+                              <p className="text-[11px] text-slate-300 mt-1">
                                 {new Date(s.submitted_at).toLocaleDateString()}
                               </p>
                               {s.github_link && (
@@ -695,7 +695,7 @@ transition={{ duration: 2, repeat: Infinity }}
                                 </a>
                               )}
                               {s.feedback && (
-                                <p className="text-xs text-slate-400 mt-2 italic">
+                                <p className="text-xs text-slate-300 mt-2 italic">
                                   {s.feedback}
                                 </p>
                               )}
@@ -730,9 +730,9 @@ transition={{ duration: 2, repeat: Infinity }}
               <h2 className="text-lg font-semibold mb-4">Session attendance</h2>
               <div className={`rounded-2xl ${glass} p-5`}>
                 {sessionLoading ? (
-                  <p className="text-sm text-slate-400">Loading…</p>
+                  <p className="text-sm text-slate-300">Loading…</p>
                 ) : sessions.length === 0 ? (
-                  <p className="text-sm text-slate-400">No sessions created yet.</p>
+                  <p className="text-sm text-slate-300">No sessions created yet.</p>
                 ) : (
                   <>
                     <div className="flex items-center justify-between mb-4">
@@ -757,11 +757,11 @@ transition={{ duration: 2, repeat: Infinity }}
                         return (
                           <div
                             key={sess.id}
-                            className="flex items-center justify-between py-2 px-3 rounded-lg bg-slate-900/50 border border-slate-800/60"
+                            className="flex items-center justify-between py-2 px-3 rounded-lg bg-slate-900/50 border border-fuchsia-500/20/60"
                           >
                             <div>
-                              <p className="text-sm font-medium text-slate-200 truncate">{sess.title}</p>
-                              <p className="text-[11px] text-slate-500">
+                              <p className="text-sm font-medium text-slate-100 truncate">{sess.title}</p>
+                              <p className="text-[11px] text-slate-300">
                                 {new Date(sess.session_date).toLocaleDateString()}
                               </p>
                             </div>
@@ -796,18 +796,18 @@ transition={{ duration: 2, repeat: Infinity }}
             >
               <h2 className="text-base font-semibold mb-3">Latest announcements</h2>
               {annLoading ? (
-                <p className="text-xs text-slate-400">Loading…</p>
+                <p className="text-xs text-slate-300">Loading…</p>
               ) : announcements.length === 0 ? (
-                <p className="text-sm text-slate-400">No announcements yet.</p>
+                <p className="text-sm text-slate-300">No announcements yet.</p>
               ) : (
                 <div className="space-y-3">
                   {announcements.map((a) => (
-                    <article key={a.id} className="border-b border-slate-800/60 pb-3 last:border-0">
-                      <p className="text-sm font-medium text-slate-200">{a.title}</p>
-                      <p className="text-[10px] text-slate-500 mt-0.5">
+                    <article key={a.id} className="border-b border-fuchsia-500/20/60 pb-3 last:border-0">
+                      <p className="text-sm font-medium text-slate-100">{a.title}</p>
+                      <p className="text-[10px] text-slate-300 mt-0.5">
                         {new Date(a.created_at).toLocaleDateString()}
                       </p>
-                      <p className="text-xs text-slate-400 mt-1 line-clamp-2">{a.content}</p>
+                      <p className="text-xs text-slate-300 mt-1 line-clamp-2">{a.content}</p>
                     </article>
                   ))}
                 </div>
@@ -831,12 +831,12 @@ transition={{ duration: 2, repeat: Infinity }}
   </h2>
 
   {!recommended ? (
-    <p className="text-xs text-slate-400">
+    <p className="text-xs text-slate-300">
       Loading challenge...
     </p>
   ) : (
     <>
-      <h3 className="text-sm font-semibold text-slate-200">
+      <h3 className="text-sm font-semibold text-slate-100">
   {recommended.title}
 </h3>
 <div className="flex items-center gap-2 mt-2">
@@ -874,14 +874,14 @@ Start challenge →
             >
               <h2 className="text-base font-semibold mb-3">Profile snapshot</h2>
               <div className="text-xs space-y-2 text-slate-300">
-                <p><span className="text-slate-500">Name:</span> {profile?.full_name || user.user_metadata?.full_name || "—"}</p>
+                <p><span className="text-slate-300">Name:</span> {profile?.full_name || user.user_metadata?.full_name || "—"}</p>
 
-<p><span className="text-slate-500">Branch:</span> {profile?.branch || "—"}</p>
+<p><span className="text-slate-300">Branch:</span> {profile?.branch || "—"}</p>
 
-<p><span className="text-slate-500">Year:</span> {profile?.year || "—"}</p>
+<p><span className="text-slate-300">Year:</span> {profile?.year || "—"}</p>
 
 <p className="break-all">
-  <span className="text-slate-500">GitHub: </span>
+  <span className="text-slate-300">GitHub: </span>
   {profile?.github ? (
     <a
       href={profile.github}
@@ -915,7 +915,7 @@ Start challenge →
               className={`rounded-2xl ${glass} p-5`}
             >
               <h2 className="text-base font-semibold mb-2">League ladder</h2>
-              <p className="text-xs text-slate-400 mb-3">Track your progression</p>
+              <p className="text-xs text-slate-300 mb-3">Track your progression</p>
               <div className="space-y-1.5">
                 {leagueOrder.map((lg) => {
                   const isCurrent = lg === currentLeague;
@@ -928,7 +928,7 @@ Start challenge →
                           ? "bg-cyan-500/15 border border-cyan-400/40"
                           : unlocked
                           ? "bg-emerald-500/10 border border-emerald-400/30"
-                          : "bg-slate-900/50 border border-slate-800/60"
+                          : "bg-slate-900/50 border border-fuchsia-500/20/60"
                       }`}
                     >
                       <div className="flex items-center gap-2">
@@ -936,7 +936,7 @@ Start challenge →
                         <span>{lg}</span>
                         {isCurrent && <span className="text-cyan-300 text-[10px] font-medium">Current</span>}
                       </div>
-                      <span className="text-slate-400 tabular-nums">{leagueThresholds[lg]} pts</span>
+                      <span className="text-slate-300 tabular-nums">{leagueThresholds[lg]} pts</span>
                     </div>
                   );
                 })}
@@ -952,7 +952,7 @@ Start challenge →
               className={`rounded-xl border border-slate-700/60 bg-slate-900/40 p-4`}
             >
               <p className="text-xs font-medium text-slate-300 mb-1">💡 Tip</p>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-slate-300">
                 Join sessions and submit challenges to climb leagues faster.
               </p>
             </motion.div>
