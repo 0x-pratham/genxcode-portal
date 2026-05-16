@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { supabase } from "../lib/supabaseClient";
 import { submitApplication } from "../services/recruitmentService";
 import { useToast } from "../context/ToastContext";
+import { APPLICATION_STATUS } from "../services/applicationStatus";
 
 export default function Apply() {
   const navigate = useNavigate();
@@ -37,13 +38,13 @@ export default function Apply() {
     const errors = {};
     if (!values.full_name || !values.full_name.trim()) errors.full_name = "Please enter your full name.";
     if (!values.email || !values.email.trim()) errors.email = "Please enter your email.";
-    else if (!/^\S+@\S+\.\S+$/.test(values.email)) errors.email = "Enter a valid email address.";
+    else if (!/^\S+@\S+\.\S+$/.test(values.email)) errors.email = "Please enter a valid email address.";
     if (!values.branch || !values.branch.trim()) errors.branch = "Please enter your branch.";
     if (!values.year || !values.year.trim()) errors.year = "Please enter your year.";
     if (!values.phone || !values.phone.trim()) errors.phone = "Please enter your phone number.";
-    else if (!/^[+\d][\d\s-]{6,}$/.test(values.phone)) errors.phone = "Enter a valid phone number.";
+    else if (!/^[+\d][\d\s-]{6,}$/.test(values.phone)) errors.phone = "Please enter a valid phone number.";
     if (!values.github || !values.github.trim()) errors.github = "Please provide your GitHub profile.";
-    else if (!/github\.com/.test(values.github) && !/^https?:\/\//.test(values.github)) errors.github = "Provide a GitHub URL or include github.com.";
+    else if (!/github\.com/.test(values.github) && !/^https?:\/\//.test(values.github)) errors.github = "Please enter a valid GitHub profile URL.";
     if (!values.why_join || !values.why_join.trim()) errors.why_join = "Tell us why you want to join.";
     return errors;
   };
@@ -92,14 +93,19 @@ export default function Apply() {
         phone: form.phone.trim(),
         github: form.github.trim(),
         why_join: form.why_join.trim(),
-        status: "pending",
+        status: APPLICATION_STATUS.PENDING,
         user_id: user?.id || null,
       };
 
       const response = await submitApplication(applicationData);
-
+      
+      console.log("API Response:", response);
       if (!response.success) {
-        showToast(response.error?.message || "Submission failed", "error");
+        showToast(
+          response.error?.message ||
+          "Unable to submit application. Please try again later.",
+          "error"
+        );
         setSubmitting(false);
         return;
       }
@@ -123,7 +129,10 @@ export default function Apply() {
 
     } catch (err) {
       console.error(err);
-      showToast("Something went wrong. Please try again.", "error");
+      showToshowToast(
+        "Unexpected error occurred while submitting application.",
+        "error"
+      ); ast("Something went wrong. Please try again.", "error");
       setSubmitting(false);
     }
   };
@@ -326,7 +335,7 @@ export default function Apply() {
               transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
             />
 
-            <div className="relative rounded-3xl bg-white/10 border border-white/10 px-5 py-5 md:px-6 md:py-6 shadow-[0_8px_32px_rgba(0,0,0,0.35)] backdrop-blur-2xl space-y-4 overflow-hidden"> 
+            <div className="relative rounded-3xl bg-white/10 border border-white/10 px-5 py-5 md:px-6 md:py-6 shadow-[0_8px_32px_rgba(0,0,0,0.35)] backdrop-blur-2xl space-y-4 overflow-hidden">
               {/* top glow */}
               <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-cyan-500/10 to-transparent pointer-events-none" />
 
@@ -432,7 +441,7 @@ export default function Apply() {
                     >
                       <option value="">Select your branch</option>
                       <option value="CSE">CSE</option>
-                      <option value="EXTC">AIML</option>
+                      <option value="AIML">AIML</option>
                       <option value="IT">IT</option>
                       <option value="AI-DS">AI-DS</option>
                       <option value="EXTC">EXTC</option>
@@ -607,7 +616,7 @@ export default function Apply() {
                     </p>
                     <motion.button
                       type="submit"
-                      disabled={submitting || !isFormValid}
+                      disabled={submitting}
                       className="btn-primary text-xs px-6 py-3 rounded-xl disabled:opacity-60 disabled:cursor-not-allowed relative overflow-hidden group transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20"
                       whileHover={shouldReduceMotion ? {} : { scale: submitting ? 1 : 1.04, y: submitting ? 0 : -2, boxShadow: submitting ? "" : "0 10px 30px rgba(34,211,238,0.12)" }}
                       whileTap={shouldReduceMotion ? {} : { scale: submitting ? 1 : 0.98 }}
@@ -627,7 +636,7 @@ export default function Apply() {
                           </>
                         )}
                       </span>
-                     <span className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-500/30 via-sky-500/20 to-indigo-500/30 opacity-0 transition-all duration-300 group-hover:opacity-100" />
+                      <span className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-500/30 via-sky-500/20 to-indigo-500/30 opacity-0 transition-all duration-300 group-hover:opacity-100" />
                     </motion.button>
                   </div>
                 </div>
