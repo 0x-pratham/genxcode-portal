@@ -2,9 +2,9 @@
 import { motion, AnimatePresence } from "framer-motion";
 
 const leagueSlideVariants = {
-  enter: { opacity: 0, y: 24, scale: 0.97, rotateX: -10 },
-  center: { opacity: 1, y: 0, scale: 1, rotateX: 0 },
-  exit: { opacity: 0, y: -24, scale: 0.97, rotateX: 10 },
+  enter: { opacity: 0, y: 16, scale: 0.98, filter: "blur(4px)" },
+  center: { opacity: 1, y: 0, scale: 1, filter: "blur(0px)" },
+  exit: { opacity: 0, y: -16, scale: 0.98, filter: "blur(4px)" },
 };
 
 export default function LeagueSection({
@@ -19,74 +19,65 @@ export default function LeagueSection({
 }) {
   return (
     <motion.section
-      className="space-y-6"
-      initial={{ opacity: 0, y: 28 }}
+      className="space-y-6 text-left max-w-4xl mx-auto"
+      initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 0.7 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
     >
-      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
-        <div>
+      {/* --- Section Header Row --- */}
+      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 border-b border-white/[0.04] pb-4">
+        <div className="space-y-1.5">
           <motion.div
-            className="inline-flex items-center gap-2 mb-2"
+            className="flex items-center gap-2"
             initial={{ opacity: 0, x: -10 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
-            <span className="text-2xl">🏆</span>
-            <h2 className="text-xl md:text-2xl font-semibold">
-              GenXCode <span className="bg-gradient-to-r from-cyan-300 to-amber-300 bg-clip-text text-transparent">League System</span>
+            <span className="text-xl">🏆</span>
+            <h2 className="text-xl md:text-2xl font-bold tracking-tight text-neutral-premiumText font-display">
+              GenXCode <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-accentMuted to-brand-accent">League System</span>
             </h2>
           </motion.div>
-          <p className="text-xs md:text-sm text-slate-400 max-w-xl mt-1">
-            Every submission, event and contribution pushes you up this rank ladder – from Bronze GenX all the way to Legend.
+          <p className="text-xs md:text-sm text-neutral-secondaryText font-medium font-sans max-w-xl">
+            Every submission, event, and contribution pushes you up this rank ladder – from Bronze GenX all the way to Legend.
           </p>
         </div>
+
+        {/* --- Metric Overview Badge --- */}
         <motion.div
-          className="inline-flex items-center gap-2 rounded-full border border-slate-800 bg-slate-900/50 px-3 py-1.5 text-[11px] text-slate-400"
-          whileHover={{ scale: 1.05, borderColor: "rgb(251, 191, 36)" }}
+          className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-brand-midnight/50 px-3.5 py-1.5 text-[11px] font-medium text-neutral-secondaryText font-sans self-start md:self-auto"
+          whileHover={{ scale: 1.02, borderColor: "rgba(0, 163, 255, 0.3)" }}
         >
-          <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" />
-          <span>8 Leagues · 0 → 8000+ points</span>
+          <span className="h-1.5 w-1.5 rounded-full bg-brand-accent animate-pulse" />
+          <span>{leagues.length} Leagues · 0 → 8000+ points</span>
         </motion.div>
       </div>
 
+      {/* --- Main Interactive Stage Card --- */}
       <div
-        className="relative max-w-4xl mx-auto"
+        className="relative w-full"
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
       >
-        <motion.div
-          className="absolute -inset-0.5 rounded-3xl bg-gradient-to-br from-cyan-500/40 via-slate-900 to-fuchsia-500/40 opacity-70 blur-2xl"
-          animate={{ opacity: [0.3, 0.85, 0.3] }}
-          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <div className="relative rounded-3xl bg-gradient-to-br from-slate-950/95 via-slate-900/95 to-slate-950/95 border border-slate-800/80 px-5 py-6 md:px-8 md:py-7 shadow-2xl shadow-slate-950/80 overflow-hidden backdrop-blur-xl">
-          <motion.div
-            className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-cyan-400 via-amber-400 to-fuchsia-400"
-            animate={{
-              opacity: [0.6, 1, 0.6],
-              boxShadow: [
-                "0 0 20px rgba(34, 211, 238, 0.3)",
-                "0 0 40px rgba(251, 191, 36, 0.5)",
-                "0 0 20px rgba(34, 211, 238, 0.3)",
-              ],
-            }}
-            transition={{ duration: 3, repeat: Infinity }}
-          />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-fuchsia-500/5" />
+        {/* Soft Ambient Brand Spotlight backplate */}
+        <div className="absolute -inset-0.5 rounded-3xl bg-gradient-to-br from-brand-accent/20 via-brand-midnight to-transparent opacity-60 blur-xl pointer-events-none" />
 
-          <div className="flex items-center justify-between gap-3 mb-4">
-            <div className="inline-flex items-center gap-2 rounded-full bg-slate-900/80 px-3 py-1 border border-slate-700/80">
-              <span className="text-[11px] font-mono text-slate-500">#{activeLeague.id.toString().padStart(2, "0")}</span>
-              <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
-              <span className="text-[11px] text-slate-200">League</span>
+        <div className="relative rounded-2xl border border-white/[0.06] bg-brand-midnight/40 p-6 md:p-8 backdrop-blur-md overflow-hidden flex flex-col justify-between shadow-[0_24px_60px_rgba(2,6,23,0.4)]">
+          
+          {/* Top Status Meta Row */}
+          <div className="flex items-center justify-between gap-3 mb-6">
+            <div className="inline-flex items-center gap-2 rounded-full bg-brand-cosmos/80 px-2.5 py-1 border border-white/[0.04]">
+              <span className="text-[10px] font-mono font-bold text-neutral-secondaryText/60">#{activeLeague.id?.toString().padStart(2, "0")}</span>
+              <span className="h-1.5 w-1.5 rounded-full bg-brand-accent" />
+              <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-premiumText font-display">Division Tier</span>
             </div>
-            <span className="text-[11px] text-slate-500">
-              {activeLeague.pointsLabel} · <span className="text-cyan-300 font-medium">{activeLeague.name}</span>
+            <span className="text-[11px] font-medium text-neutral-secondaryText font-sans">
+              {activeLeague.pointsLabel} · <span className="text-brand-accent font-semibold">{activeLeague.name}</span>
             </span>
           </div>
 
+          {/* Sliding Display Stage Window */}
           <AnimatePresence mode="wait">
             <motion.div
               key={activeLeague.key}
@@ -94,31 +85,51 @@ export default function LeagueSection({
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ duration: 0.45 }}
-              className="grid gap-6 lg:grid-cols-[1.1fr,1.2fr] items-center"
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="grid gap-8 md:grid-cols-[auto,1fr] items-center"
             >
-              <div className="relative flex flex-col items-center gap-3">
+              {/* Dynamic Badge Visual Node */}
+              <div className="relative flex flex-col items-center gap-3 mx-auto md:mx-0 shrink-0">
                 <div className="relative">
-                  <div className={`pointer-events-none absolute -inset-8 translate-y-4 blur-3xl bg-gradient-to-b ${activeLeague.glow}`} />
-                  <div className="relative h-24 w-24 md:h-28 md:w-28 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border border-slate-600/70 flex items-center justify-center shadow-[0_0_40px_rgba(15,23,42,1)] overflow-hidden">
-                    <img src={activeLeague.image} alt={`${activeLeague.name} badge`} className="h-20 w-20 md:h-24 md:w-24 object-contain" loading="lazy" />
+                  {/* Dynamic Glowing Aura Backing derived from dataset */}
+                  <div className={`pointer-events-none absolute -inset-8 translate-y-4 blur-3xl opacity-30 bg-gradient-to-b ${activeLeague.glow || 'from-brand-accent'}`} />
+                  
+                  <div className="relative h-24 w-24 md:h-28 md:w-28 rounded-2xl bg-gradient-to-br from-brand-cosmos via-brand-midnight to-brand-cosmos border border-white/[0.1] flex items-center justify-center shadow-[inset_0_1px_1px_rgba(255,255,255,0.06)] overflow-hidden">
+                    <img 
+                      src={activeLeague.image} 
+                      alt={`${activeLeague.name} badge`} 
+                      className="h-20 w-20 md:h-24 md:w-24 object-contain transition-transform duration-500 group-hover:scale-105" 
+                      loading="lazy" 
+                    />
                   </div>
-                  <div className="absolute -inset-[3px] rounded-[1.75rem] border border-cyan-300/50 blur-[2px] opacity-80" />
+                  <div className="absolute -inset-[1px] rounded-[1.25rem] border border-brand-accent/30 blur-[1px] opacity-60 pointer-events-none" />
                 </div>
-                <p className="text-[11px] text-slate-500 text-center">
-                  Badge preview used on <span className="text-cyan-300">Dashboard</span> & <span className="text-cyan-300">Leaderboard</span>.
+                <p className="text-[10px] font-medium text-neutral-secondaryText/50 text-center font-sans">
+                  Active Badge Indicator
                 </p>
               </div>
 
-              <div className="space-y-3">
-                <div>
-                  <p className="text-xs text-slate-400 mb-1">{activeLeague.emoji} {activeLeague.pointsLabel}</p>
-                  <h3 className="text-lg md:text-xl font-semibold">{activeLeague.name}</h3>
-                  <p className="text-xs md:text-sm text-cyan-200/90 mt-1">{activeLeague.tagline}</p>
-                  <p className="text-sm md:text-base text-slate-300 mt-2">{activeLeague.desc}</p>
+              {/* Text Description Stack Layer */}
+              <div className="space-y-4 text-center md:text-left">
+                <div className="space-y-1">
+                  <p className="text-xs font-semibold text-brand-accentMuted font-sans flex items-center justify-center md:justify-start gap-1">
+                    <span>{activeLeague.emoji}</span> {activeLeague.pointsLabel}
+                  </p>
+                  <h3 className="text-xl md:text-2xl font-extrabold tracking-tight text-neutral-premiumText font-display">
+                    {activeLeague.name}
+                  </h3>
+                  <p className="text-xs md:text-sm font-medium text-brand-accent/90 italic font-sans">
+                    "{activeLeague.tagline}"
+                  </p>
                 </div>
-                <div className="mt-2 space-y-2">
-                  <p className="text-[11px] text-slate-400">League path preview</p>
+                
+                <p className="text-sm md:text-base leading-relaxed text-neutral-secondaryText font-medium font-sans">
+                  {activeLeague.desc}
+                </p>
+
+                {/* --- Visual Progression Pipeline Bar --- */}
+                <div className="pt-2 space-y-1.5 text-left">
+                  <p className="text-[10px] font-bold tracking-wider uppercase text-neutral-secondaryText/40 font-display">League Path Progress</p>
                   <div className="flex items-center gap-1.5">
                     {leagues.map((lg, idx) => {
                       const isActive = lg.key === activeLeague.key;
@@ -126,14 +137,18 @@ export default function LeagueSection({
                       return (
                         <div
                           key={lg.key}
-                          className={`flex-1 h-1.5 rounded-full transition-all ${
-                            isActive ? "bg-cyan-400" : isPast ? "bg-emerald-400/70" : "bg-slate-700/80"
+                          className={`flex-1 h-1.5 rounded-full transition-all duration-300 ${
+                            isActive 
+                              ? "bg-brand-accent shadow-[0_0_12px_rgba(0,163,255,0.5)] w-4" 
+                              : isPast 
+                                ? "bg-brand-accent/40" 
+                                : "bg-white/10"
                           }`}
                         />
                       );
                     })}
                   </div>
-                  <div className="flex items-center justify-between text-[10px] text-slate-500">
+                  <div className="flex items-center justify-between text-[9px] font-bold uppercase tracking-wider text-neutral-secondaryText/40 font-display">
                     <span>Bronze</span>
                     <span>Legend</span>
                   </div>
@@ -142,29 +157,36 @@ export default function LeagueSection({
             </motion.div>
           </AnimatePresence>
 
-          <div className="mt-5 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          {/* --- Navigation Controls & Bottom Switchers Interface Row --- */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-t border-white/[0.04] pt-5 mt-6">
             <div className="flex items-center gap-2">
               <button
                 onClick={onPrev}
-                className="rounded-full border border-slate-700/80 px-3 py-1.5 text-[11px] hover:border-cyan-400 hover:bg-slate-900/90 transition"
+                className="flex-1 sm:flex-none h-8 px-3 rounded-lg border border-white/[0.06] bg-brand-cosmos/40 text-xs font-semibold text-neutral-secondaryText hover:text-neutral-premiumText hover:border-brand-accent/30 hover:bg-brand-accent/[0.02] transition-all font-sans"
                 type="button"
               >
-                Previous league
+                Previous
               </button>
               <button
                 onClick={onNext}
-                className="rounded-full border border-slate-700/80 px-3 py-1.5 text-[11px] hover:border-cyan-400 hover:bg-slate-900/90 transition"
+                className="flex-1 sm:flex-none h-8 px-3 rounded-lg border border-white/[0.06] bg-brand-cosmos/40 text-xs font-semibold text-neutral-secondaryText hover:text-neutral-premiumText hover:border-brand-accent/30 hover:bg-brand-accent/[0.02] transition-all font-sans"
                 type="button"
               >
-                Next league
+                Next
               </button>
             </div>
-            <div className="flex items-center gap-1.5 justify-end">
+            
+            {/* Dot Selectors */}
+            <div className="flex items-center gap-1.5 justify-center sm:justify-end">
               {leagues.map((lg, idx) => (
                 <button
                   key={lg.key}
                   onClick={() => onDotClick(idx)}
-                  className={`h-1.5 rounded-full transition-all ${leagueIndex === idx ? "w-6 bg-cyan-400" : "w-2 bg-slate-600/80 hover:bg-slate-300"}`}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    leagueIndex === idx 
+                      ? "w-6 bg-brand-accent shadow-[0_0_10px_rgba(0,163,255,0.4)]" 
+                      : "w-1.5 bg-white/20 hover:bg-white/40"
+                  }`}
                   type="button"
                   aria-label={`Go to ${lg.name}`}
                 />
@@ -172,8 +194,8 @@ export default function LeagueSection({
             </div>
           </div>
 
-          <p className="mt-3 text-[10px] text-slate-500">
-            This is a visual preview. Actual league depends on your points from challenges, events and verified contributions.
+          <p className="mt-4 text-[10px] text-neutral-secondaryText/40 font-medium font-sans text-center md:text-left">
+            This is a visual system preview. Ranks calibrate automatically based on verified contributions.
           </p>
         </div>
       </div>

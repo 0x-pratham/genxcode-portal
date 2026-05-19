@@ -4,63 +4,52 @@ import { motion } from "framer-motion";
 export default function BrandBlock() {
   return (
     <motion.section
-      className="mt-6"
-      initial={{ opacity: 0, y: 20 }}
+      className="mt-6 text-left max-w-4xl mx-auto"
+      initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 0.6 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
     >
-      <motion.div
-        className="relative overflow-hidden rounded-3xl border border-cyan-400/40 bg-slate-950/90 px-5 py-4 md:px-7 md:py-5 shadow-[0_0_40px_rgba(34,211,238,0.35)]"
-        whileHover={{ scale: 1.02, y: -4 }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
+      <a
+        href="https://cosmolix.co.in/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group relative block rounded-xl border border-white/[0.06] bg-brand-midnight/40 p-6 md:p-8 backdrop-blur-md transition-all duration-300 hover:border-brand-accent/30 hover:bg-brand-midnight/60 shadow-[0_12px_30px_rgba(2,6,23,0.25)] overflow-hidden cursor-pointer"
       >
-        <motion.div
-          className="pointer-events-none absolute -inset-1 bg-gradient-to-r from-cyan-500/20 via-fuchsia-500/20 to-emerald-400/20 blur-2xl opacity-70"
-          animate={{ opacity: [0.4, 0.8, 0.4] }}
-          transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3"
-          initial={{ x: "-120%", rotate: -15 }}
-          animate={{ x: ["-120%", "140%"] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-          style={{
-            background:
-              "linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0) 100%)",
-            mixBlendMode: "screen",
-          }}
-        />
+        {/* Subtle Ambient Radial Backglow */}
+        <div className="absolute -right-24 -top-24 w-56 h-56 bg-brand-accent/[0.03] rounded-full blur-3xl pointer-events-none transition-all duration-500 group-hover:bg-brand-accent/[0.06]" />
+        
+        {/* Micro Link Icon Indicator */}
+        <div className="absolute top-4 right-4 opacity-30 group-hover:opacity-100 group-hover:text-brand-accent transition-all duration-300">
+          <svg className="h-4 w-4 transform transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </div>
 
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        {/* Card Content Stage */}
+        <div className="space-y-3 font-sans relative z-10">
           <div className="space-y-1">
-            <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400">Crafted with care</p>
-            <h2 className="text-lg md:text-xl font-semibold">
-              <span className="bg-gradient-to-r from-cyan-300 via-sky-400 to-indigo-300 bg-clip-text text-transparent">
-                GenXCode
-              </span>{" "}
-              <span className="text-slate-200">· A product by</span>{" "}
-              <span className="bg-gradient-to-r from-emerald-300 to-cyan-300 bg-clip-text text-transparent">
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] font-bold font-mono text-brand-accent tracking-widest uppercase opacity-60 group-hover:opacity-100 transition-opacity">
+                // Strategic Partnership
+              </span>
+              <span className="h-[1px] w-4 bg-white/[0.08]" />
+            </div>
+            
+            <h2 className="text-base md:text-lg font-bold tracking-tight text-neutral-premiumText font-display">
+              GenXCode <span className="text-neutral-secondaryText/40 font-medium">· Engineered by</span>{" "}
+              <span className="relative inline-block font-bold text-brand-accent transition-colors">
                 Cosmolix Pvt Ltd
+                <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-brand-accent transition-all duration-300 group-hover:w-full" />
               </span>
             </h2>
-            <p className="text-[11px] md:text-xs text-slate-400 max-w-xl">
-              Built like a real SaaS platform for student communities – with dashboards, leagues, challenges and admin
-              tools designed by the Cosmolix product team.
-            </p>
           </div>
 
-          <div className="flex items-center gap-3 text-[11px] md:text-xs text-slate-300">
-            <div className="flex flex-col items-start">
-              <span className="inline-flex items-center gap-1 rounded-full border border-cyan-400/50 bg-cyan-500/10 px-3 py-1">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span>Powered by Cosmolix</span>
-              </span>
-              <span className="mt-1 text-slate-500">Enterprise-level thinking, tuned for campus scale.</span>
-            </div>
-          </div>
+          <p className="text-xs sm:text-[13px] leading-relaxed text-neutral-secondaryText font-medium max-w-2xl transition-colors group-hover:text-neutral-secondaryText/90">
+            Built utilizing high-performance SaaS design principles optimized for real-time student tech cohorts. This environment delivers integrated platforms, challenges, and user tracking features custom crafted by the Cosmolix product team.
+          </p>
         </div>
-      </motion.div>
+      </a>
     </motion.section>
   );
 }

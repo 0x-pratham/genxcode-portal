@@ -7,7 +7,6 @@ import ScrollToTop from "../components/shared/ScrollToTop";
 import SectionDivider from "../components/shared/SectionDivider";
 
 import HomeAnimatedBackground from "../components/home/HomeAnimatedBackground";
-import WelcomeBanner from "../components/home/WelcomeBanner";
 import HeroSection from "../components/home/HeroSection";
 import HeroBenefitSlider from "../components/home/HeroBenefitSlider";
 import CTAStrip from "../components/home/CTAStrip";
@@ -38,8 +37,10 @@ export default function Home() {
   const [autoLeague, setAutoLeague] = useState(true);
 
   const { scrollYProgress } = useScroll();
-  const smoothProgress = useSpring(scrollYProgress, { stiffness: 50, damping: 22, mass: 0.6 });
-  const contentTranslate = useTransform(smoothProgress, [0, 1], [0, -90]);
+  
+  // Premium tailored spring physics for organic momentum behavior
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 65, damping: 26, mass: 0.5 });
+  const contentTranslate = useTransform(smoothProgress, [0, 1], [0, -60]);
 
   useEffect(() => {
     const prev = document.documentElement.style.scrollBehavior;
@@ -70,14 +71,14 @@ export default function Home() {
   };
 
   return (
-    <main className="relative min-h-screen bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 text-slate-100 pb-24 overflow-hidden">
+    <main className="relative min-h-screen bg-brand-cosmos text-neutral-premiumText pb-32 overflow-hidden font-sans antialiased">
       <ScrollProgressBar />
       <ScrollToTop />
+      
+      {/* Background Orbs and Layers wrap seamlessly */}
       <HomeAnimatedBackground />
 
-      <div className="container-page relative z-10 pt-12 md:pt-16 space-y-16 md:space-y-20">
-        <WelcomeBanner />
-
+      <div className="home-layout-container space-y-24 relative z-10 mt-12">
         <HeroSection contentTranslate={contentTranslate} onSectionScroll={sectionScroll}>
           <HeroBenefitSlider
             benefits={benefits}
@@ -91,9 +92,10 @@ export default function Home() {
           />
         </HeroSection>
 
-        <SectionDivider variant="cyan" />
+        {/* Replaced standard neon layout split variants with unified architecture lines */}
+        <SectionDivider variant="brand" />
         <CTAStrip />
-        <SectionDivider variant="emerald" delay={0.5} />
+        <SectionDivider variant="brand" delay={0.2} />
 
         <LeagueSection
           leagues={leagues}
@@ -106,11 +108,13 @@ export default function Home() {
           onMouseLeave={() => setAutoLeague(true)}
         />
 
-        <SectionDivider variant="purple" delay={1} />
+        <SectionDivider variant="brand" delay={0.4} />
+        
         <VisionSection visions={visions} />
+        
         <FoundersSection founder={founder} coFounder={coFounder} mentor={mentor} />
 
-        <div id="team-section" className="space-y-14">
+        <div id="team-section">
           <PresidentTeam presidentTeam={presidentTeam} />
         </div>
 
@@ -126,7 +130,9 @@ export default function Home() {
         />
 
         <PillarsSection pillars={pillars} />
+        
         <BrandBlock />
+        
         <HomeFooter />
       </div>
     </main>

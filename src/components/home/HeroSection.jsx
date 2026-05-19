@@ -4,130 +4,121 @@ import { motion } from "framer-motion";
 
 const containerVariants = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.2 } },
+  visible: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
 };
 
 const textRevealVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20, scale: 0.95 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: "easeOut" } },
+  hidden: { opacity: 0, y: 16, scale: 0.98 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } },
 };
 
 export default function HeroSection({ onSectionScroll, contentTranslate, children }) {
   return (
     <motion.section
       className="grid gap-12 items-start lg:items-center lg:grid-cols-[1.2fr,1fr]"
-      initial={{ opacity: 0, y: 24 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.7, ease: "easeOut" }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       style={{ y: contentTranslate }}
     >
+      {/* Left Content Area */}
       <motion.div
-        className="space-y-8"
-        initial={{ opacity: 0, x: -30 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.7, delay: 0.1 }}
+        className="space-y-8 text-left"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
       >
-        <motion.div
-          className="inline-flex items-center gap-2 rounded-full border border-slate-700/70 bg-slate-900/80 px-3 py-1.5 text-[11px] text-slate-300 shadow-lg shadow-cyan-500/15 backdrop-blur"
-          initial={{ opacity: 0, scale: 0.9, y: -10 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.15, type: "spring", stiffness: 200, damping: 15 }}
-          whileHover={{ scale: 1.05, y: -2 }}
-        >
-          <motion.span
-            className="inline-flex h-2 w-2 rounded-full bg-emerald-400"
-            animate={{ scale: [1, 1.2, 1], opacity: [1, 0.7, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          />
-          <span className="font-medium tracking-wide">GenXCode · Student Developer Community</span>
-        </motion.div>
-
-        <motion.div className="space-y-4" variants={containerVariants} initial="hidden" animate="visible">
-          <motion.h1
-            className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold tracking-tight leading-tight md:leading-[1.05]"
+        <div className="space-y-4">
+          {/* Tagline Indicator Layer */}
+          <motion.div 
             variants={textRevealVariants}
+            className="text-[11px] font-bold tracking-[0.3em] text-brand-accent uppercase font-display block"
           >
-            Turn your{" "}
-            <motion.span
-              className="bg-gradient-to-r from-cyan-300 via-sky-400 to-indigo-400 bg-clip-text text-transparent inline-block"
-              animate={{ backgroundPosition: ["0%", "100%", "0%"] }}
-              transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
-              style={{ backgroundSize: "200% 200%" }}
-            >
-              ideas into ship‑ready projects
-            </motion.span>{" "}
-            before you graduate.
+            CODE • CREATE • CONQUER
+          </motion.div>
+
+          <motion.h1
+            variants={textRevealVariants}
+            className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-neutral-premiumText font-display leading-[1.1]"
+          >
+            The Ultimate Ecosystem for <br />
+            <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-neutral-premiumText via-brand-accentMuted to-brand-accent">
+              Next-Gen Developers.
+            </span>
           </motion.h1>
-          <motion.p className="text-sm md:text-base text-slate-400 max-w-xl" variants={textRevealVariants}>
-            Build real products, ship to GitHub, collaborate with a serious tech community and earn points,
-            leagues & recognition as you grow.
+
+          <motion.p
+            variants={textRevealVariants}
+            className="text-base sm:text-lg text-neutral-secondaryText font-medium max-w-xl font-sans leading-relaxed"
+          >
+            GenXCode is an elite hub built to elevate your engineering journey. 
+            Solve industrial tracks, review real-time feedback loops, and compete in standard seasonal leagues.
           </motion.p>
-        </motion.div>
+        </div>
 
-        <motion.div
-          className="flex flex-col sm:flex-row flex-wrap gap-4 items-center"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
+        {/* Action Button Pipeline */}
+        <motion.div 
+          variants={textRevealVariants} 
+          className="flex flex-wrap items-center gap-4 pt-2"
         >
-          <motion.div variants={itemVariants} whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.95 }}>
-            <Link to="/apply">
-              <motion.button
-                className="relative overflow-hidden group btn-primary px-7 py-3 text-sm font-medium shadow-xl shadow-cyan-500/40 transition"
-                whileHover={{ boxShadow: "0 20px 40px rgba(34, 211, 238, 0.4)" }}
-              >
-                <span className="relative z-[1]">Start Building with GenXCode</span>
-                <motion.span
-                  className="pointer-events-none absolute inset-0 bg-gradient-to-r from-cyan-400/40 via-sky-500/30 to-indigo-500/40"
-                  initial={{ opacity: 0, x: "-100%" }}
-                  whileHover={{ opacity: 1, x: "100%" }}
-                  transition={{ duration: 0.6 }}
-                />
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Link to="/signup">
+              <motion.button className="relative overflow-hidden group rounded-xl bg-brand-accent px-7 py-3.5 text-sm font-semibold text-brand-cosmos shadow-[0_4px_24px_rgba(0,163,255,0.2)] transition-shadow duration-300">
+                <span className="relative z-10 flex items-center gap-2">
+                  Get Started 
+                  <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </span>
+                <span className="absolute inset-0 bg-white/20 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
               </motion.button>
             </Link>
           </motion.div>
 
-          <motion.div variants={itemVariants} whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.95 }}>
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Link to="/challenges">
-              <motion.button
-                className="btn-outline px-7 py-3 text-sm font-medium transition"
-                whileHover={{
-                  y: -2,
-                  borderColor: "rgb(34, 211, 238)",
-                  boxShadow: "0 10px 30px rgba(34, 211, 238, 0.2)",
-                }}
-              >
-                Explore challenges
-              </motion.button>
+              <button className="rounded-xl border border-white/[0.08] bg-brand-midnight/40 px-7 py-3.5 text-sm font-semibold text-neutral-premiumText hover:border-brand-accent/30 hover:bg-brand-accent/[0.02] transition-colors">
+                Explore Challenges
+              </button>
             </Link>
           </motion.div>
 
+          {/* Clean Scroll Indicator Anchor */}
           <motion.button
             type="button"
-            variants={itemVariants}
-            whileHover={{ x: 4, scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="text-xs md:text-sm text-slate-400 hover:text-cyan-300 transition"
+            whileHover={{ y: 2 }}
+            className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-neutral-secondaryText hover:text-brand-accent transition-colors pl-2"
             onClick={() => onSectionScroll?.("team-section")}
           >
             <motion.span
-              animate={{ y: [0, 4, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
+              animate={{ y: [0, 3, 0] }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
               className="inline-block"
             >
-              Meet the team ↓
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              </svg>
             </motion.span>
+            Meet The Team
           </motion.button>
         </motion.div>
       </motion.div>
 
-      {/* Right column – passed as children (HeroBenefitSlider) */}
-      {children}
+      {/* Right Content Area (Houses the Benefit Slider via Children Injection) */}
+      <motion.div
+        variants={itemVariants}
+        className="relative w-full lg:mt-0"
+      >
+        <div className="absolute -inset-4 bg-brand-accent/[0.02] rounded-[2.5rem] blur-2xl" />
+        <div className="relative border border-white/[0.06] bg-brand-midnight/20 rounded-3xl p-2 backdrop-blur-sm shadow-[0_24px_60px_rgba(2,6,23,0.3)]">
+          {children}
+        </div>
+      </motion.div>
     </motion.section>
   );
 }
