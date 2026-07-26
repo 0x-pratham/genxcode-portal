@@ -44,7 +44,7 @@ export default function Maintenance() {
           {/* Description */}
           <p className="mt-8 text-slate-300 text-lg leading-8 max-w-2xl mx-auto">
             GenXCode is currently undergoing scheduled maintenance while we
-            introduce new features, improve performance, and strengthen our
+            introduce new features, improve performance and strengthen our
             infrastructure to deliver a better experience for everyone.
           </p>
 
@@ -57,7 +57,7 @@ export default function Maintenance() {
 
             <p className="mt-3 text-slate-400 leading-7">
               Our engineering team is working behind the scenes to ensure every
-              update is stable, secure, and ready before reopening the platform.
+              update is stable, secure and ready before reopening the platform.
             </p>
 
           </div>
