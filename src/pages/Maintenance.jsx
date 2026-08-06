@@ -148,7 +148,7 @@ export default function Maintenance() {
           {/* Footer */}
           <div className="mt-12 border-t border-slate-800 pt-8">
             <p className="text-slate-400 text-lg">
-              🚀 Launching on
+              Launching on
               <span className="text-cyan-300 font-semibold">
                 {" "}
                 7 August 2026
