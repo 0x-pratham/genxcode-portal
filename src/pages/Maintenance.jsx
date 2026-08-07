@@ -1,167 +1,169 @@
 import { useEffect, useState } from "react";
-import BackgroundOrbs from "../components/shared/BackgroundOrbs";
+import BackgroundOrbs from "../components/shared/BackgroundOrbs"; 
+import { motion } from "framer-motion";
+import confetti from "canvas-confetti";
+import { Zap, Cpu, LayoutDashboard, Rocket } from "lucide-react";
 
 export default function Maintenance() {
-  // 🔥 Set your launch date & time here
-  // Example: August 7, 2026 at 6:45 PM
-  const launchDate = new Date("2026-08-07T18:45:00").getTime();
-
-  const calculateTimeLeft = () => {
-    const now = new Date().getTime();
-    const difference = launchDate - now;
-
-    if (difference <= 0) {
-      return {
-        days: 0,
-        hours: 0,
-        minutes: 0,
-        seconds: 0,
-      };
-    }
-
-    return {
-      days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-      hours: Math.floor(
-        (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-      ),
-      minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-      seconds: Math.floor((difference % (1000 * 60)) / 1000),
-    };
-  };
-
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+  const [counter, setCounter] = useState(99999);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
+    let current = 99999;
     const interval = setInterval(() => {
-      setTimeLeft(calculateTimeLeft());
-    }, 1000);
+      current -= Math.floor(Math.random() * 2500) + 1200; 
+      
+      if (current <= 0) {
+        current = 0;
+        clearInterval(interval);
+        setIsReady(true);
+        fireConfettiBlast();
+      }
+      setCounter(current);
+    }, 40);
 
     return () => clearInterval(interval);
   }, []);
 
+  const fireConfettiBlast = () => {
+    const duration = 4000;
+    const end = Date.now() + duration;
+
+    const frame = () => {
+      confetti({
+        particleCount: 12,
+        angle: 60,
+        spread: 80,
+        origin: { x: 0 },
+        colors: ["#06b6d4", "#6366f1", "#38bdf8", "#ffffff"],
+      });
+      confetti({
+        particleCount: 12,
+        angle: 120,
+        spread: 80,
+        origin: { x: 1 },
+        colors: ["#06b6d4", "#6366f1", "#38bdf8", "#ffffff"],
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    };
+    frame();
+  };
+
+  const formatNumber = (num) => String(num).padStart(5, "0");
+
+  // Stagger animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.2, delayChildren: 0.3 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 120 } }
+  };
+
+  const features = [
+    { icon: <Zap className="w-5 h-5 text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]" />, text: "Zero-Latency UI" },
+    { icon: <Cpu className="w-5 h-5 text-indigo-400 drop-shadow-[0_0_8px_rgba(99,102,241,0.8)]" />, text: "Next-Gen LMS" },
+    { icon: <LayoutDashboard className="w-5 h-5 text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]" />, text: "Pro-Level Dashboards" },
+  ];
+
   return (
-    <div className="relative min-h-screen bg-slate-950 text-slate-100 overflow-hidden">
-      {/* Background */}
-      <BackgroundOrbs />
+    <div className="relative min-h-screen bg-slate-950 text-slate-100 overflow-hidden flex flex-col items-center justify-center font-sans">
+      <BackgroundOrbs /> 
+      
+      <div className="absolute inset-0 bg-gradient-to-br from-cyan-600/5 via-slate-950/90 to-indigo-600/5 pointer-events-none" />
 
-      {/* Gradient Blur */}
-      <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-indigo-500/5" />
+      <div className="relative z-10 w-full max-w-5xl px-6 py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="rounded-3xl border border-slate-800/60 bg-slate-900/40 backdrop-blur-2xl shadow-[0_0_100px_rgba(56,189,248,0.1)] p-10 md:p-16 text-center relative overflow-hidden"
+        >
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-[2px] bg-gradient-to-r from-transparent via-cyan-400/80 to-transparent"></div>
 
-      {/* Content */}
-      <div className="relative z-10 flex min-h-screen items-center justify-center px-6 py-10">
-        <div className="w-full max-w-4xl rounded-3xl border border-slate-800 bg-slate-900/70 backdrop-blur-2xl shadow-[0_0_100px_rgba(56,189,248,0.15)] p-10 md:p-14 text-center">
-          {/* Logo */}
-          <img
+          <motion.img
+            whileHover={{ scale: 1.05, rotate: 2 }}
             src="https://i.ibb.co/SDYy36xJ/Logo.jpg"
             alt="GenXCode Logo"
-            className="mx-auto h-20 w-20 rounded-2xl shadow-lg mb-8"
+            className="mx-auto h-24 w-24 rounded-2xl shadow-[0_0_40px_rgba(56,189,248,0.3)] mb-10 border border-slate-700/50 object-cover"
           />
 
-          {/* Status Badge */}
-          <div className="inline-flex items-center gap-3 rounded-full border border-cyan-500/20 bg-cyan-500/10 px-5 py-2 mb-8">
-            <span className="relative flex h-3 w-3">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-400 opacity-75"></span>
-              <span className="relative inline-flex h-3 w-3 rounded-full bg-cyan-400"></span>
-            </span>
-
-            <span className="text-cyan-300 font-medium tracking-wider">
-              MAINTENANCE IN PROGRESS
-            </span>
-          </div>
-
-          {/* Heading */}
-          <h1 className="text-4xl md:text-6xl font-bold leading-tight bg-gradient-to-r from-cyan-300 via-sky-400 to-indigo-400 bg-clip-text text-transparent">
-            We're Building Something Better
-          </h1>
-
-          {/* Description */}
-          <p className="mt-8 text-slate-300 text-lg leading-8 max-w-2xl mx-auto">
-            GenXCode is currently undergoing scheduled maintenance while we
-            introduce new features, improve performance, and strengthen our
-            infrastructure to deliver a faster and more reliable learning
-            platform.
-          </p>
-
-          {/* Countdown */}
-          <div className="mt-12">
-            <p className="text-cyan-300 uppercase tracking-[0.3em] text-sm mb-8">
-              Estimated Time Remaining
-            </p>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-              {/* Days */}
-              <div className="rounded-2xl border border-cyan-500/20 bg-slate-950/60 p-6">
-                <h2 className="text-5xl font-bold text-cyan-300">
-                  {String(timeLeft.days).padStart(2, "0")}
-                </h2>
-                <p className="mt-3 text-slate-500 uppercase text-xs tracking-[0.25em]">
-                  Days
-                </p>
-              </div>
-
-              {/* Hours */}
-              <div className="rounded-2xl border border-cyan-500/20 bg-slate-950/60 p-6">
-                <h2 className="text-5xl font-bold text-cyan-300">
-                  {String(timeLeft.hours).padStart(2, "0")}
-                </h2>
-                <p className="mt-3 text-slate-500 uppercase text-xs tracking-[0.25em]">
-                  Hours
-                </p>
-              </div>
-
-              {/* Minutes */}
-              <div className="rounded-2xl border border-cyan-500/20 bg-slate-950/60 p-6">
-                <h2 className="text-5xl font-bold text-cyan-300">
-                  {String(timeLeft.minutes).padStart(2, "0")}
-                </h2>
-                <p className="mt-3 text-slate-500 uppercase text-xs tracking-[0.25em]">
-                  Minutes
-                </p>
-              </div>
-
-              {/* Seconds */}
-              <div className="rounded-2xl border border-cyan-500/20 bg-slate-950/60 p-6">
-                <h2 className="text-5xl font-bold text-cyan-300">
-                  {String(timeLeft.seconds).padStart(2, "0")}
-                </h2>
-                <p className="mt-3 text-slate-500 uppercase text-xs tracking-[0.25em]">
-                  Seconds
-                </p>
+          {!isReady ? (
+            <div className="space-y-6 py-12">
+              <h2 className="text-xl md:text-2xl font-bold text-slate-500 uppercase tracking-[0.5em] animate-pulse">
+                Calibrating Future
+              </h2>
+              <div className="text-7xl md:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-b from-cyan-300 to-cyan-700 tracking-widest font-mono drop-shadow-[0_0_40px_rgba(34,211,238,0.4)] tabular-nums">
+                {formatNumber(counter)}
               </div>
             </div>
-          </div>
+          ) : (
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="show"
+              className="space-y-8"
+            >
+              <motion.h1
+                variants={itemVariants}
+                className="text-7xl md:text-9xl font-black bg-gradient-to-br from-cyan-300 via-sky-400 to-indigo-600 bg-clip-text text-transparent drop-shadow-[0_0_60px_rgba(56,189,248,0.5)] uppercase tracking-tighter"
+              >
+                SOON
+              </motion.h1>
 
-          {/* Notice */}
-          <div className="mt-12 rounded-2xl border border-slate-800 bg-slate-950/60 p-6">
-            <h3 className="text-cyan-300 font-semibold text-xl">
-              What are we working on?
-            </h3>
+              <motion.h2 
+                variants={itemVariants}
+                className="text-3xl md:text-5xl font-extrabold text-white mt-4 tracking-tight flex flex-col md:flex-row items-center justify-center gap-3"
+              >
+                GEAR UP, 
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400 drop-shadow-[0_0_20px_rgba(129,140,248,0.4)]">
+                  JSPM UNIVERSITY!
+                </span>
+              </motion.h2>
 
-            <p className="mt-4 text-slate-400 leading-8">
-              Our engineering team is upgrading the GenXCode platform with a
-              brand-new Learning Management System (LMS), improved dashboards,
-              faster performance, enhanced security, and a smoother experience
-              for every student.
-            </p>
-          </div>
+              <motion.p 
+                variants={itemVariants}
+                className="mt-8 text-slate-400 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto border-t border-slate-800/80 pt-8 font-light"
+              >
+                We aren't just upgrading; <strong className="text-cyan-300 font-semibold">we are redefining the game.</strong> GenXCode is evolving into an elite coding powerhouse built exclusively for the brightest minds.
+              </motion.p>
 
-          {/* Footer */}
-          <div className="mt-12 border-t border-slate-800 pt-8">
-            <p className="text-slate-400 text-lg">
-              Launching on
-              <span className="text-cyan-300 font-semibold">
-                {" "}
-                7 August 2026
-              </span>
-            </p>
+              <motion.div 
+                variants={itemVariants}
+                className="flex flex-col md:flex-row justify-center gap-6 md:gap-10 mt-10"
+              >
+                {features.map((feature, idx) => (
+                  <div key={idx} className="flex items-center justify-center gap-3 text-slate-300 text-sm md:text-base font-medium bg-slate-950/30 px-5 py-2.5 rounded-full border border-slate-800/50 hover:border-slate-600 transition-colors">
+                    {feature.icon}
+                    {feature.text}
+                  </div>
+                ))}
+              </motion.div>
 
-            <p className="mt-4 text-sm text-slate-500">
-              Thank you for your patience and continued support.
-              <br />
-              We'll be back soon with an even better GenXCode experience.
-            </p>
-          </div>
-        </div>
+              <motion.div 
+                variants={itemVariants}
+                className="mt-14 inline-flex items-center gap-4 rounded-full border border-cyan-500/30 bg-cyan-950/40 px-8 py-4 shadow-[0_0_30px_rgba(56,189,248,0.1)] transition-all hover:shadow-[0_0_50px_rgba(56,189,248,0.25)] hover:bg-cyan-900/40 cursor-default"
+              >
+                <span className="relative flex h-3 w-3">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-400 opacity-75"></span>
+                  <span className="relative inline-flex h-3 w-3 rounded-full bg-cyan-500"></span>
+                </span>
+                <span className="text-cyan-400 font-bold tracking-[0.2em] uppercase text-xs md:text-sm flex items-center gap-2">
+                  <Rocket className="w-4 h-4" />
+                  The Next Era Begins Soon
+                </span>
+              </motion.div>
+            </motion.div>
+          )}
+        </motion.div>
       </div>
     </div>
   );
