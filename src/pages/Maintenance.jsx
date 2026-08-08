@@ -5,35 +5,14 @@ import confetti from "canvas-confetti";
 import { Zap, Cpu, LayoutDashboard, Rocket } from "lucide-react";
 
 export default function Maintenance() {
-  // 2 days = 48 hours
-  const TWO_DAYS = 2 * 24 * 60 * 60 * 1000;
+  // 12 hours countdown
+  const TWELVE_HOURS = 12 * 60 * 60 * 1000;
+  const COUNTDOWN_STORAGE_KEY = "genxcode-maintenance-end-time";
 
-  const [timeLeft, setTimeLeft] = useState(TWO_DAYS);
+  const [timeLeft, setTimeLeft] = useState(TWELVE_HOURS);
   const [isReady, setIsReady] = useState(false);
 
-  useEffect(() => {
-    const targetTime = Date.now() + TWO_DAYS;
-
-    const updateCountdown = () => {
-      const remaining = targetTime - Date.now();
-
-      if (remaining <= 0) {
-        setTimeLeft(0);
-        setIsReady(true);
-        fireConfettiBlast();
-        return;
-      }
-
-      setTimeLeft(remaining);
-    };
-
-    updateCountdown();
-
-    const interval = setInterval(updateCountdown, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
+  // Moved confetti blast above useEffect to avoid initialization errors
   const fireConfettiBlast = () => {
     const duration = 4000;
     const end = Date.now() + duration;
@@ -62,6 +41,39 @@ export default function Maintenance() {
 
     frame();
   };
+
+  useEffect(() => {
+    // Get previously saved end time
+    let targetTime = Number(localStorage.getItem(COUNTDOWN_STORAGE_KEY));
+
+    // First visit: create a new 12-hour countdown
+    if (!targetTime || Number.isNaN(targetTime)) {
+      targetTime = Date.now() + TWELVE_HOURS;
+      localStorage.setItem(COUNTDOWN_STORAGE_KEY, String(targetTime));
+    }
+
+    const updateCountdown = () => {
+      const remaining = targetTime - Date.now();
+
+      if (remaining <= 0) {
+        setTimeLeft(0);
+        setIsReady(true);
+        fireConfettiBlast(); // Triggers confetti when time is up
+
+        // Prevent the countdown from being recreated after expiry
+        localStorage.setItem(COUNTDOWN_STORAGE_KEY, String(targetTime));
+        return;
+      }
+
+      setTimeLeft(remaining);
+    };
+
+    updateCountdown();
+
+    const interval = setInterval(updateCountdown, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const getTimeUnits = () => {
     const totalSeconds = Math.floor(timeLeft / 1000);
